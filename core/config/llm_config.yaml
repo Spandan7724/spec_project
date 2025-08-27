@@ -1,0 +1,208 @@
+# LLM Provider Configuration for Multi-Agent Currency Assistant
+# This file defines the default LLM providers, models, and agent configurations
+
+# Default provider and model (as requested: Copilot with gpt-4o-2024-11-20)
+default_provider: "copilot"
+default_model: "gpt-4o-2024-11-20"
+
+# Provider configurations
+providers:
+  # GitHub Copilot (Default Provider)
+  copilot:
+    api_base: "https://api.githubcopilot.com"
+    models:
+      - "gpt-4o-2024-11-20"  # Default model
+      - "gpt-4o"
+      - "gpt-4o-mini"
+      - "claude-3.5-sonnet"
+      - "claude-3.5-haiku"
+      - "claude-3-opus"
+      - "o1-preview"
+      - "o1-mini"
+      - "gemini-1.5-pro"
+      - "gemini-1.5-flash"
+    default_model: "gpt-4o-2024-11-20"
+    auth:
+      token_env: "COPILOT_ACCESS_TOKEN"
+      required: true
+    features:
+      function_calling: true
+      streaming: true
+      usage_tracking: true
+      temperature_control: true
+      max_tokens_control: true
+    rate_limits:
+      requests_per_minute: 60
+      tokens_per_minute: 150000
+      requests_per_day: 10000
+    
+  # OpenAI (Fallback Provider)
+  openai:
+    api_base: "https://api.openai.com/v1"
+    models:
+      - "gpt-4o"
+      - "gpt-4o-mini"
+      - "gpt-4-turbo"
+      - "gpt-4-turbo-preview"
+      - "gpt-4"
+      - "gpt-4-32k"
+      - "gpt-3.5-turbo"
+      - "gpt-3.5-turbo-16k"
+    default_model: "gpt-4o"
+    auth:
+      token_env: "OPENAI_API_KEY"
+      required: false  # Optional fallback
+    features:
+      function_calling: true
+      streaming: true
+      usage_tracking: true
+      temperature_control: true
+      max_tokens_control: true
+    rate_limits:
+      requests_per_minute: 5000
+      tokens_per_minute: 800000
+      requests_per_day: 200000
+      
+  # Anthropic (Alternative Provider)
+  anthropic:
+    api_base: "https://api.anthropic.com"
+    models:
+      - "claude-3-5-sonnet-20241022"
+      - "claude-3-5-haiku-20241022"
+      - "claude-3-opus-20240229"
+      - "claude-3-sonnet-20240229"
+      - "claude-3-haiku-20240307"
+      - "claude-2.1"
+      - "claude-2.0"
+      - "claude-instant-1.2"
+    default_model: "claude-3-5-sonnet-20241022"
+    auth:
+      token_env: "ANTHROPIC_API_KEY"
+      required: false  # Optional fallback
+    features:
+      function_calling: true
+      streaming: true
+      usage_tracking: true
+      temperature_control: true
+      max_tokens_control: true
+    rate_limits:
+      requests_per_minute: 1000
+      tokens_per_minute: 40000
+      requests_per_day: 50000
+
+# Fallback provider order (when primary provider fails)
+fallback_order:
+  - "copilot"
+  - "openai"
+  - "anthropic"
+
+# Agent-specific configurations
+agents:
+  # Market Intelligence Agent
+  market_intelligence:
+    model_override: null  # Use default provider model
+    provider_override: null  # Use default provider
+    temperature: 0.3
+    max_tokens: 2000
+    system_prompt: |
+      You are a specialized Market Intelligence Agent for currency conversion decisions.
+      
+      Your role is to analyze:
+      - Real-time news sentiment affecting currency pairs
+      - Economic calendar events and their impact
+      - Market regime detection (trending vs ranging)
+      - Cross-market correlations
+      - Technical indicators and patterns
+      
+      Provide clear, concise analysis with confidence scores.
+      Focus on factors that directly impact exchange rate movements.
+    
+  # Risk Analysis Agent
+  risk_analysis:
+    model_override: null
+    provider_override: null
+    temperature: 0.2
+    max_tokens: 1500
+    system_prompt: |
+      You are a specialized Risk Analysis Agent for currency conversion decisions.
+      
+      Your role is to evaluate:
+      - Market volatility and uncertainty levels
+      - User risk tolerance alignment
+      - Prediction confidence and reliability
+      - Time-based risks from deadlines
+      - Scenario analysis and stress testing
+      
+      Provide quantitative risk assessments with clear reasoning.
+      Consider both market risks and user-specific risk factors.
+    
+  # Cost Optimization Agent
+  cost_optimization:
+    model_override: null
+    provider_override: null
+    temperature: 0.1
+    max_tokens: 1000
+    system_prompt: |
+      You are a specialized Cost Optimization Agent for currency conversion decisions.
+      
+      Your role is to analyze:
+      - Real-time provider rate comparisons
+      - Fee structures and hidden costs
+      - Optimal timing for cost minimization
+      - Transaction cost breakdowns
+      - Provider routing strategies
+      
+      Focus on measurable cost savings and precise calculations.
+      Prioritize accuracy in financial computations.
+    
+  # Decision Coordinator
+  decision_coordinator:
+    model_override: null
+    provider_override: null
+    temperature: 0.4
+    max_tokens: 3000
+    system_prompt: |
+      You are the Decision Coordinator for currency conversion recommendations.
+      
+      Your role is to:
+      - Synthesize inputs from Market, Risk, and Cost agents
+      - Resolve conflicts between different agent recommendations
+      - Generate final conversion decisions (convert now vs wait)
+      - Provide clear, actionable explanations
+      - Calculate confidence scores based on agent consensus
+      
+      Make decisions that balance market opportunity, risk tolerance, and cost efficiency.
+      Always provide transparent reasoning for your recommendations.
+
+# Workflow settings
+workflow:
+  parallel_execution: true  # Run agents in parallel when possible
+  timeout_seconds: 30      # Maximum time for workflow completion
+  retry_attempts: 3        # Number of retry attempts on failure
+  fallback_provider: "openai"  # Provider to use when primary fails
+  enable_caching: true     # Cache responses for identical requests
+  cache_ttl_minutes: 5     # Cache time-to-live
+  
+# Performance and monitoring settings
+performance:
+  max_concurrent_requests: 10  # Maximum simultaneous provider requests
+  health_check_interval_minutes: 5  # Provider health check frequency
+  response_timeout_seconds: 60  # Individual provider request timeout
+  enable_usage_tracking: true  # Track token usage and costs
+  log_level: "INFO"  # Logging level for provider operations
+
+# Environment variable overrides
+# These can be set in the environment to override config values
+env_overrides:
+  provider: "LLM_CONFIG_PROVIDER"      # Override default_provider
+  model: "LLM_CONFIG_MODEL"            # Override default_model
+  temperature: "LLM_CONFIG_TEMPERATURE"  # Override temperature globally
+  max_tokens: "LLM_CONFIG_MAX_TOKENS"    # Override max_tokens globally
+  log_level: "LLM_CONFIG_LOG_LEVEL"      # Override log_level
+
+# Development and testing settings
+development:
+  enable_mock_providers: false  # Use mock providers for testing
+  enable_debug_logging: false   # Enable detailed debug logs
+  simulate_provider_failures: false  # Simulate failures for testing
+  test_mode: false  # Enable test mode with reduced timeouts

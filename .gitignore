@@ -121,5 +121,14 @@ latest_experiment_results.pkl
 .coverage
 htmlcov/
 
+# LLM and Agent system files
+core/config/.env
+agent_memory/
+conversation_history/
+*.log
+agent_logs/
+provider_cache/
+workflow_state/
+
 CLAUDE.md
 .claude/
