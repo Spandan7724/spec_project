@@ -132,3 +132,5 @@ workflow_state/
 
 CLAUDE.md
 .claude/
+docs/
+.ruff_cache/
