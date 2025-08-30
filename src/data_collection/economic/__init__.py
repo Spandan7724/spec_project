@@ -12,7 +12,6 @@ from .calendar_collector import (
 
 from .fred_provider import FREDProvider
 from .ecb_provider import ECBProvider
-from .rbi_provider import RBIProvider
 
 __all__ = [
     # Core Calendar
@@ -24,6 +23,5 @@ __all__ = [
     
     # Providers
     "FREDProvider",
-    "ECBProvider",
-    "RBIProvider"
+    "ECBProvider"
 ]

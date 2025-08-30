@@ -260,7 +260,7 @@ class EconomicCalendarCollector:
                 sources_used.append("BOE")
                 logger.info(f"Collected {len(boe_events)} events from BOE")
             
-            # RBI (Indian economic data)
+            # RBI (Indian economic data) - using web scraper
             rbi_events = await self._fetch_rbi_events(days_ahead)
             if rbi_events:
                 all_events.extend(rbi_events)
@@ -343,16 +343,16 @@ class EconomicCalendarCollector:
         return None
     
     async def _fetch_rbi_events(self, days_ahead: int) -> Optional[List[EconomicEvent]]:
-        """Fetch events from RBI and Indian economic sources."""
+        """Fetch events from RBI using web scraper."""
         try:
-            from .rbi_provider import RBIProvider
+            from .rbi_scraper import RBIScraper
             
-            async with RBIProvider() as provider:
-                events = await provider.get_upcoming_releases(days_ahead)
+            async with RBIScraper() as scraper:
+                events = await scraper.get_upcoming_releases(days_ahead)
                 return events or []
                 
         except Exception as e:
-            logger.error(f"RBI events fetch error: {e}")
+            logger.error(f"RBI scraping error: {e}")
             return None
     
     def _deduplicate_events(self, events: List[EconomicEvent]) -> List[EconomicEvent]:

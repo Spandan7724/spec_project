@@ -134,3 +134,5 @@ CLAUDE.md
 .claude/
 docs/
 .ruff_cache/
+repomix-output.xml
+scraped_data/
