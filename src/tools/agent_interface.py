@@ -6,7 +6,7 @@ Provides easy-to-use methods for AI agents in conversational contexts
 import asyncio
 from typing import Dict, List, Any, Optional
 
-from .web_scraper import SimpleWebScraper, ScrapingResult
+from .web_scraper import SimpleWebScraper
 from .decision_engine import DecisionEngine
 
 class AgentScrapingInterface:

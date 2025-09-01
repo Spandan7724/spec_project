@@ -1,0 +1,90 @@
+# ML System Configuration
+# ======================
+
+# Model Architecture Settings
+model:
+  # LSTM Architecture
+  hidden_size: 128           # Number of LSTM hidden units
+  num_layers: 2              # Number of LSTM layers
+  dropout: 0.2               # Dropout rate for regularization
+  bidirectional: false       # Use bidirectional LSTM
+  
+  # Training Parameters
+  batch_size: 32             # Training batch size
+  learning_rate: 0.001       # Learning rate for optimizer
+  epochs: 100                # Maximum number of training epochs
+  patience: 15               # Early stopping patience
+  
+  # Data Parameters
+  sequence_length: 30        # Days of historical data to use (reduced from 60)
+  prediction_horizons: [1, 7, 30]  # Forecast horizons in days
+  train_test_split: 0.7      # Fraction for training (increased from 0.8)
+  validation_split: 0.15     # Fraction for validation (reduced from 0.2)
+
+# Storage Configuration
+storage:
+  model_storage_path: "models/"
+  data_storage_path: "data/"
+  
+  # Model Versioning Strategy
+  # "timestamp" - Create new folder with timestamp (lstm_USDEUR_20250831_184518)
+  # "overwrite" - Use same folder name (lstm_USDEUR) and overwrite existing model
+  model_versioning: "overwrite"
+
+# Feature Engineering
+features:
+  # Price-based features
+  use_ohlcv: true
+  use_returns: true
+  use_log_returns: true
+  
+  # Technical indicators
+  use_moving_averages: true
+  ma_periods: [20, 50]       # Reduced from [20, 50, 200] to avoid overfitting
+  use_bollinger_bands: true
+  use_rsi: true
+  use_macd: true
+  use_volatility: true
+  
+  # Economic features
+  use_economic_events: true
+  use_calendar_effects: true
+  
+  # Feature scaling
+  feature_scaling: "minmax"  # "minmax", "standard", "robust"
+
+# Prediction Settings
+prediction:
+  confidence_levels: [0.1, 0.5, 0.9]  # P10, P50, P90
+  min_confidence_threshold: 0.3
+  max_prediction_age_hours: 24
+  
+  # Caching
+  enable_caching: true
+  cache_ttl_seconds: 3600    # 1 hour
+
+# Backtesting
+backtest:
+  walk_forward_steps: 7      # Days to step forward (reduced from 30)
+  min_train_samples: 50      # Minimum training samples required (reduced from 1000)
+  
+  # Metrics to calculate
+  calculate_sharpe: true
+  calculate_sortino: true
+  calculate_max_drawdown: true
+  
+  # Currency pairs to test
+  test_pairs: ["USD/EUR", "USD/GBP", "EUR/GBP"]
+
+# System Settings
+system:
+  device: "auto"             # "auto", "cpu", "cuda"
+  log_level: "INFO"
+
+# Data Collection Settings
+data:
+  # Minimum days of data to collect for training
+  min_training_days: 2000     # Increased to ensure enough data
+  
+  # Historical data lookback for features
+  feature_lookback_days: 3000  # More data for better feature calculation

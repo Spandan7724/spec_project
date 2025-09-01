@@ -26,7 +26,7 @@ async def find_wise_calculator():
             
             # Look for form elements or interactive components
             form_indicators = ["amount", "from", "to", "calculate", "get quote", "send"]
-            print(f"\nForm indicators found:")
+            print("\nForm indicators found:")
             for indicator in form_indicators:
                 count = content.lower().count(indicator.lower())
                 if count > 0:
@@ -35,7 +35,7 @@ async def find_wise_calculator():
             # Try to find specific quote URLs in the content
             quote_urls = re.findall(r'(https://[^"\s)]*(?:quote|send|transfer)[^"\s)]*)', content)
             if quote_urls:
-                print(f"\nQuote URLs found:")
+                print("\nQuote URLs found:")
                 for url in set(quote_urls[:5]):
                     print(f"  - {url}")
 
@@ -67,7 +67,7 @@ async def find_remitly_calculator():
             
             # Look for specific amount/quote functionality
             amount_indicators = ["enter amount", "how much", "send amount", "calculate"]
-            print(f"\nAmount input indicators:")
+            print("\nAmount input indicators:")
             for indicator in amount_indicators:
                 count = content.lower().count(indicator.lower())
                 if count > 0:
@@ -92,7 +92,7 @@ async def find_xe_calculator():
             
             # Look for calculator interface elements
             calc_terms = ["calculate", "quote", "estimate", "amount", "fee breakdown"]
-            print(f"\nCalculator interface terms:")
+            print("\nCalculator interface terms:")
             for term in calc_terms:
                 count = content.lower().count(term.lower())
                 if count > 0:

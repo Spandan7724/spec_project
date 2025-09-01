@@ -5,7 +5,7 @@ RBI web scraper for real Indian economic data and events.
 import logging
 import re
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import List, Optional
 from crawl4ai import AsyncWebCrawler
 
 from .calendar_collector import EconomicEvent, EventImpact, EventStatus

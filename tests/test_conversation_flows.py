@@ -5,8 +5,6 @@ Tests realistic user scenarios and agent decision-making
 """
 import asyncio
 import pytest
-import tempfile
-import shutil
 from pathlib import Path
 
 # Add src to path

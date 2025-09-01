@@ -1,0 +1,4 @@
+# LLM Provider Dependencies
+httpx>=0.25.0
+pyyaml>=6.0
+asyncio-mqtt>=0.11.0  # For potential future streaming

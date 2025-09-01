@@ -132,7 +132,7 @@ workflow_state/
 
 CLAUDE.md
 .claude/
-docs/
+# docs/
 .ruff_cache/
 repomix-output.xml
 scraped_data/

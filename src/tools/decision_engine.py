@@ -3,8 +3,7 @@
 Decision Engine for Web Scraping Tool
 Determines when and how agents should scrape for information
 """
-import re
-from typing import Dict, List, Tuple, Optional
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 
 @dataclass

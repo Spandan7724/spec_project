@@ -26,7 +26,7 @@ async def test_wise_api():
                 print(f"Content length: {len(response.text)}")
                 
                 if response.status_code == 200:
-                    print(f"✅ Accessible")
+                    print("✅ Accessible")
                     print(f"Sample content: {response.text[:200]}...")
                 else:
                     print(f"❌ Status {response.status_code}")
@@ -53,7 +53,7 @@ async def test_revolut_api():
                 print(f"Content length: {len(response.text)}")
                 
                 if response.status_code == 200:
-                    print(f"✅ Accessible")
+                    print("✅ Accessible")
                     print(f"Sample content: {response.text[:200]}...")
                 else:
                     print(f"❌ Status {response.status_code}")
@@ -80,7 +80,7 @@ async def test_xe_api():
                 print(f"Content length: {len(response.text)}")
                 
                 if response.status_code == 200:
-                    print(f"✅ Accessible")
+                    print("✅ Accessible")
                     print(f"Sample content: {response.text[:200]}...")
                 else:
                     print(f"❌ Status {response.status_code}")

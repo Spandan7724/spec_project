@@ -6,7 +6,7 @@ import logging
 import re
 import hashlib
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import List, Optional
 from crawl4ai import AsyncWebCrawler
 
 from .news_models import NewsArticle, NewsSentiment

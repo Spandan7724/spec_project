@@ -42,7 +42,7 @@ async def examine_rbi_data():
                 if len(relevant_lines) >= 10:
                     break
         
-        print(f"\nRelevant content samples:")
+        print("\nRelevant content samples:")
         for i, line in enumerate(relevant_lines[:5], 1):
             print(f"{i}. {line}")
 
@@ -91,7 +91,7 @@ async def examine_news_data():
                     if len(headlines) >= 5:
                         break
             
-            print(f"\nSample forex headlines:")
+            print("\nSample forex headlines:")
             for i, headline in enumerate(headlines, 1):
                 print(f"{i}. {headline}")
 

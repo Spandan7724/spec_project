@@ -88,7 +88,7 @@ async def detailed_remitly_extraction():
                         if len(fee_lines) >= 10:
                             break
                 
-                print(f"\nFee/rate related content:")
+                print("\nFee/rate related content:")
                 for i, line in enumerate(fee_lines, 1):
                     print(f"  {i}. {line}")
                 

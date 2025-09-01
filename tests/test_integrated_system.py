@@ -20,13 +20,13 @@ async def test_integrated_calendar():
         calendar = await collector.get_economic_calendar(days_ahead=14)
         
         if calendar:
-            print(f"\nIntegrated Calendar Results:")
+            print("\nIntegrated Calendar Results:")
             print(f"Total events: {calendar.event_count}")
             print(f"Upcoming events: {calendar.upcoming_count}")
             print(f"High impact events: {calendar.high_impact_count}")
             print(f"Sources: {calendar.sources}")
             
-            print(f"\nAll Events:")
+            print("\nAll Events:")
             for i, event in enumerate(calendar.events, 1):
                 print(f"{i}. {event.title} ({event.source})")
                 print(f"   Date: {event.release_date}")
@@ -50,10 +50,10 @@ async def test_news_system():
             articles = await scraper.get_latest_news(hours_back=24)
             
             if articles:
-                print(f"\nNews System Results:")
+                print("\nNews System Results:")
                 print(f"Articles found: {len(articles)}")
                 
-                print(f"\nSample Articles:")
+                print("\nSample Articles:")
                 for i, article in enumerate(articles[:5], 1):
                     print(f"{i}. {article.title}")
                     print(f"   Source: {article.source}")

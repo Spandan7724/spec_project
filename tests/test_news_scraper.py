@@ -17,7 +17,7 @@ async def test_news_scraper():
         try:
             articles = await scraper.get_latest_news(hours_back=48)
             
-            print(f"\nNews Scraper Results:")
+            print("\nNews Scraper Results:")
             print(f"Number of articles found: {len(articles) if articles else 0}")
             
             if articles:

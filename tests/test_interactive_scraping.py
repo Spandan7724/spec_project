@@ -84,7 +84,7 @@ class InteractiveScrapingTester:
             query, self.conversation_context
         )
         
-        print(f"\n✅ Decision Results:")
+        print("\n✅ Decision Results:")
         print(f"Should scrape: {decision['should_scrape']}")
         print(f"Reason: {decision['reason']}")
         print(f"Confidence: {decision['confidence']:.2f}")
@@ -115,13 +115,13 @@ class InteractiveScrapingTester:
                 query, self.conversation_context
             )
             
-            print(f"\n✅ Scraping Results:")
+            print("\n✅ Scraping Results:")
             print(f"Success: {info['success']}")
             print(f"Sources checked: {info['sources_checked']}")
             print(f"Results found: {info['results_found']}")
             
             if info['success'] and info['data']:
-                print(f"\n📊 Extracted Data:")
+                print("\n📊 Extracted Data:")
                 for key, value in info['data'].items():
                     if isinstance(value, list) and len(value) > 5:
                         print(f"  {key}: {value[:5]}... (showing first 5)")
@@ -129,12 +129,12 @@ class InteractiveScrapingTester:
                         print(f"  {key}: {value}")
             
             if info['citations']:
-                print(f"\n📚 Citations:")
+                print("\n📚 Citations:")
                 for citation in info['citations']:
                     print(f"  - {citation}")
             
             if info['errors']:
-                print(f"\n❌ Errors:")
+                print("\n❌ Errors:")
                 for error in info['errors']:
                     print(f"  - {error}")
                     
@@ -164,13 +164,13 @@ class InteractiveScrapingTester:
                 specific_urls=urls
             )
             
-            print(f"\n✅ Custom URL Results:")
+            print("\n✅ Custom URL Results:")
             print(f"Success: {info['success']}")
             print(f"Sources checked: {len(urls)}")
             print(f"Successful sources: {info['results_found']}")
             
             if info['data']:
-                print(f"\n📊 Data Found:")
+                print("\n📊 Data Found:")
                 for key, value in info['data'].items():
                     if isinstance(value, list) and len(value) > 3:
                         print(f"  {key}: {value[:3]}... (showing first 3)")
@@ -202,7 +202,7 @@ class InteractiveScrapingTester:
         try:
             info = await AgentScrapingInterface.check_provider_updates(provider)
             
-            print(f"\n✅ Provider Results:")
+            print("\n✅ Provider Results:")
             print(f"Success: {info['success']}")
             
             if info['data']:
@@ -211,7 +211,7 @@ class InteractiveScrapingTester:
                     print(f"  {key}: {value}")
             
             if info['citations']:
-                print(f"\n📚 Sources:")
+                print("\n📚 Sources:")
                 for citation in info['citations']:
                     print(f"  - {citation}")
                     
@@ -244,11 +244,11 @@ class InteractiveScrapingTester:
         try:
             info = await AgentScrapingInterface.check_economic_events(event)
             
-            print(f"\n✅ Economic News Results:")
+            print("\n✅ Economic News Results:")
             print(f"Success: {info['success']}")
             
             if info['data']:
-                print(f"\n📰 News Data:")
+                print("\n📰 News Data:")
                 for key, value in info['data'].items():
                     if key == 'headlines' and isinstance(value, list):
                         print(f"  Headlines found: {len(value)}")
@@ -271,7 +271,7 @@ class InteractiveScrapingTester:
     
     def show_context(self):
         """Show current conversation context"""
-        print(f"\n--- Current Context ---")
+        print("\n--- Current Context ---")
         print(f"Context: '{self.conversation_context}'" if self.conversation_context else "No context set")
     
     async def run_demo_scenarios(self):

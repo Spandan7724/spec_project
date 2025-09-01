@@ -13,6 +13,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "fastapi>=0.116.1",
     "httpx>=0.28.1",
+    "joblib>=1.5.1",
     "langchain>=0.3.0",
     "langchain-anthropic>=0.2.0",
     "langchain-core>=0.3.0",
@@ -40,6 +41,7 @@ dependencies = [
     "sqlalchemy>=2.0.43",
     "structlog>=25.4.0",
     "torch>=2.8.0",
+    "torchvision>=0.23.0",
     "uvicorn[standard]>=0.35.0",
     "yfinance>=0.2.65",
 ]

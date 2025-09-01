@@ -14,7 +14,7 @@ from tools.web_scraper import GenericScrapingInterface
 
 async def test_custom_query(query: str, custom_url: str = None):
     """Test scraping with custom query and optional URL"""
-    print(f"=== Testing Custom Query ===")
+    print("=== Testing Custom Query ===")
     print(f"Query: '{query}'")
     if custom_url:
         print(f"Custom URL: {custom_url}")

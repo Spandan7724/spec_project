@@ -8,7 +8,6 @@ import pytest
 import tempfile
 import shutil
 from pathlib import Path
-import json
 import time
 
 # Add src to path
@@ -16,7 +15,6 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from tools.agent_interface import AgentScrapingInterface
-from tools.web_scraper import SimpleWebScraper
 from tools.cache_manager import CacheManager
 from tools.decision_engine import DecisionEngine
 

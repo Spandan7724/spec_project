@@ -17,7 +17,7 @@ async def test_rbi_scraper():
         try:
             events = await scraper.get_upcoming_releases(days_ahead=30)
             
-            print(f"\nRBI Scraper Results:")
+            print("\nRBI Scraper Results:")
             print(f"Number of events found: {len(events) if events else 0}")
             
             if events:

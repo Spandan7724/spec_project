@@ -1,0 +1,111 @@
+{
+  "model_name": "LSTM_USD/EUR_20250901_222609",
+  "model_type": "lstm",
+  "currency_pair": "USD/EUR",
+  "model_id": "lstm_usdeur_20250901_222609",
+  "created": "2025-09-01T22:26:09.296511",
+  "file_path": "models/lstm_usdeur_20250901_222609/model.pth",
+  "directory": "models/lstm_usdeur_20250901_222609",
+  "model_info": {
+    "model_type": "LSTMModel",
+    "model_version": "1.0",
+    "is_trained": true,
+    "config": {
+      "input_size": 64,
+      "hidden_size": 128,
+      "num_layers": 2,
+      "dropout": 0.2,
+      "bidirectional": false,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "epochs": 100,
+      "patience": 15,
+      "sequence_length": 60,
+      "prediction_horizons": [
+        1,
+        7,
+        30
+      ],
+      "train_test_split": 0.8,
+      "validation_split": 0.2,
+      "device": "cuda"
+    },
+    "parameter_count": 246086,
+    "trainable_parameters": 246086,
+    "architecture": {
+      "input_size": 64,
+      "hidden_size": 128,
+      "num_layers": 2,
+      "dropout": 0.2,
+      "bidirectional": false,
+      "output_size": 3
+    },
+    "prediction_horizons": [
+      1,
+      7,
+      30
+    ],
+    "device": "cuda",
+    "training_history_length": 20
+  },
+  "training_samples": 29,
+  "features_count": 64,
+  "performance_metrics": {
+    "mse": 8.785051613813266e-05,
+    "mae": 0.007719758898019791,
+    "rmse": 0.009372860616595802,
+    "r2": -1.9779974358957286,
+    "directional_accuracy": 0.4746136865342164,
+    "mean_uncertainty": 0.20582932233810425,
+    "directional_accuracy_1d": 0.4966887417218543,
+    "directional_accuracy_7d": 0.5298013245033113,
+    "directional_accuracy_30d": 0.3973509933774834
+  },
+  "training_history": {
+    "loss": [
+      0.07282205671072006,
+      0.07062902301549911,
+      0.06946034729480743,
+      0.0682724118232727,
+      0.06715092062950134,
+      0.06596335768699646,
+      0.06412990391254425,
+      0.0619877465069294,
+      0.059111371636390686,
+      0.055885735899209976,
+      0.052290692925453186,
+      0.048853565007448196,
+      0.045305658131837845,
+      0.04213395342230797,
+      0.0387711264193058,
+      0.0355638824403286,
+      0.03234201297163963,
+      0.029218656942248344,
+      0.026104984804987907,
+      0.023636985570192337
+    ],
+    "val_loss": [
+      0.001703633926808834,
+      0.001008500810712576,
+      0.0005308440886437893,
+      0.00024064024910330772,
+      5.4388248827308416e-05,
+      7.553796604042873e-05,
+      0.00028085900703445077,
+      0.00033814815105870366,
+      0.00024379264505114406,
+      0.00014181737788021564,
+      0.0001477728656027466,
+      0.00019388424698263407,
+      0.0002006477297982201,
+      0.00015512351819779724,
+      0.00013696889800485224,
+      0.00012949196388944983,
+      0.00010822177864611149,
+      0.00011441936658229679,
+      0.00010330994700780138,
+      9.11595270736143e-05
+    ]
+  },
+  "data_days": 200
+}
