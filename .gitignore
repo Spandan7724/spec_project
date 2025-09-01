@@ -136,3 +136,4 @@ CLAUDE.md
 .ruff_cache/
 repomix-output.xml
 scraped_data/
+models/

@@ -146,7 +146,19 @@ class Layer1DataLoader:
                     indicator_data.loc[price_data.index[-1], 'volatility'] = tech_indicators.realized_volatility
                 
                 # Forward fill missing values for older dates (simplified approach)
-                indicator_data = indicator_data.fillna(method='bfill')
+                indicator_data = indicator_data.bfill()
+                
+                # Validate technical indicator data quality
+                total_cols = len(indicator_data.columns)
+                constant_cols = sum(1 for col in indicator_data.columns if indicator_data[col].nunique() <= 1)
+                null_percentage = indicator_data.isnull().sum().sum() / (len(indicator_data) * total_cols) * 100
+                
+                logger.info(f"Technical indicators validation - Total columns: {total_cols}, "
+                           f"Constant columns: {constant_cols}, Null percentage: {null_percentage:.1f}%")
+                
+                if constant_cols > total_cols * 0.7:
+                    logger.warning(f"High number of constant technical indicators ({constant_cols}/{total_cols}). "
+                                 "This may indicate insufficient price data or calculation issues.")
             
             logger.info(f"Loaded technical indicators for {currency_pair}")
             return indicator_data

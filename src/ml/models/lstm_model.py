@@ -326,13 +326,13 @@ class LSTMModel(BaseModel):
         X_tensor = torch.FloatTensor(X_sample).to(self.device)
         X_tensor.requires_grad_(True)
         
-        # Ensure model is in evaluation mode
-        self.eval()
+        # Ensure model is in training mode for gradient computation
+        # CUDA RNN backward pass requires training mode
+        self.train()
         
-        # Use torch.no_grad() context but still allow gradients for input
+        # Use torch.enable_grad() context to allow gradients
         with torch.enable_grad():
             predictions, _ = self.forward(X_tensor)
-            
             
             # Calculate gradients
             prediction_sum = torch.sum(predictions)

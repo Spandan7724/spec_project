@@ -276,7 +276,7 @@ class FeatureEngineer:
         
         # Economic-Technical interactions
         if 'gdp_usd' in features.columns and 'sma_20' in features.columns:
-            features['gdp_tech_interaction'] = (features['gdp_usd'].fillna(method='ffill') * 
+            features['gdp_tech_interaction'] = (features['gdp_usd'].ffill() * 
                                               features['sma_20'])
         
         return features
@@ -290,24 +290,38 @@ class FeatureEngineer:
         features = features.loc[:, features.isnull().mean() < nan_threshold]
         
         # Forward fill remaining NaN values
-        features = features.fillna(method='ffill')
+        features = features.ffill()
         
         # Backward fill any remaining NaN at the beginning
-        features = features.fillna(method='bfill')
+        features = features.bfill()
         
         # Replace any infinite values
         features = features.replace([np.inf, -np.inf], np.nan)
         features = features.fillna(0)
         
-        # Remove constant columns
+        # Remove constant columns (with better diagnostic info)
         constant_cols = []
         for col in features.columns:
-            if features[col].nunique() <= 1:
+            unique_vals = features[col].nunique()
+            if unique_vals <= 1:
+                # Log details about why the column is constant
+                sample_values = features[col].dropna().head(5).tolist()
+                logger.warning(f"Constant column '{col}': {unique_vals} unique values, sample: {sample_values}")
                 constant_cols.append(col)
         
         if constant_cols:
-            logger.warning(f"Removing constant columns: {constant_cols}")
+            logger.warning(f"Removing {len(constant_cols)} constant columns: {constant_cols}")
             features = features.drop(columns=constant_cols)
+            
+            # If too many columns are constant, warn about data quality
+            if len(constant_cols) > len(features.columns) * 0.5:
+                logger.error(f"Data quality issue: {len(constant_cols)} constant columns removed out of {len(features.columns) + len(constant_cols)} total. Check data source and time range.")
+        
+        # Final validation
+        if features.empty:
+            raise ValueError("No valid features remaining after preprocessing")
+        
+        logger.info(f"Feature engineering completed: {len(features.columns)} features, {len(features)} samples")
         
         return features
     
@@ -324,7 +338,7 @@ class FeatureEngineer:
         
         for horizon in horizons:
             # Future returns (main prediction target for LSTM)
-            targets[f'return_{horizon}d'] = prices['close'].shift(-horizon).pct_change()
+            targets[f'return_{horizon}d'] = prices['close'].shift(-horizon).pct_change(fill_method=None)
             
             # Note: Only using returns as the main prediction target
             # Direction and price levels can be derived from returns
