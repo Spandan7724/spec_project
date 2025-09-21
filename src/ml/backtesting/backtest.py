@@ -36,7 +36,10 @@ class MLBacktester:
     """
     
     def __init__(self, config: MLConfig = None):
-        self.config = config or MLConfig.get_default()
+        if config is None:
+            from ..config import load_ml_config
+            config = load_ml_config()
+        self.config = config
         self.data_loader = Layer1DataLoader()
         self.feature_engineer = FeatureEngineer()
         self.preprocessor = DataPreprocessor()

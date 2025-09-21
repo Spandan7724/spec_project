@@ -20,8 +20,9 @@ async def basic_prediction_example():
     print("🔮 Basic ML Prediction Example")
     print("-" * 40)
     
-    # Initialize predictor
-    config = MLConfig.get_default()
+    # Initialize predictor with configuration from YAML
+    from src.ml.config import load_ml_config
+    config = load_ml_config('ml_config.yaml')
     predictor = MLPredictor(config)
     
     try:
@@ -69,7 +70,8 @@ async def training_example():
     print("\n🧠 Model Training Example")
     print("-" * 40)
     
-    config = MLConfig.get_default()
+    from src.ml.config import load_ml_config
+    config = load_ml_config('ml_config.yaml')
     predictor = MLPredictor(config)
     
     try:
@@ -116,7 +118,8 @@ async def model_management_example():
     print("\n📊 Model Management Example")
     print("-" * 40)
     
-    config = MLConfig.get_default()
+    from src.ml.config import load_ml_config
+    config = load_ml_config('ml_config.yaml')
     predictor = MLPredictor(config)
     
     try:
@@ -157,7 +160,8 @@ async def backtesting_example():
     try:
         from src.ml.backtesting import MLBacktester
         
-        config = MLConfig.get_default()
+        from src.ml.config import load_ml_config
+        config = load_ml_config('ml_config.yaml')
         backtester = MLBacktester(config)
         
         print("Running walk-forward backtest...")
@@ -211,7 +215,7 @@ async def feature_importance_example():
     print("-" * 40)
     
     try:
-        config = MLConfig.get_default()
+        config = load_ml_config('ml_config.yaml')
         predictor = MLPredictor(config)
         
         # Get feature importance

@@ -34,7 +34,7 @@ class FeatureEngineer:
         features = self._add_price_features(features, prices)
         
         # Technical indicator features
-        if indicators is not None:
+        if indicators is not None and not indicators.empty:
             features = self._add_indicator_features(features, indicators)
         
         # Economic event features
@@ -127,10 +127,6 @@ class FeatureEngineer:
             features['bb_position'] = ((current_price - bb_middle_aligned) / 
                                      (bb_width_aligned + 1e-8))
             features['bb_width_norm'] = bb_width_aligned / bb_middle_aligned
-            
-            # Bollinger Band signals
-            features['bb_upper_touch'] = (current_price >= bb_upper_aligned).astype(int)
-            features['bb_lower_touch'] = (current_price <= bb_lower_aligned).astype(int)
         
         # RSI
         if 'rsi' in indicators.columns:
@@ -194,30 +190,54 @@ class FeatureEngineer:
                 mask = (economic_events['indicator'] == indicator) & (economic_events['currency'] == currency)
                 indicator_data = economic_events[mask].copy()
                 
-                if len(indicator_data) > 0:
-                    feature_name = f'{indicator.lower()}_{currency.lower()}'
-                    
-                    # Forward fill economic values (they don't change daily)
-                    indicator_series = indicator_data['value'].reindex(features.index, method='ffill')
-                    features[feature_name] = indicator_series
-                    
-                    # Changes in economic indicators
-                    features[f'{feature_name}_change'] = indicator_series.diff()
-                    features[f'{feature_name}_pct_change'] = indicator_series.pct_change()
-                    
-                    # Days since last event
-                    last_event_dates = indicator_data.index
-                    days_since_event = []
-                    
-                    for date in features.index:
-                        recent_events = last_event_dates[last_event_dates <= date]
-                        if len(recent_events) > 0:
-                            days_since = (date - recent_events[-1]).days
-                        else:
-                            days_since = 999  # Large number for no prior events
-                        days_since_event.append(days_since)
-                    
-                    features[f'{feature_name}_days_since'] = days_since_event
+                if len(indicator_data) == 0:
+                    continue
+
+                feature_name = f'{indicator.lower()}_{currency.lower()}'
+
+                value_series = None
+                for column in ("actual", "forecast", "previous"):
+                    if column in indicator_data.columns:
+                        series = pd.to_numeric(indicator_data[column], errors='coerce')
+                        if series.dropna().empty:
+                            continue
+                        if hasattr(series.index, "tz") and series.index.tz is not None:
+                            series = series.tz_convert(None)
+                        value_series = series
+                        break
+
+                if value_series is None:
+                    logger.debug("Skipping economic feature %s (no usable values)", feature_name)
+                    continue
+
+                indicator_index = value_series.index
+                if hasattr(features.index, "tz") and features.index.tz is not None:
+                    target_index = features.index.tz_convert(None)
+                else:
+                    target_index = features.index
+
+                indicator_series = value_series.reindex(target_index, method='ffill')
+
+                if indicator_series.dropna().nunique() <= 1:
+                    logger.debug("Skipping economic feature %s (constant series)", feature_name)
+                    continue
+
+                features[feature_name] = indicator_series
+                features[f'{feature_name}_change'] = indicator_series.diff()
+                features[f'{feature_name}_pct_change'] = indicator_series.pct_change()
+
+                last_event_dates = indicator_data.index
+                days_since_event: List[int] = []
+
+                for date in features.index:
+                    recent_events = last_event_dates[last_event_dates <= date]
+                    if len(recent_events) > 0:
+                        days_since = (date - recent_events[-1]).days
+                    else:
+                        days_since = 999
+                    days_since_event.append(days_since)
+
+                features[f'{feature_name}_days_since'] = days_since_event
         
         # Economic regime features
         if 'gdp_usd' in features.columns and 'cpi_usd' in features.columns:
@@ -304,9 +324,12 @@ class FeatureEngineer:
         for col in features.columns:
             unique_vals = features[col].nunique()
             if unique_vals <= 1:
-                # Log details about why the column is constant
-                sample_values = features[col].dropna().head(5).tolist()
-                logger.warning(f"Constant column '{col}': {unique_vals} unique values, sample: {sample_values}")
+                sample_values = features[col].dropna().head(3).tolist()
+                logger.debug(
+                    "Dropping constant feature %s (sample=%s)",
+                    col,
+                    sample_values,
+                )
                 constant_cols.append(col)
         
         if constant_cols:

@@ -5,8 +5,13 @@ Comprehensive test script for all currency assistant components
 
 import asyncio
 import sys
+import os
 from pathlib import Path
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -19,11 +24,11 @@ def test_imports():
     try:
         # Data Collection
         from src.data_collection.providers import AlphaVantageProvider, YahooFinanceProvider, ExchangeRateHostProvider
-        from src.data_collection.rate_collector import RateCollector
+        from src.data_collection.rate_collector import MultiProviderRateCollector
         print("✅ Data Collection providers")
         
         # Economic Calendar
-        from src.data_collection.economic.providers import ECBProvider, BOEProvider, FREDProvider, RBIProvider
+        from src.data_collection.economic import ECBProvider, FREDProvider, RBIScraper
         print("✅ Economic Calendar providers")
         
         # Technical Analysis
@@ -31,12 +36,11 @@ def test_imports():
         print("✅ Technical Analysis")
         
         # News Scraping
-        from src.data_collection.news.scraper import NewsScraper
+        from src.data_collection.news import FinancialNewsScraper
         print("✅ News Scraping")
         
         # ML System
         from src.ml import MLPredictor, MLConfig
-        from src.ml.models.lstm_model import LSTMPredictor
         print("✅ ML System")
         
         # LLM Providers
@@ -45,7 +49,7 @@ def test_imports():
         print("✅ LLM Providers")
         
         # Agent Tools
-        from src.tools.web_scraping import WebScrapingInterface
+        from src.tools import GenericScrapingInterface, CacheManager
         print("✅ Agent Tools")
         
         return True
@@ -60,16 +64,22 @@ def test_data_collection():
     print("=" * 50)
     
     try:
-        from src.data_collection.rate_collector import RateCollector
-        collector = RateCollector()
+        from src.data_collection.rate_collector import MultiProviderRateCollector
+        collector = MultiProviderRateCollector()
         print("✅ RateCollector initialization")
         
-        # Test provider initialization
+        # Test individual provider initialization with API keys
         from src.data_collection.providers import AlphaVantageProvider, YahooFinanceProvider
         
-        alpha_provider = AlphaVantageProvider()
-        print("✅ AlphaVantage provider")
+        # Alpha Vantage with API key
+        alpha_key = os.getenv('ALPHA_VANTAGE_API_KEY')
+        if alpha_key:
+            alpha_provider = AlphaVantageProvider(alpha_key)
+            print("✅ AlphaVantage provider")
+        else:
+            print("⚠️ AlphaVantage provider - no API key")
         
+        # Yahoo Finance (no API key needed)
         yahoo_provider = YahooFinanceProvider()
         print("✅ Yahoo Finance provider")
         
@@ -85,13 +95,18 @@ async def test_economic_calendar():
     print("=" * 50)
     
     try:
-        from src.data_collection.economic.providers import ECBProvider, FREDProvider
+        from src.data_collection.economic import ECBProvider, FREDProvider
         
         ecb = ECBProvider()
         print("✅ ECB provider initialization")
         
-        fred = FREDProvider()
-        print("✅ FRED provider initialization")
+        # FRED provider with API key
+        fred_key = os.getenv('FRED_API_KEY')
+        if fred_key:
+            fred = FREDProvider(fred_key)
+            print("✅ FRED provider initialization")
+        else:
+            print("⚠️ FRED provider - no API key")
         
         return True
         
@@ -130,10 +145,10 @@ def test_ml_system():
     
     try:
         from src.ml import MLPredictor, MLConfig
-        from src.ml.models.lstm_model import LSTMPredictor
         from src.ml.utils.model_storage import ModelStorage
         
-        config = MLConfig.get_default()
+        from src.ml.config import load_ml_config
+        config = load_ml_config('ml_config.yaml')
         print("✅ ML Config loaded")
         
         predictor = MLPredictor(config)
@@ -177,10 +192,9 @@ def test_agent_tools():
     print("=" * 50)
     
     try:
-        from src.tools.web_scraping import WebScrapingInterface
-        from src.tools.cache_manager import CacheManager
+        from src.tools import GenericScrapingInterface, CacheManager
         
-        scraper = WebScrapingInterface()
+        scraper = GenericScrapingInterface()
         print("✅ Web scraping interface")
         
         cache = CacheManager()
@@ -193,12 +207,27 @@ def test_agent_tools():
         return False
 
 def test_configuration():
-    """Test configuration files"""
+    """Test configuration files and environment variables"""
     print("\n⚙️ Testing Configuration")
     print("=" * 50)
     
     try:
         import yaml
+        
+        # Test environment variables
+        print("Environment Variables:")
+        api_keys = {
+            'ALPHA_VANTAGE_API_KEY': os.getenv('ALPHA_VANTAGE_API_KEY'),
+            'EXCHANGE_RATE_HOST_API_KEY': os.getenv('EXCHANGE_RATE_HOST_API_KEY'),
+            'FRED_API_KEY': os.getenv('FRED_API_KEY'),
+            'ANTHROPIC_API_KEY': os.getenv('ANTHROPIC_API_KEY'),
+        }
+        
+        for key, value in api_keys.items():
+            if value:
+                print(f"  ✅ {key}: {'*' * 8}{value[-4:]}")
+            else:
+                print(f"  ❌ {key}: Not set")
         
         # Test config.yaml
         if Path("config.yaml").exists():

@@ -10,8 +10,8 @@ import time
 from pathlib import Path
 from datetime import datetime, timedelta
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+# Add project root to path so src module can be found
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.ml import MLPredictor, MLConfig
 from src.ml.prediction.predictor import MLPredictionRequest
@@ -188,7 +188,8 @@ async def test_prediction_api():
     
     try:
         # Initialize predictor
-        config = MLConfig.get_default()
+        from src.ml.config import load_ml_config
+        config = load_ml_config('ml_config.yaml')
         predictor = MLPredictor(config)
         
         # First train a model
@@ -255,7 +256,8 @@ async def test_backtesting():
     try:
         from src.ml.backtesting import MLBacktester
         
-        config = MLConfig.get_default()
+        from src.ml.config import load_ml_config
+        config = load_ml_config('ml_config.yaml')
         backtester = MLBacktester(config)
         
         # Run a short backtest
@@ -341,7 +343,8 @@ async def test_system_performance():
         print(f"  Memory usage: {memory_mb:.1f}MB")
         
         # Test prediction speed
-        config = MLConfig.get_default()
+        from src.ml.config import load_ml_config
+        config = load_ml_config('ml_config.yaml')
         predictor = MLPredictor(config)
         
         # Get system status

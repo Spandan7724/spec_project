@@ -27,7 +27,8 @@ async def capture_agent_output():
     print("This shows the EXACT format agents receive for verification\n")
     
     # Initialize ML predictor (same as agents would)
-    config = MLConfig.get_default()
+    from src.ml.config import load_ml_config
+    config = load_ml_config('ml_config.yaml')
     predictor = MLPredictor(config)
     
     try:
@@ -131,7 +132,8 @@ async def test_multiple_currencies():
     print("=" * 60)
     
     currency_pairs = ["USD/EUR", "EUR/USD", "GBP/USD"]
-    predictor = MLPredictor(MLConfig.get_default())
+    from src.ml.config import load_ml_config
+    predictor = MLPredictor(load_ml_config('ml_config.yaml'))
     
     for pair in currency_pairs:
         print(f"\n📈 Testing {pair}...")

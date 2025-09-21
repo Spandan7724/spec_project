@@ -284,7 +284,7 @@ class TechnicalIndicatorEngine:
         if len(series) < period + 1:
             return None
         
-        returns = series.pct_change().dropna().tail(period)
+        returns = series.pct_change(fill_method=None).dropna().tail(period)
         if len(returns) < 2:
             return None
         

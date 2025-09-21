@@ -8,6 +8,7 @@ import logging
 from typing import Dict, List, Any
 from pathlib import Path
 from datetime import datetime
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -171,9 +172,14 @@ class ModelStorage:
             # Get model config from metadata
             model_info = metadata.get('model_info', {})
             config = model_info.get('config', {})
-            
+            config = dict(config)
+            target_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            config['device'] = target_device
+
             model = LSTMModel(config)
             model.load_model(str(model_file))
+            model.device = target_device
+            model.to(target_device)
             
         else:
             # Generic loading

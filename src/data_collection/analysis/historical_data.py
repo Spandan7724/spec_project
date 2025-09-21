@@ -199,16 +199,25 @@ class HistoricalDataCollector:
             
             async with YahooFinanceProvider() as provider:
                 # Determine period string for yfinance
-                if days <= 7:
-                    period = "7d"
+                # Yahoo Finance supports: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
+                if days <= 5:
+                    period = "5d"
                 elif days <= 30:
                     period = "1mo"
                 elif days <= 90:
                     period = "3mo"
                 elif days <= 180:
                     period = "6mo"
-                else:
+                elif days <= 365:
                     period = "1y"
+                elif days <= 730:  # ~2 years
+                    period = "2y"
+                elif days <= 1825:  # ~5 years
+                    period = "5y"
+                elif days <= 3650:  # ~10 years
+                    period = "10y"
+                else:
+                    period = "max"  # Maximum available data
                 
                 hist_data = await provider.get_historical_data(base_currency, quote_currency, period)
                 
@@ -495,7 +504,7 @@ async def get_recent_volatility(currency_pair: str,
     if len(rates) < 2:
         return None
     
-    returns = rates.pct_change().dropna()
+    returns = rates.pct_change(fill_method=None).dropna()
     
     # Calculate annualized volatility (assuming 252 trading days per year)
     volatility = returns.std() * np.sqrt(252)

@@ -8,6 +8,7 @@ import logging
 import time
 from typing import Dict, List, Any
 from datetime import datetime, timedelta
+import torch
 
 from ..config import MLConfig, load_ml_config
 from ..models.lstm_model import LSTMModel
@@ -72,29 +73,48 @@ class MLPredictor:
                 return cached_result
         
         try:
-            # Load or get model
             model = self._get_model(request.currency_pair)
-            
-            # Get latest features
-            features_df = self._get_latest_features(request.currency_pair)
-            
-            # Prepare features for prediction
+
+            features_df = await self._get_latest_features(request.currency_pair)
+
+            if not getattr(self.preprocessor, "fitted", False):
+                raise RuntimeError(
+                    "Preprocessor is not loaded. Train a model or ensure the preprocessor artifact exists."
+                )
+
             X_pred = self.preprocessor.prepare_single_prediction(features_df)
-            
-            # Make prediction
-            prediction_result = model.predict(X_pred, request.horizons)
-            
-            # Create response
+
+            model_horizons = model.prediction_horizons
+            requested_horizons = request.horizons or model_horizons
+            valid_horizons = [h for h in requested_horizons if h in model_horizons]
+
+            if not valid_horizons:
+                raise ValueError(
+                    f"Requested horizons {requested_horizons} are not supported by model (available: {model_horizons})"
+                )
+
+            missing = set(requested_horizons) - set(valid_horizons)
+            if missing:
+                logger.warning(
+                    "Ignoring unsupported horizons for %s: %s",
+                    request.currency_pair,
+                    sorted(missing),
+                )
+
+            prediction_result = model.predict(X_pred, valid_horizons)
+
             response = self._create_response(
-                request, prediction_result, model, 
-                features_df.shape[1], start_time
+                request,
+                prediction_result,
+                model,
+                features_df.shape[1],
+                start_time,
+                valid_horizons,
             )
-            
-            # Cache the result
+
             self.cache.store_prediction(request.currency_pair, response)
-            
             return response
-            
+
         except Exception as e:
             logger.error(f"Prediction failed for {request.currency_pair}: {e}")
             raise e
@@ -117,62 +137,24 @@ class MLPredictor:
             # Also load the associated preprocessor
             self._load_preprocessor_for_model(currency_pair, model_type="lstm")
             
+            target_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            model.device = target_device
+            model.to(target_device)
+
             self.loaded_models[model_key] = model
-            logger.info(f"Loaded LSTM model for {currency_pair}")
+            logger.info(f"Loaded LSTM model for {currency_pair} on {target_device}")
             return model
             
         except (ValueError, FileNotFoundError) as e:
-            # No trained model available - auto-train one
-            logger.warning(f"No trained model available for {currency_pair}: {e}")
-            
-            # Check if we've auto-trained recently to prevent excessive retraining
-            last_auto_train = self.auto_training_history.get(currency_pair)
-            if last_auto_train:
-                hours_since_training = (datetime.now() - last_auto_train).total_seconds() / 3600
-                if hours_since_training < 24:  # Don't auto-train more than once per day
-                    logger.error(f"Auto-training for {currency_pair} was attempted {hours_since_training:.1f} hours ago. "
-                                f"Waiting 24 hours before next attempt.")
-                    raise ValueError(f"No trained model available for {currency_pair}. "
-                                   f"Auto-training was recently attempted. Please wait or train manually.")
-            
-            logger.info(f"Auto-training new model for {currency_pair}...")
-            
-            try:
-                # Record the training attempt
-                self.auto_training_history[currency_pair] = datetime.now()
-                
-                # Auto-train using configuration values
-                training_days = self.config.data.min_training_days
-                logger.info(f"Using {training_days} days of training data from config")
-                
-                training_result = self.train_model(
-                    currency_pair=currency_pair,
-                    days=training_days,
-                    save_model=True,
-                    set_as_default=True
-                )
-                
-                logger.info(f"Auto-training completed for {currency_pair}: {training_result['model_id']}")
-                
-                # Now load the newly trained model
-                model = self.model_storage.load_model(
-                    currency_pair=currency_pair,
-                    model_type="lstm"
-                )
-                
-                # Load the associated preprocessor
-                self._load_preprocessor_for_model(currency_pair, model_type="lstm")
-                
-                self.loaded_models[model_key] = model
-                logger.info(f"Successfully loaded auto-trained model for {currency_pair}")
-                return model
-                
-            except Exception as train_error:
-                logger.error(f"Auto-training failed for {currency_pair}: {train_error}")
-                # Remove the failed attempt from history so it can be retried later
-                if currency_pair in self.auto_training_history:
-                    del self.auto_training_history[currency_pair]
-                raise ValueError(f"No trained model available for {currency_pair} and auto-training failed: {train_error}")
+            logger.error(
+                "No trained model available for %s: %s. Use the training script to generate one.",
+                currency_pair,
+                e,
+            )
+            raise ValueError(
+                f"No trained model available for {currency_pair}. "
+                "Run scripts/train_ml_model.py on a GPU-enabled host first."
+            ) from e
     
     def _load_preprocessor_for_model(self, currency_pair: str, model_type: str = "lstm"):
         """Load the preprocessor associated with a model"""
@@ -197,39 +179,57 @@ class MLPredictor:
             logger.error(f"Failed to load preprocessor for {currency_pair}: {e}")
             raise
     
-    def _get_latest_features(self, currency_pair: str) -> pd.DataFrame:
-        """Get latest features for prediction"""
-        # Load recent data (enough for sequence + feature calculation)
-        days_needed = self.config.model.sequence_length + 30  # Buffer for indicators
-        
-        # Load data
-        prices, indicators, economic_events = self.data_loader.get_combined_dataset(
+    async def _get_latest_features(self, currency_pair: str) -> pd.DataFrame:
+        """Get latest engineered features for inference."""
+
+        sequence_length = self.preprocessor.sequence_length if self.preprocessor else self.config.model.sequence_length
+
+        ma_periods = getattr(self.config.features, 'ma_periods', None) or []
+        longest_indicator_window = max([200] + list(ma_periods))  # 200-day SMA used in features
+        buffer_days = 10  # extra days to account for returns/rolling windows
+        days_needed = max(sequence_length + 30, sequence_length + longest_indicator_window + buffer_days)
+
+        prices, indicators, economic_events = await self.data_loader.fetch_combined_dataset(
             currency_pair=currency_pair,
-            days=days_needed
+            days=days_needed,
         )
-        
-        # Engineer features
+
         features = self.feature_engineer.engineer_features(
-            prices, indicators, economic_events
+            prices,
+            indicators,
+            economic_events if not economic_events.empty else None,
         )
-        
-        logger.info(f"Generated {features.shape[1]} features from {features.shape[0]} days of data")
-        
+
+        if features.shape[0] < sequence_length:
+            raise ValueError(
+                f"Insufficient feature history for {currency_pair}: {features.shape[0]} < {sequence_length}"
+            )
+
+        logger.info(
+            "Generated %s features over %s samples for %s",
+            features.shape[1],
+            features.shape[0],
+            currency_pair,
+        )
+
         return features
     
-    def _create_response(self, 
-                        request: MLPredictionRequest,
-                        prediction_result,
-                        model: LSTMModel,
-                        features_count: int,
-                        start_time: float) -> MLPredictionResponse:
+    def _create_response(
+        self,
+        request: MLPredictionRequest,
+        prediction_result,
+        model: LSTMModel,
+        features_count: int,
+        start_time: float,
+        horizons: List[int],
+    ) -> MLPredictionResponse:
         """Create response from prediction result"""
         
         # Format predictions by horizon
         predictions = {}
         direction_probs = {}
         
-        for i, horizon in enumerate(request.horizons):
+        for i, horizon in enumerate(horizons):
             pred_value = float(prediction_result.predictions[i])
             confidence_intervals = prediction_result.confidence_intervals
             
@@ -265,15 +265,21 @@ class MLPredictor:
         """
         logger.info(f"Training new LSTM model for {currency_pair}")
         
+        if not torch.cuda.is_available():
+            raise RuntimeError(
+                "CUDA GPU is required for training the LSTM model. "
+                "Please provision a GPU-enabled environment or train offline."
+            )
+
         # Ensure we have enough training data (minimum based on sequence length)
         min_days_needed = max(days, self.config.model.sequence_length * 3, 200)
         
         # Load training data
-        prices, indicators, economic_events = self.data_loader.get_combined_dataset(
+        prices, indicators, economic_events = self.data_loader.load_combined_dataset(
             currency_pair=currency_pair,
-            days=min_days_needed
+            days=min_days_needed,
         )
-        
+
         # Engineer features
         features = self.feature_engineer.engineer_features(
             prices, indicators, economic_events
@@ -284,18 +290,24 @@ class MLPredictor:
             prices, self.config.model.prediction_horizons
         )
         
+        if features.shape[0] <= self.preprocessor.sequence_length:
+            raise ValueError(
+                f"Not enough samples to create sequences (have {features.shape[0]}, "
+                f"need > {self.preprocessor.sequence_length})."
+            )
+
         # Prepare data for training
         data_splits = self.preprocessor.prepare_data(
             features, targets,
             test_size=self.config.model.train_test_split,
             validation_size=self.config.model.validation_split
         )
-        
+
         # Initialize model
         model_config = self.config.model.__dict__.copy()
         model_config['input_size'] = features.shape[1]
-        model_config['device'] = self.config.get_device()
-        
+        model_config['device'] = 'cuda'
+
         model = LSTMModel(model_config)
         
         # Train model
