@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from uuid import uuid4
 from typing import Any, Dict, List, Optional
 
 _VALID_RISK_LEVELS = {"low", "moderate", "high"}
@@ -91,6 +92,9 @@ class MarketAnalysis:
     rate_timestamp: Optional[datetime] = None
     technical_signals: Dict[str, Any] = field(default_factory=dict)
     ml_forecasts: Dict[str, Any] = field(default_factory=dict)
+    primary_forecast_horizon: Optional[int] = None
+    primary_forecast: Dict[str, Any] = field(default_factory=dict)
+    timeframe_aligned_forecasts: Dict[str, Any] = field(default_factory=dict)
     indicators_used: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     data_source_notes: List[str] = field(default_factory=list)
@@ -224,4 +228,7 @@ class AgentGraphState:
 def initialize_state(payload: Dict[str, Any]) -> AgentGraphState:
     """Create the initial graph state from an inbound request payload."""
     request = AgentRequest.from_payload(payload)
-    return AgentGraphState(request=request)
+    meta = AgentMeta()
+    provided_correlation = payload.get("correlation_id")
+    meta.correlation_id = str(provided_correlation) if provided_correlation else str(uuid4())
+    return AgentGraphState(request=request, meta=meta)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from functools import lru_cache
 from typing import Dict
 
 import numpy as np
@@ -23,6 +24,10 @@ class RiskAssessmentAgent:
     async def __call__(self, state: AgentGraphState) -> AgentGraphState:
         request = state.request
         risk_assessment = RiskAssessment()
+        correlation_id = state.meta.correlation_id or "n/a"
+        log_extra = {"correlation_id": correlation_id}
+
+        logger.debug("[%s] Risk assessment starting", correlation_id, extra=log_extra)
 
         try:
             dataset = await self.historical_collector.get_historical_data(
@@ -85,16 +90,40 @@ class RiskAssessmentAgent:
                 risk_assessment.hedging_notes.append("Monitor key economic releases before executing")
 
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Risk agent failed to compute metrics", exc_info=exc)
+            logger.exception(
+                "[%s] Risk agent failed to compute metrics",
+                correlation_id,
+                extra=log_extra,
+                exc_info=exc,
+            )
             risk_assessment.errors.append(f"Risk calculation error: {exc}")
+
+        logger.debug(
+            "[%s] Risk assessment completed with %d warning(s)",
+            correlation_id,
+            len(risk_assessment.errors),
+            extra=log_extra,
+        )
 
         return state.with_risk(risk_assessment)
 
 
+@lru_cache(maxsize=1)
+def _default_risk_agent() -> RiskAssessmentAgent:
+    """Shared default instance for reuse across requests."""
+    return RiskAssessmentAgent()
+
+
 async def run_risk_agent(
     state: AgentGraphState,
+    *,
     agent: RiskAssessmentAgent | None = None,
+    historical_collector: HistoricalDataCollector | None = None,
 ) -> AgentGraphState:
     """Convenience coroutine for LangGraph nodes."""
-    agent = agent or RiskAssessmentAgent()
+    if agent is None:
+        if historical_collector is not None:
+            agent = RiskAssessmentAgent(historical_collector=historical_collector)
+        else:
+            agent = _default_risk_agent()
     return await agent(state)

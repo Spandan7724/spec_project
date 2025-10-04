@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from functools import lru_cache
 from typing import List
 
 from data_collection.economic.calendar_collector import EconomicCalendarCollector, EconomicEvent
@@ -38,6 +39,10 @@ class EconomicAnalysisAgent:
     async def __call__(self, state: AgentGraphState) -> AgentGraphState:
         request = state.request
         economic = EconomicAnalysis(event_window_days=request.timeframe_days)
+        correlation_id = state.meta.correlation_id or "n/a"
+        log_extra = {"correlation_id": correlation_id}
+
+        logger.debug("[%s] Economic analysis starting", correlation_id, extra=log_extra)
 
         try:
             calendar = await self.calendar_collector.get_economic_calendar(
@@ -80,16 +85,46 @@ class EconomicAnalysisAgent:
                 economic.confidence = 0.4
 
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Economic agent failed to gather calendar data", exc_info=exc)
+            logger.exception(
+                "[%s] Economic agent failed to gather calendar data",
+                correlation_id,
+                extra=log_extra,
+                exc_info=exc,
+            )
             economic.errors.append(f"Economic data error: {exc}")
+        else:
+            # Ensure unexpected exceptions surface as warnings rather than halting execution.
+            pass
+        finally:
+            if not economic.summary and not economic.errors:
+                economic.summary = "Economic analysis completed without notable events"
+
+        logger.debug(
+            "[%s] Economic analysis completed with %d warning(s)",
+            correlation_id,
+            len(economic.errors),
+            extra=log_extra,
+        )
 
         return state.with_economic(economic)
 
 
+@lru_cache(maxsize=1)
+def _default_economic_agent() -> EconomicAnalysisAgent:
+    """Shared default instance for reuse across requests."""
+    return EconomicAnalysisAgent()
+
+
 async def run_economic_agent(
     state: AgentGraphState,
+    *,
     agent: EconomicAnalysisAgent | None = None,
+    calendar_collector: EconomicCalendarCollector | None = None,
 ) -> AgentGraphState:
     """Convenience coroutine for LangGraph nodes."""
-    agent = agent or EconomicAnalysisAgent()
+    if agent is None:
+        if calendar_collector is not None:
+            agent = EconomicAnalysisAgent(calendar_collector=calendar_collector)
+        else:
+            agent = _default_economic_agent()
     return await agent(state)
