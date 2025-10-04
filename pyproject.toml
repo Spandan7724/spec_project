@@ -42,6 +42,12 @@ dependencies = [
     "structlog>=25.4.0",
     "torch>=2.8.0",
     "torchvision>=0.23.0",
+    "typer[all]>=0.12.0",
+    "rich>=13.7.0",
+    "prompt-toolkit>=3.0.43",
     "uvicorn[standard]>=0.35.0",
     "yfinance>=0.2.65",
 ]
+
+[project.scripts]
+currency-assistant = "currency_assistant.cli.main:app"

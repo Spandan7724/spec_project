@@ -232,15 +232,17 @@ class MLPredictor:
         for i, horizon in enumerate(horizons):
             pred_value = float(prediction_result.predictions[i])
             confidence_intervals = prediction_result.confidence_intervals
-            
-            predictions[f"{horizon}d"] = {
+
+            horizon_key = str(int(horizon))
+
+            predictions[horizon_key] = {
                 "mean": pred_value,
                 "p10": float(confidence_intervals["p10"][i]),
                 "p50": float(confidence_intervals["p50"][i]),
                 "p90": float(confidence_intervals["p90"][i])
             }
-            
-            direction_probs[f"{horizon}d"] = float(prediction_result.direction_probabilities[i])
+
+            direction_probs[horizon_key] = float(prediction_result.direction_probabilities[i])
         
         processing_time = (time.time() - start_time) * 1000  # Convert to ms
         
