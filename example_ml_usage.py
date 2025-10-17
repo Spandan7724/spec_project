@@ -215,6 +215,7 @@ async def feature_importance_example():
     print("-" * 40)
     
     try:
+        from src.ml.config import load_ml_config
         config = load_ml_config('ml_config.yaml')
         predictor = MLPredictor(config)
         

@@ -126,7 +126,7 @@ class MLBacktester:
                 # Make prediction for current date
                 if current_date in features.index:
                     prediction_result = self._make_backtest_prediction(
-                        current_model, features, current_date, prediction_horizons
+                        current_model, features, prices, current_date, prediction_horizons
                     )
                     
                     # Get actual outcomes
@@ -206,6 +206,7 @@ class MLBacktester:
     def _make_backtest_prediction(self,
                                  model: LSTMModel,
                                  features: pd.DataFrame,
+                                 prices: pd.DataFrame,
                                  prediction_date: datetime,
                                  prediction_horizons: List[int]) -> Dict[str, Any]:
         """Make prediction for backtesting"""
@@ -226,7 +227,10 @@ class MLBacktester:
             X_pred = self.preprocessor.prepare_single_prediction(feature_sequence)
             
             # Make prediction
-            prediction_result = model.predict(X_pred, prediction_horizons)
+            prediction_result = model.predict(
+                X_pred,
+                prediction_horizons,
+            )
             
             return {
                 'predictions': prediction_result.predictions.tolist(),

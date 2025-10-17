@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import logging
 
-from data_collection.analysis.historical_data import HistoricalDataCollector
-from data_collection.economic.calendar_collector import EconomicCalendarCollector
+from src.data_collection.analysis.historical_data import HistoricalDataCollector
+from src.data_collection.economic.calendar_collector import EconomicCalendarCollector
 
 logger = logging.getLogger(__name__)
 

@@ -190,7 +190,23 @@ class DataPreprocessor:
         
         # Ensure we have the same features as during training
         if hasattr(self, 'training_features') and self.training_features is not None:
-            # Reindex to match training features, fill missing with 0
+            missing = set(self.training_features) - set(recent_features.columns)
+            extra = set(recent_features.columns) - set(self.training_features)
+
+            if missing:
+                logger.warning(
+                    "Incoming features missing %d trained columns: %s",
+                    len(missing),
+                    sorted(missing),
+                )
+
+            if extra:
+                logger.warning(
+                    "Incoming features contain %d unseen columns that will be dropped: %s",
+                    len(extra),
+                    sorted(extra),
+                )
+
             recent_features = recent_features.reindex(columns=self.training_features, fill_value=0)
         
         # Scale features

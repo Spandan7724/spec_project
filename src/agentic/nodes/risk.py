@@ -8,7 +8,7 @@ from typing import Dict
 
 import numpy as np
 
-from data_collection.analysis.historical_data import HistoricalDataCollector
+from src.data_collection.analysis.historical_data import HistoricalDataCollector
 
 from ..state import AgentGraphState, RiskAssessment
 

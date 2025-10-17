@@ -3,7 +3,7 @@
 🤖 **Interactive currency conversion timing advisor** - Get AI-powered advice on when to convert currencies for optimal timing.
 
 ## Quick Start
-
+uv pip install -e . --no-deps
 ### Installation
 ```bash
 # Install dependencies

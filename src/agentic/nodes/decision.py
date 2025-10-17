@@ -8,7 +8,7 @@ from functools import lru_cache
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from llm.manager import LLMManager
+from src.llm.manager import LLMManager
 from ..state import AgentGraphState, Recommendation
 
 logger = logging.getLogger(__name__)

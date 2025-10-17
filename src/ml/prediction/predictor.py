@@ -2,11 +2,13 @@
 Main prediction API for ML models
 """
 
+import asyncio
+
 import pandas as pd
 import numpy as np
 import logging
 import time
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 from datetime import datetime, timedelta
 import torch
 
@@ -38,6 +40,13 @@ class MLPredictor:
         self.model_storage = ModelStorage(self.config.model_storage_path)
         self.confidence_calc = ConfidenceCalculator()
         self.cache = PredictionCache()
+
+        # Track quality warnings to avoid repeating logs per model
+        self._warned_models: set[str] = set()
+        self._quality_thresholds = {
+            'directional_accuracy': 0.55,
+            'r2': 0.0,
+        }
         
         # Cache for loaded models
         self.loaded_models: Dict[str, LSTMModel] = {}
@@ -75,7 +84,7 @@ class MLPredictor:
         try:
             model = self._get_model(request.currency_pair)
 
-            features_df = await self._get_latest_features(request.currency_pair)
+            features_df, latest_close = await self._get_latest_features(request.currency_pair)
 
             if not getattr(self.preprocessor, "fitted", False):
                 raise RuntimeError(
@@ -101,7 +110,10 @@ class MLPredictor:
                     sorted(missing),
                 )
 
-            prediction_result = model.predict(X_pred, valid_horizons)
+            prediction_result = model.predict(
+                X_pred,
+                valid_horizons,
+            )
 
             response = self._create_response(
                 request,
@@ -110,6 +122,7 @@ class MLPredictor:
                 features_df.shape[1],
                 start_time,
                 valid_horizons,
+                latest_close,
             )
 
             self.cache.store_prediction(request.currency_pair, response)
@@ -123,25 +136,33 @@ class MLPredictor:
         """Get or load model for currency pair"""
         # Check if model is already loaded
         model_key = f"lstm_{currency_pair}"
-        
+
         if model_key in self.loaded_models:
             return self.loaded_models[model_key]
-        
+
         # Load model from storage
         try:
             model = self.model_storage.load_model(
                 currency_pair=currency_pair,
                 model_type="lstm"
             )
-            
+
             # Also load the associated preprocessor
             self._load_preprocessor_for_model(currency_pair, model_type="lstm")
-            
+
             target_device = 'cuda' if torch.cuda.is_available() else 'cpu'
             model.device = target_device
             model.to(target_device)
 
             self.loaded_models[model_key] = model
+            model_id = (
+                self.model_storage.registry
+                .get('default_models', {})
+                .get(currency_pair, {})
+                .get('lstm')
+            )
+            if model_id:
+                self._warn_if_low_quality(model_id, currency_pair)
             logger.info(f"Loaded LSTM model for {currency_pair} on {target_device}")
             return model
             
@@ -178,9 +199,39 @@ class MLPredictor:
         except Exception as e:
             logger.error(f"Failed to load preprocessor for {currency_pair}: {e}")
             raise
+
+    def _warn_if_low_quality(self, model_id: str, currency_pair: str) -> None:
+        """Emit a warning if stored metrics fall below quality thresholds."""
+        if model_id in self._warned_models:
+            return
+
+        metadata = self.model_storage.registry.get('models', {}).get(model_id, {})
+        metrics = metadata.get('performance_metrics', {})
+
+        if not metrics:
+            return
+
+        failing_metrics: Dict[str, Any] = {}
+
+        directional_accuracy = metrics.get('directional_accuracy')
+        if directional_accuracy is not None and directional_accuracy < self._quality_thresholds['directional_accuracy']:
+            failing_metrics['directional_accuracy'] = directional_accuracy
+
+        r2_score = metrics.get('r2')
+        if r2_score is not None and r2_score < self._quality_thresholds['r2']:
+            failing_metrics['r2'] = r2_score
+
+        if failing_metrics:
+            logger.warning(
+                "Model %s (%s) below quality thresholds: %s",
+                model_id,
+                currency_pair,
+                {k: round(v, 4) for k, v in failing_metrics.items()},
+            )
+            self._warned_models.add(model_id)
     
-    async def _get_latest_features(self, currency_pair: str) -> pd.DataFrame:
-        """Get latest engineered features for inference."""
+    async def _get_latest_features(self, currency_pair: str) -> Tuple[pd.DataFrame, float]:
+        """Get latest engineered features for inference along with current price."""
 
         sequence_length = self.preprocessor.sequence_length if self.preprocessor else self.config.model.sequence_length
 
@@ -212,7 +263,9 @@ class MLPredictor:
             currency_pair,
         )
 
-        return features
+        latest_close = float(prices['close'].iloc[-1])
+
+        return features, latest_close
     
     def _create_response(
         self,
@@ -222,6 +275,7 @@ class MLPredictor:
         features_count: int,
         start_time: float,
         horizons: List[int],
+        latest_close: float,
     ) -> MLPredictionResponse:
         """Create response from prediction result"""
         
@@ -229,21 +283,28 @@ class MLPredictor:
         predictions = {}
         direction_probs = {}
         
+        confidence_intervals = prediction_result.confidence_intervals
+
         for i, horizon in enumerate(horizons):
-            pred_value = float(prediction_result.predictions[i])
-            confidence_intervals = prediction_result.confidence_intervals
-
             horizon_key = str(int(horizon))
+            mean_return = float(prediction_result.predictions[i])
 
-            predictions[horizon_key] = {
-                "mean": pred_value,
-                "p10": float(confidence_intervals["p10"][i]),
-                "p50": float(confidence_intervals["p50"][i]),
-                "p90": float(confidence_intervals["p90"][i])
+            horizon_stats = {
+                "mean": mean_return,
+                "mean_return": mean_return,
+                "mean_price": latest_close * (1.0 + mean_return),
             }
 
+            for label, values in confidence_intervals.items():
+                return_value = float(values[i])
+                label_key = label.lower()
+                horizon_stats[label_key] = return_value
+                horizon_stats[f"{label_key}_return"] = return_value
+                horizon_stats[f"{label_key}_price"] = latest_close * (1.0 + return_value)
+
+            predictions[horizon_key] = horizon_stats
             direction_probs[horizon_key] = float(prediction_result.direction_probabilities[i])
-        
+
         processing_time = (time.time() - start_time) * 1000  # Convert to ms
         
         return MLPredictionResponse(
@@ -267,10 +328,13 @@ class MLPredictor:
         """
         logger.info(f"Training new LSTM model for {currency_pair}")
         
-        if not torch.cuda.is_available():
-            raise RuntimeError(
-                "CUDA GPU is required for training the LSTM model. "
-                "Please provision a GPU-enabled environment or train offline."
+        if torch.cuda.is_available():
+            training_device = 'cuda'
+        else:
+            training_device = 'cpu'
+            logger.warning(
+                "CUDA not available; training %s model on CPU. Expect slower runtime.",
+                currency_pair,
             )
 
         # Ensure we have enough training data (minimum based on sequence length)
@@ -308,7 +372,7 @@ class MLPredictor:
         # Initialize model
         model_config = self.config.model.__dict__.copy()
         model_config['input_size'] = features.shape[1]
-        model_config['device'] = 'cuda'
+        model_config['device'] = training_device
 
         model = LSTMModel(model_config)
         
@@ -473,7 +537,7 @@ class MLPredictor:
     def get_feature_importance(self, currency_pair: str) -> Dict[str, float]:
         """Get feature importance for a currency pair's model"""
         model = self._get_model(currency_pair)
-        features_df = self._get_latest_features(currency_pair)
+        features_df, _ = asyncio.run(self._get_latest_features(currency_pair))
         
         # Get a sample for importance calculation
         X_sample = self.preprocessor.prepare_single_prediction(features_df)

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "currency-assistant"
 version = "0.1.0"
@@ -50,4 +54,10 @@ dependencies = [
 ]
 
 [project.scripts]
-currency-assistant = "currency_assistant.cli.main:app"
+currency-assistant = "src.cli.main:app"
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.setuptools.package-data]
+src = ["**/*"]

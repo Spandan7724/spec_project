@@ -359,9 +359,12 @@ class FeatureEngineer:
         
         targets = pd.DataFrame(index=prices.index)
         
+        close = prices['close']
+
         for horizon in horizons:
-            # Future returns (main prediction target for LSTM)
-            targets[f'return_{horizon}d'] = prices['close'].shift(-horizon).pct_change(fill_method=None)
+            # Future return relative to today's close
+            shifted = close.shift(-horizon)
+            targets[f'return_{horizon}d'] = (shifted - close) / close
             
             # Note: Only using returns as the main prediction target
             # Direction and price levels can be derived from returns

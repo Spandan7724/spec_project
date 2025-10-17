@@ -6,10 +6,10 @@ import logging
 
 from functools import lru_cache
 
-from data_collection.rate_collector import MultiProviderRateCollector
-from data_collection.analysis.technical_indicators import TechnicalIndicatorEngine
-from ml.prediction.predictor import MLPredictor
-from ml.prediction.types import MLPredictionRequest
+from src.data_collection.rate_collector import MultiProviderRateCollector
+from src.data_collection.analysis.technical_indicators import TechnicalIndicatorEngine
+from src.ml.prediction.predictor import MLPredictor
+from src.ml.prediction.types import MLPredictionRequest
 
 from ..state import AgentGraphState, MarketAnalysis
 

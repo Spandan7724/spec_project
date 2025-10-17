@@ -210,8 +210,8 @@ class LSTMModel(BaseModel):
         self.train()
         return val_loss
     
-    def predict(self, 
-                features: np.ndarray, 
+    def predict(self,
+                features: np.ndarray,
                 horizons: List[int] = None) -> PredictionResult:
         """
         Make predictions with confidence intervals
@@ -231,25 +231,22 @@ class LSTMModel(BaseModel):
         self.eval()
         with torch.no_grad():
             predictions, uncertainty = self.forward(X_tensor)
-            predictions = predictions.cpu().numpy()
-            uncertainty = uncertainty.cpu().numpy()
-        
+            predictions = predictions.cpu().numpy()[0]
+            uncertainty = uncertainty.cpu().numpy()[0]
+
         # Calculate confidence intervals
         confidence_intervals = self._calculate_confidence_intervals(
-            predictions[0], uncertainty[0]
+            predictions, uncertainty
         )
-        
-        # Calculate direction probabilities (simple sigmoid approach)
-        current_price = 1.0  # Assuming normalized/relative predictions
-        direction_probs = self._calculate_direction_probabilities(
-            np.array([current_price]), predictions[0]
-        )
-        
+
+        # Predicted returns -> direction probabilities via logistic transform
+        direction_probs = 1.0 / (1.0 + np.exp(-predictions))
+
         # Overall model confidence (inverse of average uncertainty)
-        model_confidence = float(1.0 / (1.0 + np.mean(uncertainty[0])))
-        
+        model_confidence = float(1.0 / (1.0 + np.mean(uncertainty)))
+
         return PredictionResult(
-            predictions=predictions[0],
+            predictions=predictions,
             confidence_intervals=confidence_intervals,
             direction_probabilities=direction_probs,
             model_confidence=model_confidence,

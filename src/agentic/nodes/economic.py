@@ -6,7 +6,7 @@ import logging
 from functools import lru_cache
 from typing import List
 
-from data_collection.economic.calendar_collector import EconomicCalendarCollector, EconomicEvent
+from src.data_collection.economic.calendar_collector import EconomicCalendarCollector, EconomicEvent
 
 from ..state import AgentGraphState, EconomicAnalysis
 
