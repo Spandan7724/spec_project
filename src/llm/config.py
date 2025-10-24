@@ -36,17 +36,21 @@ class LLMConfig:
             
             for provider_name, provider_data in provider_configs.items():
                 # Map provider names to their environment variable names
-                env_var_map = {
-                    'copilot': 'COPILOT_ACCESS_TOKEN',
-                    'openai': 'OPENAI_API_KEY', 
-                    'claude': 'ANTHROPIC_API_KEY'
-                }
+                # Support copilot variants (copilot_mini, copilot_claude, etc.)
+                if provider_name.startswith('copilot'):
+                    api_key_env = 'COPILOT_ACCESS_TOKEN'
+                elif provider_name == 'openai':
+                    api_key_env = 'OPENAI_API_KEY'
+                elif provider_name == 'claude':
+                    api_key_env = 'ANTHROPIC_API_KEY'
+                else:
+                    api_key_env = None
                 
                 providers[provider_name] = ProviderConfig(
                     name=provider_name,
                     model=provider_data.get('model', 'gpt-4'),
                     enabled=provider_data.get('enabled', True),
-                    api_key_env=env_var_map.get(provider_name),
+                    api_key_env=api_key_env,
                     kwargs=provider_data.get('kwargs', {})
                 )
             

@@ -7,6 +7,18 @@ llm:
       kwargs:
         temperature: 0.7
         max_tokens: 128000
+    copilot_mini:
+      model: "gpt-5-mini"
+      enabled: true
+      kwargs:
+        temperature: 0.7
+        max_tokens: 128000
+    copilot_claude:
+      model: "claude-3.5-sonnet"
+      enabled: true
+      kwargs:
+        temperature: 0.7
+        max_tokens: 128000
     openai:
       model: "gpt-4"
       enabled: false
@@ -21,4 +33,4 @@ llm:
         max_tokens: 200000
   failover:
     enabled: true
-    order: ["copilot", "openai", "claude"]
+    order: ["copilot", "copilot_mini", "openai", "claude"]

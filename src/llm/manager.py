@@ -32,19 +32,20 @@ class LLMManager:
     
     def _initialize_providers(self):
         """Initialize all configured providers"""
-        provider_classes = {
-            'copilot': CopilotProvider,
-            'openai': OpenAIProvider,
-            'claude': ClaudeProvider
-        }
-        
         for provider_name, provider_config in self.config.providers.items():
             if not provider_config.enabled:
                 logger.info(f"Skipping disabled provider: {provider_name}")
                 continue
             
-            provider_class = provider_classes.get(provider_name)
-            if provider_class is None:
+            # Determine provider class based on name
+            # Support copilot variants (copilot_mini, copilot_claude, etc.)
+            if provider_name.startswith('copilot'):
+                provider_class = CopilotProvider
+            elif provider_name == 'openai':
+                provider_class = OpenAIProvider
+            elif provider_name == 'claude':
+                provider_class = ClaudeProvider
+            else:
                 logger.warning(f"Unknown provider: {provider_name}")
                 continue
             
