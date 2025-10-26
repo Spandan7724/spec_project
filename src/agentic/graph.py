@@ -6,6 +6,7 @@ from src.agentic.state import AgentState
 from src.agentic.nodes.market_data import market_data_node as market_data_node_async
 from src.agentic.nodes.market_intelligence import market_intelligence_node as market_intelligence_node_async
 from src.agentic.nodes.prediction import prediction_node as prediction_node_async
+from src.agentic.nodes.decision import decision_node as decision_engine_node_real
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def create_graph() -> StateGraph:
     workflow.add_node("market_data", lambda state: asyncio.run(market_data_node_async(state)))
     workflow.add_node("market_intelligence", lambda state: asyncio.run(market_intelligence_node_async(state)))
     workflow.add_node("price_prediction", lambda state: asyncio.run(prediction_node_async(state)))
-    workflow.add_node("decision_engine", decision_engine_node)
+    workflow.add_node("decision_engine", decision_engine_node_real)
     workflow.add_node("response", response_node)
     
     # Set entry point

@@ -3,7 +3,7 @@
 **Status**: In Progress  
 **Start Date**: October 24, 2025  
 **Estimated Duration**: 6-8 weeks  
-**Current Phase**: Phase 3 - Decision Engine Agent
+**Current Phase**: Phase 4 - Supervisor Agent & Orchestration
 
 ---
 
@@ -258,7 +258,7 @@ print(rate)
 2. `src/data_collection/market_data/indicators.py`
 3. `src/data_collection/market_data/regime.py`
 4. `src/data_collection/market_data/snapshot.py`
-5. `src/data_collection/market_data/cache.py`
+5. `src/data_collection/market_data/cache.py` (optional; using `src/cache.py` centrally)
 6. `tests/unit/test_market_data/test_aggregator.py`
 7. `tests/unit/test_market_data/test_indicators.py`
 
@@ -402,14 +402,16 @@ print(result["intelligence_report"]["overall_bias"])
 2. `src/prediction/feature_builder.py`
 3. `src/prediction/models.py` - Data contracts
 4. `tests/prediction/test_data_loader.py`
-5. `tests/prediction/test_features.py`
+5. `tests/prediction/test_feature_builder.py`
 
 **Validation**:
 ```python
-from src.prediction.data_loader import load_historical_data
-from src.prediction.feature_builder import build_features
-data = await load_historical_data("USDEUR=X", days=90)
-features = build_features(data, mode="price_only")
+from src.prediction.data_loader import HistoricalDataLoader
+from src.prediction.feature_builder import FeatureBuilder
+
+loader = HistoricalDataLoader()
+data = await loader.fetch_historical_data("USD", "EUR", days=90, interval="1d")
+features = FeatureBuilder(["sma_5", "sma_20", "rsi_14", "macd", "macd_signal"]).build_features(data, mode="price_only")
 print(features.columns)
 ```
 
@@ -434,20 +436,20 @@ print(features.columns)
 
 **Implementation Approach**:
 - Save models as `.pkl` files using pickle
-- Track metadata in single `registry.json` file
+- Track metadata in single `prediction_registry.json` file
 - No external services needed (MLflow skipped for simplicity)
 
 **Validation**:
 ```python
 from src.prediction.registry import ModelRegistry
-registry = ModelRegistry()
+registry = ModelRegistry("data/models/prediction_registry.json", "data/models/prediction/")
 registry.save_model("usd_eur_v1", model_obj, {
     "accuracy": 0.68,
     "currency_pair": "USD/EUR",
     "created_at": "2025-10-25"
 })
 loaded = registry.load_model("usd_eur_v1")
-metadata = registry.get_metadata("usd_eur_v1")
+metadata = registry.get_model_info("usd_eur_v1")
 ```
 
 ---
@@ -549,29 +551,29 @@ print(result["price_forecast"]["predictions"]["7"])
 
 ---
 
-## 📋 Phase 3: Layer 3 Agent - Decision Engine (Week 4)
+## 📋 Phase 3: Layer 3 Agent - Decision Engine (Week 4) ✅ COMPLETE
 
 **Goal**: Implement recommendation logic
 
-### 3.1: Decision Model Core
+### 3.1: Decision Model Core ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 5-6 hours
 
 **Reference**: `/plans/decision-engine.plan.md`
 
 **Tasks**:
-- [ ] Create utility calculation model
-- [ ] Implement action scoring (convert_now, staged, wait)
-- [ ] Add risk penalty calculation
-- [ ] Add urgency fit calculation
-- [ ] Write decision model tests
+- [x] Create utility calculation model
+- [x] Implement action scoring (convert_now, staged, wait)
+- [x] Add risk penalty calculation
+- [x] Add urgency fit calculation
+- [x] Write decision model tests
 
-**Files to Create**:
+**Files Created**:
 1. `src/decision/models.py` - Data contracts
-2. `src/decision/utility.py` - Utility model
+2. `src/decision/utility_scorer.py` - Utility model
 3. `src/decision/risk_calculator.py`
 4. `src/decision/config.py`
-5. `tests/decision/test_utility.py`
+5. `tests/decision/test_utility_scorer.py`
 
 **Validation**:
 ```python
@@ -587,19 +589,19 @@ utility = calculate_utility(
 
 ---
 
-### 3.2: Staging Algorithm
+### 3.2: Staging Algorithm ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 3-4 hours
 
 **Tasks**:
-- [ ] Create staging calculator
-- [ ] Implement tranche sizing
-- [ ] Add event-aware spacing
-- [ ] Write staging tests
+- [x] Create staging calculator
+- [x] Implement tranche sizing
+- [x] Add event-aware spacing
+- [x] Write staging tests
 
-**Files to Create**:
-1. `src/decision/staging.py`
-2. `tests/decision/test_staging.py`
+**Files Created**:
+1. `src/decision/staging_planner.py`
+2. `tests/decision/test_staging_planner.py`
 
 **Validation**:
 ```python
@@ -615,17 +617,17 @@ print(plan.tranches, plan.spacing_days)
 
 ---
 
-### 3.3: Heuristic Fallbacks
+### 3.3: Heuristic Fallbacks ✅ COMPLETE
 **Priority**: 🟡 Important  
 **Time Estimate**: 2-3 hours
 
 **Tasks**:
-- [ ] Implement event-gating rules
-- [ ] Implement momentum-based heuristics
-- [ ] Add conservative/aggressive adjustments
-- [ ] Write heuristic tests
+- [x] Implement event-gating rules
+- [x] Implement momentum-based heuristics
+- [x] Add conservative/aggressive adjustments
+- [x] Write heuristic tests
 
-**Files to Create**:
+**Files Created**:
 1. `src/decision/heuristics.py`
 2. `tests/decision/test_heuristics.py`
 
@@ -638,21 +640,23 @@ print(decision.action, decision.rationale)
 
 ---
 
-### 3.4: Decision Engine Node
+### 3.4: Decision Engine Node ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 3-4 hours
 
 **Tasks**:
-- [ ] Create main decision engine
-- [ ] Integrate all inputs (market, intelligence, prediction)
-- [ ] Generate rationale and confidence
-- [ ] Create decision node for LangGraph
-- [ ] Write integration tests
+- [x] Create main decision engine
+- [x] Integrate all inputs (market, intelligence, prediction)
+- [x] Generate rationale and confidence
+- [x] Create decision node for LangGraph
+- [x] Write integration tests
 
-**Files to Create**:
-1. `src/decision/engine.py`
+**Files Created**:
+1. `src/decision/decision_maker.py`
 2. `src/agentic/nodes/decision.py`
-3. `tests/agentic/nodes/test_decision.py`
+3. `tests/decision/test_decision_maker.py`
+4. `tests/unit/test_agentic/test_nodes/test_decision.py`
+5. `scripts_test/test_phase_3.py`
 
 **Validation**:
 ```python
@@ -1045,7 +1049,7 @@ python scripts/evaluate_model.py --model-id usd_eur_v1
 
 **Validation**:
 ```python
-from src.prediction import MLPredictor
+from src.prediction.predictor import MLPredictor
 predictor = MLPredictor()
 pred = await predictor.predict(PredictionRequest(
     currency_pair="USD/EUR",

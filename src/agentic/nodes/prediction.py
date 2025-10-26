@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from src.agentic.state import AgentState
@@ -102,6 +103,7 @@ async def prediction_node(state: AgentState) -> Dict[str, Any]:
             "warnings": pred_response.warnings,
             "explanations": pred_response.explanations,
             "model_info": pred_response.model_info,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         return {

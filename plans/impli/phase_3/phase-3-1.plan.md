@@ -71,7 +71,7 @@ Empty init file for the decision module.
 
 **Purpose**: Add decision engine configuration section.
 
-**Structure** (as specified in decision-engine.plan.md lines 180-233):
+**Structure** (as described in decision-engine.plan.md Configuration section):
 
 ```yaml
 decision:

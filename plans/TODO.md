@@ -1,6 +1,6 @@
 # Currency Assistant - Implementation TODO
 
-**Last Updated**: January 29, 2025  
+**Last Updated**: January 30, 2025  
 **Total Tasks**: 33  
 **Estimated Duration**: 6-8 weeks
 
@@ -11,7 +11,7 @@
 - [x] Phase 0: Foundation & Infrastructure (4 tasks) ✅ COMPLETE
 - [x] Phase 1: Layer 1 Agents - Data Collection (6 tasks) ✅ COMPLETE
 - [x] Phase 2: Price Prediction Agent (5 tasks) ✅ COMPLETE
-- [ ] Phase 3: Decision Engine Agent (4 tasks)
+- [x] Phase 3: Decision Engine Agent (4 tasks) ✅ COMPLETE
 - [ ] Phase 4: Supervisor Agent & Orchestration (4 tasks)
 - [ ] Phase 5: User Interfaces (3 tasks)
 - [ ] Phase 6: Testing & Polish (3 tasks)
@@ -316,14 +316,15 @@ print(result["intelligence_report"]["overall_bias"])
 - `src/prediction/feature_builder.py`
 - `src/prediction/models.py`
 - `tests/prediction/test_data_loader.py`
-- `tests/prediction/test_features.py`
+- `tests/prediction/test_feature_builder.py`
 
 **Validation**:
 ```python
-from src.prediction.data_loader import load_historical_data
-from src.prediction.feature_builder import build_features
-data = await load_historical_data("USDEUR=X", days=90)
-features = build_features(data, mode="price_only")
+from src.prediction.data_loader import HistoricalDataLoader
+from src.prediction.feature_builder import FeatureBuilder
+loader = HistoricalDataLoader()
+data = await loader.fetch_historical_data("USD", "EUR", days=90, interval="1d")
+features = FeatureBuilder(["sma_5", "sma_20", "rsi_14", "macd", "macd_signal"]).build_features(data, mode="price_only")
 ```
 
 ---
@@ -340,14 +341,14 @@ features = build_features(data, mode="price_only")
 **Files to Create**:
 - `src/prediction/registry.py` (JSON + pickle based)
 - `src/prediction/config.py`
-- `data/models/` directory
-- `data/models/registry.json` (metadata file)
+- `data/models/prediction/` directory
+- `data/models/prediction_registry.json` (metadata file)
 - `tests/prediction/test_registry.py`
 
 **Validation**:
 ```python
 from src.prediction.registry import ModelRegistry
-registry = ModelRegistry()
+registry = ModelRegistry("data/models/prediction_registry.json", "data/models/prediction/")
 registry.save_model("usd_eur_v1", model_obj, metadata)
 loaded = registry.load_model("usd_eur_v1")
 ```
@@ -442,22 +443,22 @@ print(result["price_forecast"]["predictions"]["7"])
 
 ## 📋 Phase 3: Decision Engine Agent
 
-### [ ] 3.1 Decision Model Core
+### [x] 3.1 Decision Model Core ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 5-6 hours | **Ref**: `decision-engine.plan.md`
 
 **Tasks**:
-- [ ] Create utility calculation model
-- [ ] Implement action scoring (convert_now, staged, wait)
-- [ ] Add risk penalty calculation
-- [ ] Add urgency fit calculation
-- [ ] Write decision model tests
+- [x] Create utility calculation model
+- [x] Implement action scoring (convert_now, staged, wait)
+- [x] Add risk penalty calculation
+- [x] Add urgency fit calculation
+- [x] Write decision model tests
 
-**Files to Create**:
+**Files Created**:
 - `src/decision/models.py`
-- `src/decision/utility.py`
+- `src/decision/utility_scorer.py`
 - `src/decision/risk_calculator.py`
 - `src/decision/config.py`
-- `tests/decision/test_utility.py`
+- `tests/decision/test_utility_scorer.py`
 
 **Validation**:
 ```python
@@ -467,18 +468,18 @@ utility = calculate_utility(expected_improvement=0.5, risk_penalty=0.2, ...)
 
 ---
 
-### [ ] 3.2 Staging Algorithm
+### [x] 3.2 Staging Algorithm ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create staging calculator
-- [ ] Implement tranche sizing
-- [ ] Add event-aware spacing
-- [ ] Write staging tests
+- [x] Create staging calculator
+- [x] Implement tranche sizing
+- [x] Add event-aware spacing
+- [x] Write staging tests
 
-**Files to Create**:
-- `src/decision/staging.py`
-- `tests/decision/test_staging.py`
+**Files Created**:
+- `src/decision/staging_planner.py`
+- `tests/decision/test_staging_planner.py`
 
 **Validation**:
 ```python
@@ -488,16 +489,16 @@ plan = create_staged_plan(amount=5000, timeframe_days=7, urgency="normal")
 
 ---
 
-### [ ] 3.3 Heuristic Fallbacks
+### [x] 3.3 Heuristic Fallbacks ✅ COMPLETE
 **Priority**: 🟡 Important | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Implement event-gating rules
-- [ ] Implement momentum-based heuristics
-- [ ] Add conservative/aggressive adjustments
-- [ ] Write heuristic tests
+- [x] Implement event-gating rules
+- [x] Implement momentum-based heuristics
+- [x] Add conservative/aggressive adjustments
+- [x] Write heuristic tests
 
-**Files to Create**:
+**Files Created**:
 - `src/decision/heuristics.py`
 - `tests/decision/test_heuristics.py`
 
@@ -509,20 +510,22 @@ decision = heuristic_decision(indicators, intelligence, user_params)
 
 ---
 
-### [ ] 3.4 Decision Engine Node
+### [x] 3.4 Decision Engine Node ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create main decision engine
-- [ ] Integrate all inputs (market, intelligence, prediction)
-- [ ] Generate rationale and confidence
-- [ ] Create decision node for LangGraph
-- [ ] Write integration tests
+- [x] Create main decision engine
+- [x] Integrate all inputs (market, intelligence, prediction)
+- [x] Generate rationale and confidence
+- [x] Create decision node for LangGraph
+- [x] Write integration tests
 
-**Files to Create**:
-- `src/decision/engine.py`
+**Files Created**:
+- `src/decision/decision_maker.py`
 - `src/agentic/nodes/decision.py`
-- `tests/agentic/nodes/test_decision.py`
+- `tests/decision/test_decision_maker.py`
+- `tests/unit/test_agentic/test_nodes/test_decision.py`
+- `scripts_test/test_phase_3.py` (end-to-end runner)
 
 **Validation**:
 ```python
@@ -858,7 +861,7 @@ python scripts/train_model.py --pair USD/EUR --horizons 1,7,30
 
 **Validation**:
 ```python
-from src.prediction import MLPredictor
+from src.prediction.predictor import MLPredictor
 predictor = MLPredictor()
 pred = await predictor.predict(...)
 ```
@@ -872,23 +875,23 @@ pred = await predictor.predict(...)
 | Phase 0 | 4 | 8-12 hours | ✅ Complete |
 | Phase 1 | 6 | 22-30 hours | ✅ Complete |
 | Phase 2 | 5 | 16-23 hours | ✅ Complete |
-| Phase 3 | 4 | 13-17 hours | ⏳ Not Started |
+| Phase 3 | 4 | 13-17 hours | ✅ Complete |
 | Phase 4 | 4 | 14-20 hours | ⏳ Not Started |
 | Phase 5 | 3 | 16-21 hours | ⏳ Not Started |
 | Phase 6 | 3 | 10-14 hours | ⏳ Not Started |
 | Phase 7 | 3 | 7-9 hours | ⏳ Not Started |
 | Phase 8 | 2 | 8-11 hours | ⏳ Not Started |
-| **Total** | **33** | **111-152 hours** | **45% Complete** |
+| **Total** | **33** | **111-152 hours** | **58% Complete** |
 
 ---
 
 ## 🎯 Current Focus
 
-**Next Task**: Phase 3.1 - Decision Model Core
+**Next Task**: Phase 4.1 - NLU Parameter Extraction
 
 **Command to Start**:
 ```bash
-mkdir -p src/decision
+mkdir -p src/agentic/nlu src/agentic/conversation src/agentic/response
 ```
 
 ---
@@ -903,4 +906,4 @@ mkdir -p src/decision
 
 ---
 
-**For detailed implementation steps, see**: `.cursor/plans/IMPLEMENTATION_ROADMAP.md`
+**For detailed implementation steps, see**: `plans/IMPLEMENTATION_ROADMAP.md`

@@ -7,7 +7,7 @@ Implement the staging planner that creates multi-tranche conversion plans. The p
 
 ## Reference
 
-See `plans/decision-engine.plan.md` for staging logic and tranche patterns (lines 23-29, 259-276).
+See `plans/decision-engine.plan.md` for staging logic and tranche patterns (Tranche Patterns and Staging Planner sections).
 
 ## Files to Create
 

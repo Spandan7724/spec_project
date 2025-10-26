@@ -87,6 +87,63 @@ agents:
       moderate: 0.10
       aggressive: 0.15
 
+decision:
+  risk_profiles:
+    conservative:
+      weights:
+        profit: 0.8
+        risk: 1.2
+        cost: 0.4
+        urgency: 0.3
+      min_improvement_bps: 10.0
+      event_proximity_threshold_days: 2.0
+      volatility_penalty_multiplier: 1.5
+
+    moderate:
+      weights:
+        profit: 1.0
+        risk: 0.8
+        cost: 0.3
+        urgency: 0.4
+      min_improvement_bps: 5.0
+      event_proximity_threshold_days: 1.5
+      volatility_penalty_multiplier: 1.0
+
+    aggressive:
+      weights:
+        profit: 1.2
+        risk: 0.5
+        cost: 0.2
+        urgency: 0.5
+      min_improvement_bps: 3.0
+      event_proximity_threshold_days: 0.5
+      volatility_penalty_multiplier: 0.7
+
+  thresholds:
+    convert_now_min_utility: 0.3
+    staged_min_timeframe_days: 3
+    wait_event_proximity_days: 1.5
+    min_model_confidence: 0.4
+    max_prediction_age_hours: 6
+
+  staging:
+    max_tranches: 3
+    min_spacing_days: 1
+    short_timeframe_tranches: 2
+    long_timeframe_tranches: 3
+    urgent_pattern: [0.6, 0.4]
+    normal_pattern: [0.5, 0.5]
+    flexible_pattern: [0.33, 0.33, 0.34]
+
+  costs:
+    default_spread_bps: 5.0
+    default_fee_bps: 0.0
+    staging_cost_multiplier: 1.2
+  
+  heuristics:
+    enabled: false
+    trigger_policy: strict
+
 prediction:
   prediction_horizons: [1, 7, 30]
   cache_ttl_hours: 1
@@ -124,7 +181,7 @@ prediction:
   model_registry_path: "data/models/prediction_registry.json"
   model_storage_dir: "data/models/prediction/"
   # Explanations (Phase 2 evidence for UI)
-  explain_enabled: false
+  explain_enabled: true
   explain_include_plots: false
   explain_top_n: 5
   # Horizon routing

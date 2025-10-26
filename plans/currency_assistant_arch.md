@@ -1199,7 +1199,7 @@ Return to User
 - Target: < 5 seconds for 95% of requests
 - Breakdown:
   - Layer 1 (parallel): < 3 seconds
-  - Layer 2 (prediction): < 10 seconds
+  - Layer 2 (prediction): < 2 seconds
   - Layer 3 (decision): < 3 seconds
   - Response generation: < 1 second
 
