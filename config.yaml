@@ -87,6 +87,53 @@ agents:
       moderate: 0.10
       aggressive: 0.15
 
+prediction:
+  prediction_horizons: [1, 7, 30]
+  cache_ttl_hours: 1
+  predictor_backend: "hybrid"  # lightgbm | lstm | hybrid
+  features_mode: "price_only"  # price_only | price_plus_intel
+
+  technical_indicators:
+    - sma_5
+    - sma_20
+    - sma_50
+    - ema_12
+    - ema_26
+    - rsi_14
+    - macd
+    - macd_signal
+    - bb_upper
+    - bb_lower
+    - bb_middle
+    - atr_14
+    - volatility_20
+
+  min_history_days: 100
+  max_history_days: 365
+
+  # Quality gates
+  min_samples_required: 500
+  min_validation_coverage: 0.85
+  min_directional_accuracy: 0.52
+
+  # Fallback
+  enable_fallback_heuristics: true
+  fallback_strength_pct: 0.15
+
+  # Model registry storage
+  model_registry_path: "data/models/prediction_registry.json"
+  model_storage_dir: "data/models/prediction/"
+  # Explanations (Phase 2 evidence for UI)
+  explain_enabled: false
+  explain_include_plots: false
+  explain_top_n: 5
+  # Horizon routing
+  default_timeframe: "1_day"  # or "immediate", "1_week", "1_month"
+  use_user_timeframe: true     # if true, prefer timeframe parsed from user message
+  include_intraday_for_1_day: false
+  intraday_horizons: [1, 4, 24]
+  daily_horizons: [1, 7, 30]
+
 logging:
   enabled: false  # Set to true to enable logging, false to disable completely
   level: "INFO"

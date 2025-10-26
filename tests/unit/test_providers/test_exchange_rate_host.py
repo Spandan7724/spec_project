@@ -22,7 +22,7 @@ class DummyResponse:
 
 class DummyClient:
     def __init__(self, timeout=None, data=None, should_raise: bool = False):
-        self._data = data or {"rates": {"EUR": 0.85}, "date": "2025-10-24"}
+        self._data = data or {"quotes": {"USDEUR": 0.85}, "timestamp": 1729800000}
         self._should_raise = should_raise
 
     async def __aenter__(self):

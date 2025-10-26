@@ -1,9 +1,13 @@
 <!-- f67714c1-a54f-4e8d-9617-16955f212afc a2f7c1dc-fee5-408e-b953-70ec229d7c82 -->
-# Phase 2.3: LightGBM Backend + SHAP Explainability
+# Phase 2.3: Model Backends (LightGBM + LSTM) + Explainability
 
 ## Overview
 
-Implement the machine learning prediction engine using LightGBM for gradient boosting. This includes training quantile regression models for uncertainty estimates, binary classifiers for direction probability, and SHAP integration for model explainability. The backend provides the core forecasting capability for the Price Prediction Agent.
+Implement both model backends:
+- LightGBM for daily/weekly tabular modeling with quantiles and direction probability.
+- LSTM for intraday (1–24h) sequence forecasting.
+
+Add SHAP explainability for LightGBM and design feature importance/attribution reporting for LSTM (via integrated gradients or permutation importance in a later phase if needed).
 
 ## Implementation Steps
 
@@ -374,6 +378,73 @@ class LightGBMBackend(BasePredictorBackend):
         self.feature_names = state.get('feature_names', [])
         
         logger.info(f"Loaded models from {path}")
+
+### Step 3: LSTM Backend Implementation
+
+**File**: `src/prediction/backends/lstm_backend.py`
+
+Implement an LSTM-based backend for intraday horizons:
+
+```python
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Optional
+from src.utils.logging import get_logger
+from .base import BasePredictorBackend
+
+logger = get_logger(__name__)
+
+class LSTMBackend(BasePredictorBackend):
+    """LSTM-based predictor (intraday horizons)"""
+
+    def __init__(self, seq_len: int = 64, hidden_dim: int = 64):
+        self.seq_len = seq_len
+        self.hidden_dim = hidden_dim
+        self.model = None  # Placeholder for torch model
+        self.validation_metrics = {}
+        self.feature_names: List[str] = []
+
+    def train(self, X_train: pd.DataFrame, y_train: pd.DataFrame, horizons: List[int], params: Optional[Dict] = None) -> Dict:
+        """Train LSTM for specified intraday horizons (e.g., 1h, 4h, 24h)."""
+        # Plan: build supervised sequences, train per-horizon heads, record metrics
+        raise NotImplementedError("Detailed LSTM training implemented during coding phase")
+
+    def predict(self, X: pd.DataFrame, horizons: List[int], include_quantiles: bool = True) -> Dict[int, Dict]:
+        """Predict horizon returns using the trained LSTM."""
+        raise NotImplementedError("LSTM prediction implemented during coding phase")
+
+    def get_model_confidence(self) -> float:
+        # Map validation directional accuracy to confidence (same policy as LightGBM)
+        if not self.validation_metrics:
+            return 0.0
+        acc = [m['directional_accuracy'] for m in self.validation_metrics.values() if 'directional_accuracy' in m]
+        if not acc:
+            return 0.0
+        return float(max(0.0, (np.mean(acc) - 0.5) * 2))
+
+    def save(self, path: str):
+        raise NotImplementedError("Persist LSTM state dict and params")
+
+    def load(self, path: str):
+        raise NotImplementedError("Load LSTM state dict and params")
+```
+
+Design notes:
+- Start with close-only sequences plus a small set of technical features.
+- Sequence length 64–128 steps (minutes/hourly bars depending on data availability).
+- Focus on horizons: 1h, 4h, 24h. Map 24h to “1_day” horizon for downstream compatibility.
+
+### Step 4: Hybrid Routing and Backend Selection
+
+Integrate both backends in the predictor:
+- Use LSTM for intraday horizons (<= 24h) when available.
+- Use LightGBM for daily/weekly horizons (1d, 7d, 30d).
+- Allow `predictor_backend: hybrid` in config to enable automatic routing.
+
+Update `src/prediction/predictor.py` to:
+- Instantiate both backends if configured.
+- Split requested horizons by granularity and merge results into a unified PredictionResponse.
+- Log which backend served each horizon.
 ```
 
 ### Step 3: SHAP Explainability Integration
@@ -837,6 +908,8 @@ lightgbm = ">=4.0.0"
 scikit-learn = ">=1.3.0"
 shap = ">=0.44.0"
 matplotlib = ">=3.7.0"  # For SHAP plots
+# LSTM
+torch = ">=2.3.0"  # or tensorflow/keras if preferred
 ```
 
 ## Validation
@@ -883,15 +956,14 @@ print("Top features:", importance)
 
 ## Success Criteria
 
-- Models train successfully for multiple horizons
-- Directional accuracy > 52% (better than random)
-- Quantile coverage within 75-90% range
-- Predictions complete in <500ms
-- Feature importance correctly identifies key drivers
-- SHAP plots generate without errors
+- LightGBM trains successfully for daily/weekly horizons; LSTM for intraday horizons
+- Directional accuracy > 52% across served horizons
+- Quantile coverage within 75-90% range (LightGBM)
+- Predictions complete within target latencies (inference: <500ms LightGBM, <100ms per sequence LSTM)
+- Explainability available for LightGBM; LSTM attribution planned
 - Models save and load correctly
 - All unit tests pass with >80% coverage
-- Confidence score correctly reflects model quality
+- Confidence score maps from validation accuracy
 
 ## Next Phase
 
@@ -901,9 +973,11 @@ After Phase 2.3 completes, proceed to **Phase 2.4: Fallback Heuristics** to impl
 
 - [ ] Create BasePredictorBackend interface in src/prediction/backends/base.py
 - [ ] Implement LightGBMBackend with quantile regression and direction classification
+- [ ] Implement LSTMBackend for intraday horizons
+- [ ] Add hybrid routing in predictor based on horizon
 - [ ] Create PredictionExplainer with SHAP for web UI visualizations (waterfall, force plots)
 - [ ] Implement CalibrationChecker for quality gates in src/prediction/utils/calibration.py
 - [ ] Add model training with early stopping and validation metrics
-- [ ] Write comprehensive unit tests for LightGBM backend (>80% coverage)
+- [ ] Write comprehensive unit tests for LightGBM and LSTM backends (>80% coverage)
 - [ ] Write unit tests for SHAP explainer and calibration utilities
 - [ ] Manually validate model training with real EUR/USD data

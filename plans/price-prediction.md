@@ -134,7 +134,7 @@ class ModelMetadata:
 **File: `src/prediction/config.py`**
 
 ```python
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict
 import os
 import yaml
@@ -148,7 +148,7 @@ class PredictionConfig:
     cache_ttl_hours: int = 1
     
     # Backend
-    predictor_backend: str = "lightgbm"  # lightgbm | lstm
+    predictor_backend: str = "hybrid"  # lightgbm | lstm | hybrid
     
     # Features
     features_mode: str = "price_only"  # price_only | price_plus_intel
@@ -176,16 +176,21 @@ class PredictionConfig:
     fallback_strength_pct: float = 0.15  # ±0.15% default signal
     
     # Model registry
-    model_registry_path: str = "models/prediction_registry.json"
-    model_storage_dir: str = "models/prediction/"
+    model_registry_path: str = "data/models/prediction_registry.json"
+    model_storage_dir: str = "data/models/prediction/"
     
     @classmethod
     def from_yaml(cls, config_path: str = "config.yaml"):
-        """Load from YAML config file"""
+        """Load from YAML config file.
+
+        Prefers root-level `prediction:`; falls back to `agents.prediction` if missing.
+        """
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:
-                full_config = yaml.safe_load(f)
-                pred_config = full_config.get('prediction', {})
+                full_config = yaml.safe_load(f) or {}
+                pred_config = full_config.get('prediction')
+                if pred_config is None:
+                    pred_config = full_config.get('agents', {}).get('prediction', {})
                 return cls(**pred_config)
         return cls()
 ```
@@ -196,7 +201,7 @@ class PredictionConfig:
 prediction:
   prediction_horizons: [1, 7, 30]
   cache_ttl_hours: 1
-  predictor_backend: "lightgbm"  # lightgbm | lstm
+  predictor_backend: "hybrid"  # lightgbm | lstm | hybrid
   features_mode: "price_only"  # price_only | price_plus_intel
   
   technical_indicators:
@@ -226,8 +231,8 @@ prediction:
     enable_heuristics: true
     strength_pct: 0.15
   
-  model_registry_path: "models/prediction_registry.json"
-  model_storage_dir: "models/prediction/"
+  model_registry_path: "data/models/prediction_registry.json"
+  model_storage_dir: "data/models/prediction/"
 ```
 
 ### 3. Data Loading
@@ -913,7 +918,7 @@ class LightGBMBackend(BasePredictorBackend):
         self.validation_metrics = state['validation_metrics']
 ```
 
-### 8. LSTM Backend (Phase 2 - Stub for now)
+### 8. LSTM Backend (Phase 2)
 
 **File: `src/prediction/backends/lstm_backend.py`**
 
@@ -924,11 +929,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class LSTMBackend(BasePredictorBackend):
-    """LSTM-based predictor (Phase 2 implementation)"""
+    """LSTM-based predictor (implemented in Phase 2)"""
     
     def __init__(self):
-        logger.info("LSTM backend not yet implemented - will be added in Phase 2")
-        raise NotImplementedError("LSTM backend coming in Phase 2")
+        logger.info("LSTM backend implementation details are in Phase 2 plans")
+        raise NotImplementedError("LSTM backend to be implemented per Phase 2 plan")
     
     def train(self, X_train, y_train, horizons):
         raise NotImplementedError()
@@ -1575,7 +1580,7 @@ if __name__ == "__main__":
 - [ ] Implement model registry (`src/prediction/registry.py`)
 - [ ] Implement base backend interface (`src/prediction/backends/base.py`)
 - [ ] Implement LightGBM backend (`src/prediction/backends/lightgbm_backend.py`)
-- [ ] Create LSTM backend stub (`src/prediction/backends/lstm_backend.py`)
+- [ ] Implement LSTM backend (`src/prediction/backends/lstm_backend.py`)
 - [ ] Implement fallback predictor (`src/prediction/utils/fallback.py`)
 - [ ] Implement main predictor (`src/prediction/predictor.py`)
 - [ ] Create prediction agent node (`src/agentic/nodes/prediction.py`)
@@ -1595,7 +1600,7 @@ if __name__ == "__main__":
 - [ ] Implement ModelRegistry (JSON + pickle) in src/prediction/registry.py
 - [ ] Create BasePredictorBackend interface in src/prediction/backends/base.py
 - [ ] Implement LightGBMBackend with quantile regression in src/prediction/backends/lightgbm_backend.py
-- [ ] Create LSTM backend stub in src/prediction/backends/lstm_backend.py
+- [ ] Implement LSTM backend in src/prediction/backends/lstm_backend.py
 - [ ] Implement FallbackPredictor with heuristics in src/prediction/utils/fallback.py
 - [ ] Implement MLPredictor with caching and quality gates in src/prediction/predictor.py
 - [ ] Create PredictionAgent node in src/agentic/nodes/prediction.py

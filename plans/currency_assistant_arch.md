@@ -109,7 +109,7 @@ This multi-agent system follows a **Supervisor Pattern** with specialized sub-ag
 **Technology**:
 - API integrations: REST/WebSocket
 - Data validation: Pandas, NumPy
-- Caching: Redis
+- Caching: In-memory TTL (no Redis)
 - Rate limiting handling
 - Technical analysis libraries: TA-Lib
 
@@ -205,7 +205,8 @@ This multi-agent system follows a **Supervisor Pattern** with specialized sub-ag
 **Primary Responsibility**: ML-based price forecasting with confidence intervals
 
 **Core Functions**:
-- Generate short-term (1-24 hours) price forecasts using LSTM networks
+- Generate intraday (1–24 hours) price forecasts using LSTM
+- Generate daily and weekly forecasts using LightGBM
 - Generate medium-term (1-7 days) trend predictions
 - Calculate prediction confidence intervals
 - Adapt models based on market regime changes
@@ -229,9 +230,10 @@ This multi-agent system follows a **Supervisor Pattern** with specialized sub-ag
 - Feature importance scores
 
 **ML Models**:
-- **Primary**: LightGBM for price prediction (fast, accurate)
-- **Baseline**: Simple heuristics (moving averages, RSI) for fallback
-- **Ensemble**: Combine multiple horizons for robustness
+- LightGBM (daily/weekly) for fast, accurate tabular modeling
+- LSTM (intraday) for sequence modeling of high-frequency series
+- Baseline heuristics (moving averages, RSI) for fallback
+- Hybrid routing by horizon; optional ensemble across backends
 
 **Technology**:
 - LightGBM for gradient boosting models

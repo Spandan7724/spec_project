@@ -18,7 +18,7 @@ async def test_intelligence_service_integration(monkeypatch):
     async def fake_search(self, query: str, num_results: int = 10):
         return []
 
-    async def fake_collect_calendar_urls(self, currency: str, month=None, year=None):
+    async def fake_collect_calendar_urls(self, currency: str, month=None, year=None, num_results: int = 10):
         from src.data_collection.market_intelligence.serper_client import SerperSearchResult
         return [
             SerperSearchResult(title=f"{currency} Event", url="https://example.com", snippet=f"{currency} policy meeting", position=1)

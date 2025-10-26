@@ -3,10 +3,12 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 import yaml
+from pathlib import Path
 from dotenv import load_dotenv
 from src.utils.errors import ConfigurationError
 from src.utils.logging import setup_logging
 import logging
+from src.utils.paths import find_project_root
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +23,28 @@ class Config:
         Args:
             config_path: Path to YAML configuration file
         """
-        self.config_path = Path(config_path)
+        # Resolve config path robustly (CWD, env, project root)
+        self.config_path = self._resolve_config_path(Path(config_path))
         self._config: Dict[str, Any] = {}
         self._load()
+
+    def _resolve_config_path(self, candidate: Path) -> Path:
+        # Environment override
+        env_cfg = os.getenv("CURRENCY_ASSISTANT_CONFIG")
+        if env_cfg:
+            p = Path(env_cfg).expanduser().resolve()
+            if p.exists():
+                return p
+        # Direct candidate
+        if candidate.exists():
+            return candidate
+        # Project root
+        root = find_project_root()
+        root_cfg = root / candidate.name
+        if root_cfg.exists():
+            return root_cfg
+        # Fallback to candidate (will error later)
+        return candidate
     
     def _load(self) -> None:
         """Load configuration from YAML and environment."""
@@ -147,4 +168,3 @@ def get_config() -> Config:
     if _config is None:
         raise ConfigurationError("Configuration not loaded. Call load_config() first.")
     return _config
-

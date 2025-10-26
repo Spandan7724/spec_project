@@ -53,6 +53,7 @@ dependencies = [
 
 [project.scripts]
 currency-assistant = "src.cli.main:app"
+currency-assistant-train = "src.cli.train:app"
 
 [tool.setuptools]
 packages = ["src"]

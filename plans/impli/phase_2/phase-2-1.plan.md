@@ -136,16 +136,21 @@ class PredictionConfig:
     fallback_strength_pct: float = 0.15  # ±0.15% default signal
     
     # Model registry
-    model_registry_path: str = "models/prediction_registry.json"
-    model_storage_dir: str = "models/prediction/"
+    model_registry_path: str = "data/models/prediction_registry.json"
+    model_storage_dir: str = "data/models/prediction/"
     
     @classmethod
     def from_yaml(cls, config_path: str = "config.yaml"):
-        """Load from YAML config file"""
+        """Load from YAML config file.
+
+        Prefers root-level `prediction:`; falls back to `agents.prediction` if missing.
+        """
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:
-                full_config = yaml.safe_load(f)
-                pred_config = full_config.get('prediction', {})
+                full_config = yaml.safe_load(f) or {}
+                pred_config = full_config.get('prediction')
+                if pred_config is None:
+                    pred_config = full_config.get('agents', {}).get('prediction', {})
                 return cls(**pred_config)
         return cls()
 ```
@@ -186,8 +191,8 @@ prediction:
     enable_heuristics: true
     strength_pct: 0.15
   
-  model_registry_path: "models/prediction_registry.json"
-  model_storage_dir: "models/prediction/"
+  model_registry_path: "data/models/prediction_registry.json"
+  model_storage_dir: "data/models/prediction/"
 ```
 
 ### Step 3: Historical Data Loader
@@ -212,7 +217,9 @@ class HistoricalDataLoader:
     def get_yahoo_symbol(base: str, quote: str) -> str:
         """Convert currency pair to Yahoo symbol"""
         return f"{base}{quote}=X"
-    
+
+    # Note: For LSTM/intraday support, extend to accept an `interval` parameter
+    # (e.g., '1h', '30m') with corresponding yfinance calls and history limits.
     async def fetch_historical_data(
         self, 
         base: str, 

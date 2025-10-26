@@ -272,7 +272,7 @@ class ModelRegistry:
 
 ### Step 2: Create Model Storage Directory Structure
 
-**Directory**: `models/prediction/`
+**Directory**: `data/models/prediction/`
 
 Create the directory structure for storing models:
 
@@ -282,7 +282,7 @@ mkdir -p models/prediction
 
 ### Step 3: Initialize Empty Registry
 
-**File**: `models/prediction_registry.json`
+**File**: `data/models/prediction_registry.json`
 
 Create empty registry file (will be auto-populated):
 
@@ -532,8 +532,8 @@ def test_registry_persistence(temp_registry_dir, sample_model, sample_metadata):
 ## Files to Create
 
 - `src/prediction/registry.py`
-- `models/prediction/` (directory)
-- `models/prediction_registry.json` (empty JSON file)
+- `data/models/prediction/` (directory)
+- `data/models/prediction_registry.json` (empty JSON file)
 - `tests/prediction/test_registry.py`
 
 ## Dependencies
@@ -555,8 +555,8 @@ from datetime import datetime
 
 # Initialize registry
 registry = ModelRegistry(
-    registry_path="models/prediction_registry.json",
-    storage_dir="models/prediction/"
+    registry_path="data/models/prediction_registry.json",
+    storage_dir="data/models/prediction/"
 )
 
 # Create sample metadata
@@ -611,7 +611,7 @@ After Phase 2.2 completes, proceed to **Phase 2.3: LightGBM Backend + SHAP Expla
 ### To-dos
 
 - [ ] Implement ModelRegistry class with JSON metadata and pickle model storage
-- [ ] Create models/prediction/ directory structure and empty registry.json file
+- [ ] Create data/models/prediction/ directory structure and empty registry.json file
 - [ ] Add model registration, retrieval, and deletion functionality
 - [ ] Implement model metadata tracking (accuracy, currency_pair, version, features)
 - [ ] Add model loading with scaler support for feature preprocessing

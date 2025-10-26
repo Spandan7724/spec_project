@@ -1,6 +1,6 @@
 # Currency Assistant - Implementation TODO
 
-**Last Updated**: October 25, 2025  
+**Last Updated**: January 29, 2025  
 **Total Tasks**: 33  
 **Estimated Duration**: 6-8 weeks
 
@@ -10,7 +10,7 @@
 
 - [x] Phase 0: Foundation & Infrastructure (4 tasks) ✅ COMPLETE
 - [x] Phase 1: Layer 1 Agents - Data Collection (6 tasks) ✅ COMPLETE
-- [ ] Phase 2: Price Prediction Agent (5 tasks)
+- [x] Phase 2: Price Prediction Agent (5 tasks) ✅ COMPLETE
 - [ ] Phase 3: Decision Engine Agent (4 tasks)
 - [ ] Phase 4: Supervisor Agent & Orchestration (4 tasks)
 - [ ] Phase 5: User Interfaces (3 tasks)
@@ -69,12 +69,11 @@ python -c "from src.config import load_config; print(load_config())"
 - `src/database/connection.py`
 - `src/database/session.py`
 - `src/cache.py` (in-memory cache with TTL)
-- `alembic/versions/001_initial_schema.py`
-- `alembic.ini`
+- `alembic/versions/001_initial_schema.py` (Optional; skipped for SQLite)
+- `alembic.ini` (Optional; skipped for SQLite)
 
 **Validation**:
 ```bash
-alembic upgrade head
 python -c "from src.database.models import Conversation; print('DB models loaded')"
 python -c "from src.cache import SimpleCache; cache = SimpleCache(); print('Cache ready')"
 ```
@@ -156,8 +155,8 @@ health = await get_health_status()
 - `src/data_collection/providers/base.py`
 - `src/data_collection/providers/exchange_rate_host.py`
 - `src/data_collection/providers/yfinance_client.py`
-- `tests/providers/test_exchange_rate_host.py`
-- `tests/providers/test_yfinance.py`
+- `tests/unit/test_providers/test_exchange_rate_host.py`
+- `tests/unit/test_providers/test_yfinance.py`
 
 **Validation**:
 ```python
@@ -185,8 +184,8 @@ rate = await client.get_rate("USD", "EUR")
 - `src/data_collection/market_data/indicators.py`
 - `src/data_collection/market_data/regime.py`
 - `src/data_collection/market_data/snapshot.py`
-- `tests/market_data/test_aggregator.py`
-- `tests/market_data/test_indicators.py`
+- `tests/unit/test_market_data/test_aggregator.py`
+- `tests/unit/test_market_data/test_indicators.py`
 
 Note: Uses `src/cache.py` for caching (already created in Phase 0.2)
 
@@ -211,7 +210,7 @@ print(snapshot.mid_rate, snapshot.indicators.rsi_14)
 
 **Files to Create**:
 - `src/agentic/nodes/market_data.py`
-- `tests/agentic/nodes/test_market_data.py`
+- `tests/unit/test_agentic/test_nodes/test_market_data.py`
 
 **Validation**:
 ```python
@@ -238,7 +237,7 @@ assert result["market_snapshot"] is not None
 - `src/data_collection/market_intelligence/serper_client.py`
 - `src/data_collection/market_intelligence/calendar_collector.py`
 - `src/data_collection/market_intelligence/news_collector.py`
-- `tests/market_intelligence/test_serper.py`
+- `tests/unit/test_market_intelligence/test_serper_client.py`
 
 **Validation**:
 ```python
@@ -289,7 +288,7 @@ events = await extract_calendar_events(search_results, "USD", "EUR")
 - `src/data_collection/market_intelligence/aggregator.py`
 - `src/data_collection/market_intelligence/bias_calculator.py`
 - `src/agentic/nodes/market_intelligence.py`
-- `tests/agentic/nodes/test_market_intelligence.py`
+- `tests/unit/test_agentic/test_nodes/test_market_intelligence.py`
 
 **Validation**:
 ```python
@@ -302,15 +301,15 @@ print(result["intelligence_report"]["overall_bias"])
 
 ## 📋 Phase 2: Price Prediction Agent
 
-### [ ] 2.1 Data Pipeline & Feature Engineering
+### [x] 2.1 Data Pipeline & Feature Engineering ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-6 hours | **Ref**: `price-prediction.md`
 
 **Tasks**:
-- [ ] Create historical OHLC data loader (yfinance)
-- [ ] Implement technical feature builder (SMA, EMA, RSI, etc.)
-- [ ] Add optional Market Intelligence features
-- [ ] Create feature validation
-- [ ] Write data pipeline tests
+- [x] Create historical OHLC data loader (yfinance)
+- [x] Implement technical feature builder (SMA, EMA, RSI, etc.)
+- [x] Add optional Market Intelligence features
+- [x] Create feature validation
+- [x] Write data pipeline tests
 
 **Files to Create**:
 - `src/prediction/data_loader.py`
@@ -329,14 +328,14 @@ features = build_features(data, mode="price_only")
 
 ---
 
-### [ ] 2.2 Model Registry & Storage
+### [x] 2.2 Model Registry & Storage ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Create simple JSON model registry
-- [ ] Implement model save/load with pickle
-- [ ] Add model metadata tracking (accuracy, currency_pair, version)
-- [ ] Write registry tests
+- [x] Create simple JSON model registry
+- [x] Implement model save/load with pickle
+- [x] Add model metadata tracking (accuracy, currency_pair, version)
+- [x] Write registry tests
 
 **Files to Create**:
 - `src/prediction/registry.py` (JSON + pickle based)
@@ -357,26 +356,29 @@ loaded = registry.load_model("usd_eur_v1")
 
 ---
 
-### [ ] 2.3 LightGBM Backend + SHAP Explainability
+### [x] 2.3 Model Backends (LightGBM + LSTM) + Explainability ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 5-7 hours
 
 **Tasks**:
-- [ ] Create base predictor interface
-- [ ] Implement LightGBM backend
-- [ ] Add quantile regression
-- [ ] Add direction probability estimation
-- [ ] Implement quality gates
-- [ ] Create calibration utilities
-- [ ] Integrate SHAP for explainability
-- [ ] Generate SHAP visualizations for web UI
-- [ ] Write backend tests
+- [x] Create base predictor interface
+- [x] Implement LightGBM backend (daily/weekly)
+- [x] Implement LSTM backend (intraday 1h/4h/24h)
+- [x] Add quantile regression (LightGBM)
+- [x] Add direction probability estimation (LightGBM)
+- [x] Implement quality gates
+- [x] Create calibration utilities
+- [x] Integrate SHAP for explainability (LightGBM)
+- [x] Generate SHAP visualizations for web UI
+- [x] Write backend tests for both backends
 
 **Files to Create**:
 - `src/prediction/backends/base.py`
 - `src/prediction/backends/lightgbm_backend.py`
+- `src/prediction/backends/lstm_backend.py`
 - `src/prediction/explainer.py` (SHAP integration)
 - `src/prediction/utils/calibration.py`
 - `tests/prediction/backends/test_lightgbm.py`
+- `tests/prediction/backends/test_lstm.py`
 
 **Validation**:
 ```python
@@ -384,7 +386,7 @@ from src.prediction.backends import LightGBMBackend
 from src.prediction.explainer import PredictionExplainer
 
 backend = LightGBMBackend(config)
-predictions = await backend.predict(features, horizons=[1, 7, 30])
+predictions = backend.predict(features, horizons=[1, 7, 30])
 
 # SHAP explanations
 explainer = PredictionExplainer(backend.model)
@@ -393,14 +395,14 @@ shap_plot = explainer.generate_waterfall_plot(features)
 
 ---
 
-### [ ] 2.4 Fallback Heuristics
+### [x] 2.4 Fallback Heuristics ✅ COMPLETE
 **Priority**: 🟡 Important | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Implement MA crossover heuristic
-- [ ] Implement RSI reversion heuristic
-- [ ] Add fallback confidence scoring
-- [ ] Write fallback tests
+- [x] Implement MA crossover heuristic
+- [x] Implement RSI reversion heuristic
+- [x] Add fallback confidence scoring
+- [x] Write fallback tests
 
 **Files to Create**:
 - `src/prediction/utils/fallback.py`
@@ -414,14 +416,14 @@ pred = fallback_predict(indicators, horizons=[1, 7, 30])
 
 ---
 
-### [ ] 2.5 Prediction Agent & Caching
+### [x] 2.5 Prediction Agent & Caching ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create main predictor with caching
-- [ ] Implement quality gate checks
-- [ ] Add prediction node for LangGraph
-- [ ] Write integration tests
+- [x] Create main predictor with caching
+- [x] Implement quality gate checks
+- [x] Add prediction node for LangGraph
+- [x] Write integration tests
 
 **Files to Create**:
 - `src/prediction/predictor.py`
@@ -869,24 +871,24 @@ pred = await predictor.predict(...)
 |-------|-------|----------------|--------|
 | Phase 0 | 4 | 8-12 hours | ✅ Complete |
 | Phase 1 | 6 | 22-30 hours | ✅ Complete |
-| Phase 2 | 5 | 16-23 hours | ⏳ Not Started |
+| Phase 2 | 5 | 16-23 hours | ✅ Complete |
 | Phase 3 | 4 | 13-17 hours | ⏳ Not Started |
 | Phase 4 | 4 | 14-20 hours | ⏳ Not Started |
 | Phase 5 | 3 | 16-21 hours | ⏳ Not Started |
 | Phase 6 | 3 | 10-14 hours | ⏳ Not Started |
 | Phase 7 | 3 | 7-9 hours | ⏳ Not Started |
 | Phase 8 | 2 | 8-11 hours | ⏳ Not Started |
-| **Total** | **33** | **111-152 hours** | **30% Complete** |
+| **Total** | **33** | **111-152 hours** | **45% Complete** |
 
 ---
 
 ## 🎯 Current Focus
 
-**Next Task**: Phase 2.1 - Data Pipeline & Feature Engineering
+**Next Task**: Phase 3.1 - Decision Model Core
 
 **Command to Start**:
 ```bash
-mkdir -p src/prediction
+mkdir -p src/decision
 ```
 
 ---
@@ -902,4 +904,3 @@ mkdir -p src/prediction
 ---
 
 **For detailed implementation steps, see**: `.cursor/plans/IMPLEMENTATION_ROADMAP.md`
-
