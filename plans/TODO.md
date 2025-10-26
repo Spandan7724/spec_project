@@ -1,6 +1,6 @@
 # Currency Assistant - Implementation TODO
 
-**Last Updated**: January 30, 2025  
+**Last Updated**: January 31, 2025  
 **Total Tasks**: 33  
 **Estimated Duration**: 6-8 weeks
 
@@ -12,7 +12,7 @@
 - [x] Phase 1: Layer 1 Agents - Data Collection (6 tasks) ✅ COMPLETE
 - [x] Phase 2: Price Prediction Agent (5 tasks) ✅ COMPLETE
 - [x] Phase 3: Decision Engine Agent (4 tasks) ✅ COMPLETE
-- [ ] Phase 4: Supervisor Agent & Orchestration (4 tasks)
+- [x] Phase 4: Supervisor Agent & Orchestration (4 tasks) ✅ COMPLETE
 - [ ] Phase 5: User Interfaces (3 tasks)
 - [ ] Phase 6: Testing & Polish (3 tasks)
 - [ ] Phase 7: Deployment & Production (3 tasks)
@@ -538,90 +538,92 @@ print(result["recommendation"]["action"])
 
 ## 📋 Phase 4: Supervisor Agent & Orchestration
 
-### [ ] 4.1 NLU Parameter Extraction
+### [x] 4.1 NLU Parameter Extraction ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-6 hours | **Ref**: `supervisor-agent.plan.md`
 
 **Tasks**:
-- [ ] Create parameter extractor using LLM (gpt-4o)
-- [ ] Implement currency pair parsing
-- [ ] Implement amount extraction
-- [ ] Implement risk/urgency/timeframe inference
-- [ ] Add validation and clarification prompts
-- [ ] Write extraction tests
+- [x] Create parameter extractor using LLM (gpt-4o)
+- [x] Implement currency pair parsing
+- [x] Implement amount extraction
+- [x] Implement risk/urgency/timeframe inference
+- [x] Add validation and clarification prompts
+- [x] Write extraction tests
 
 **Files to Create**:
-- `src/agentic/nlu/extractor.py`
-- `src/agentic/nlu/prompts.py`
-- `src/agentic/nlu/validation.py`
-- `tests/agentic/nlu/test_extraction.py`
+- `src/supervisor/nlu_extractor.py`
+- `src/supervisor/prompts.py`
+- `src/supervisor/validation.py`
+- `tests/supervisor/test_nlu_extractor.py`
 
 **Validation**:
 ```python
-from src.agentic.nlu.extractor import extract_parameters
-params = await extract_parameters("I need to convert 5000 USD to EUR today")
+from src.supervisor.nlu_extractor import NLUExtractor
+params = NLUExtractor().extract("I need to convert 5000 USD to EUR today")
 ```
 
 ---
 
-### [ ] 4.2 Conversation Manager
+### [x] 4.2 Conversation Manager ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create conversation session manager
-- [ ] Implement memory storage/retrieval
-- [ ] Add clarification flow
-- [ ] Write conversation tests
+- [x] Create conversation session manager
+- [x] Implement memory storage/retrieval
+- [x] Add clarification flow
+- [x] Write conversation tests
 
 **Files to Create**:
-- `src/agentic/conversation/session.py`
-- `src/agentic/conversation/memory.py`
-- `tests/agentic/conversation/test_session.py`
+- `src/supervisor/conversation_manager.py`
+- `src/supervisor/session_manager.py`
+- `tests/supervisor/test_conversation_manager.py`
 
 **Validation**:
 ```python
-from src.agentic.conversation import ConversationSession
-session = ConversationSession(user_id="test")
-session.add_turn("user", "Convert USD to EUR")
+from src.supervisor.conversation_manager import ConversationManager
+from src.supervisor.models import SupervisorRequest
+
+mgr = ConversationManager()
+resp = mgr.process_input(SupervisorRequest(user_input="Convert USD to EUR"))
 ```
 
 ---
 
-### [ ] 4.3 Response Generator
+### [x] 4.3 Response Generator ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create response formatter
-- [ ] Generate friendly recommendation text
-- [ ] Add visualization data preparation
-- [ ] Write response tests
+- [x] Create response formatter
+- [x] Generate friendly recommendation text
+- [x] Add visualization data preparation
+- [x] Write response tests
 
 **Files to Create**:
-- `src/agentic/response/generator.py`
-- `src/agentic/response/formatter.py`
-- `tests/agentic/response/test_generator.py`
+- `src/supervisor/response_formatter.py`
+- `src/supervisor/message_templates.py`
+- `tests/supervisor/test_response_formatter.py`
 
 **Validation**:
 ```python
-from src.agentic.response import generate_response
-response = generate_response(recommendation, state)
+from src.supervisor.response_formatter import ResponseFormatter
+text = ResponseFormatter().format_recommendation(recommendation)
 ```
 
 ---
 
-### [ ] 4.4 LangGraph Orchestration
+### [x] 4.4 LangGraph Orchestration ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-6 hours
 
 **Tasks**:
-- [ ] Build complete LangGraph workflow
-- [ ] Add conditional routing logic
-- [ ] Implement Layer 1 parallel dispatch
-- [ ] Add error handling and retries
-- [ ] Create Supervisor node
-- [ ] Write end-to-end tests
+- [x] Build complete LangGraph workflow
+- [x] Add conditional routing logic
+- [x] Implement Layer 1 parallel dispatch
+- [x] Add error handling and retries
+- [x] Create Supervisor node
+- [x] Write end-to-end tests
 
 **Files to Create**:
 - `src/agentic/graph.py` (complete)
-- `src/agentic/nodes/supervisor.py`
+- `src/supervisor/supervisor.py`
 - `src/agentic/routing.py`
 - `tests/agentic/test_graph.py`
 
@@ -689,27 +691,27 @@ curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}
 
 ---
 
-### [ ] 5.3 Web Frontend (HTMX)
+### [ ] 5.3 Web Frontend (Next.js + TypeScript)
 **Priority**: 🟡 Important | **Time**: 6-8 hours
 
 **Tasks**:
-- [ ] Create HTML templates (Jinja2)
-- [ ] Add HTMX interactions
-- [ ] Create chart components (Chart.js)
-- [ ] Add loading states
-- [ ] Style with CSS
-- [ ] Test in browser
-
-**Files to Create**:
-- `src/ui/web/templates/base.html`
-- `src/ui/web/templates/chat.html`
-- `src/ui/web/templates/recommendation.html`
-- `src/ui/web/static/css/style.css`
-- `src/ui/web/static/js/charts.js`
+- [ ] Initialize Next.js 14+ project with TypeScript and TailwindCSS
+- [ ] Install and configure shadcn/ui component library
+- [ ] Create API client layer (axios/fetch) in `frontend/lib/api/`
+- [ ] Implement TypeScript types in `frontend/lib/types/`
+- [ ] Create React Query hooks (`useConversation`, `useAnalysis`)
+- [ ] Implement Zustand store for chat state
+- [ ] Build chat UI components (ChatContainer, ChatMessage, ChatInput)
+- [ ] Build analysis components (RecommendationCard, ConfidenceGauge, StagingPlan)
+- [ ] Implement visualization components (PriceChart, PredictionChart) with Recharts
+- [ ] Test full flow against FastAPI backend
 
 **Validation**:
 ```bash
-# Open http://localhost:8000 in browser
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:3000 and test with backend running on :8000
 ```
 
 ---
@@ -876,22 +878,22 @@ pred = await predictor.predict(...)
 | Phase 1 | 6 | 22-30 hours | ✅ Complete |
 | Phase 2 | 5 | 16-23 hours | ✅ Complete |
 | Phase 3 | 4 | 13-17 hours | ✅ Complete |
-| Phase 4 | 4 | 14-20 hours | ⏳ Not Started |
+| Phase 4 | 4 | 14-20 hours | ✅ Complete |
 | Phase 5 | 3 | 16-21 hours | ⏳ Not Started |
 | Phase 6 | 3 | 10-14 hours | ⏳ Not Started |
 | Phase 7 | 3 | 7-9 hours | ⏳ Not Started |
 | Phase 8 | 2 | 8-11 hours | ⏳ Not Started |
-| **Total** | **33** | **111-152 hours** | **58% Complete** |
+| **Total** | **33** | **111-152 hours** | **70% Complete** |
 
 ---
 
 ## 🎯 Current Focus
 
-**Next Task**: Phase 4.1 - NLU Parameter Extraction
+**Next Task**: Phase 5.1 - TUI (Terminal User Interface)
 
 **Command to Start**:
 ```bash
-mkdir -p src/agentic/nlu src/agentic/conversation src/agentic/response
+mkdir -p src/ui/tui
 ```
 
 ---
@@ -902,7 +904,7 @@ mkdir -p src/agentic/nlu src/agentic/conversation src/agentic/response
 - Mark tasks complete with `[x]` as you finish them
 - Update estimated time based on actual experience
 - Add notes about blockers or issues encountered
-- Reference detailed plans in `.cursor/plans/` for implementation guidance
+- Reference detailed plans in `plans/` for implementation guidance
 
 ---
 

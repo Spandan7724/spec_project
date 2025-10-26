@@ -111,7 +111,7 @@ This multi-agent system follows a **Supervisor Pattern** with specialized sub-ag
 - Data validation: Pandas, NumPy
 - Caching: In-memory TTL (no Redis)
 - Rate limiting handling
-- Technical analysis libraries: TA-Lib
+- Technical indicators: Pandas/NumPy-based (no TA-Lib dependency)
 
 **Success Metrics**:
 - Data freshness < 1 second for major pairs
@@ -884,7 +884,7 @@ Return to User
 ### Data Processing
 - **Pandas**: Data manipulation
 - **NumPy**: Numerical computations
-- **TA-Lib**: Technical analysis indicators
+- Technical indicators implemented with Pandas/NumPy (no TA‑Lib dependency)
 - **BeautifulSoup/Scrapy**: Web scraping
 - **spaCy**: NLP and text processing
 

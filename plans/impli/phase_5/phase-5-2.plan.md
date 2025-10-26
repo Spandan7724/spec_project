@@ -23,7 +23,7 @@ src/ui/web/
 │   ├── __init__.py
 │   ├── conversation.py              # Conversation endpoints
 │   ├── analysis.py                  # Analysis execution endpoints
-│   ├── visualization.py             # Data for charts (optional)
+│   ├── visualization.py             # Data for charts 
 │   └── health.py                    # Health check endpoints
 ├── models/
 │   ├── __init__.py
@@ -526,10 +526,11 @@ curl http://localhost:8000/health
 
 ## Integration Points
 
-- `src.agentic.conversation.session.ConversationSession`: Session management
-- `src.agentic.nlu.extractor.extract_parameters`: Parameter extraction
-- `src.agentic.graph.create_graph`: LangGraph workflow execution
-- `src.agentic.response.generator.generate_response`: Response formatting
+- `src.supervisor/conversation_manager.py`: Conversation/session management
+- `src.supervisor/nlu_extractor.py`: Parameter extraction
+- `src.supervisor/agent_orchestrator.py`: Agent workflow execution
+- `src/agentic/graph.py`: LangGraph workflow
+- `src.supervisor/response_formatter.py`: Response formatting
 - `src.health.get_health_status`: Health monitoring
 
 ## Security Considerations

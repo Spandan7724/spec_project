@@ -57,14 +57,14 @@ Build an interactive Terminal User Interface (TUI) using the `rich` library for 
 ## Architecture
 
 ```
-src/cli/
+src/ui/tui/
 ├── __init__.py
-├── tui_app.py                    # Main TUI application
+├── app.py                        # Main TUI application
 ├── formatters.py                 # Rich formatting utilities
 ├── prompts.py                    # User input prompts
 └── display.py                    # Display components
 
-tests/cli/
+tests/ui/tui/
 ├── test_tui_formatting.py
 └── test_tui_flow.py
 ```
@@ -73,7 +73,7 @@ tests/cli/
 
 ### 1. Main TUI Application
 
-**File: `src/cli/tui_app.py`**
+**File: `src/ui/tui/app.py`**
 
 ```python
 import asyncio
@@ -339,42 +339,22 @@ if __name__ == "__main__":
 
 ### 2. CLI Entry Point
 
-**Update: `src/cli/main.py`** (if exists, or create new)
-
-```python
-import typer
-from rich import print as rprint
-
-from src.cli.tui_app import CurrencyAssistantTUI
-
-app = typer.Typer(
-    name="currency-assistant",
-    help="AI-powered currency conversion assistant",
-    add_completion=False
-)
-
-@app.command()
-def interactive():
-    """Launch interactive TUI mode"""
-    tui = CurrencyAssistantTUI()
-    tui.run()
-
-@app.command()
-def version():
-    """Show version information"""
-    rprint("[cyan]Currency Assistant[/] version 0.1.0")
-
-if __name__ == "__main__":
-    app()
-```
-
-### 3. Package Entry Point
-
-**Update: `pyproject.toml`**
+You can expose a dedicated TUI command without conflicting with the existing CLI:
 
 ```toml
 [project.scripts]
-currency-assistant = "src.cli.tui_app:main"
+currency-assistant-tui = "src.ui.tui.app:main"
+```
+
+Alternatively, add an `interactive` subcommand in `src/cli/main.py` that imports and runs `CurrencyAssistantTUI`.
+
+### 3. Package Entry Point
+
+Use the same entry as above so the installed command is consistent.
+
+```toml
+[project.scripts]
+currency-assistant-tui = "src.ui.tui.app:main"
 ```
 
 ## Usage
@@ -383,13 +363,13 @@ currency-assistant = "src.cli.tui_app:main"
 
 ```bash
 # Option 1: Direct
-python -m src.cli.tui_app
+python -m src.ui.tui.app
 
 # Option 2: Installed command (after pip install)
-currency-assistant
+currency-assistant-tui
 
 # Option 3: Using uv
-uv run currency-assistant
+uv run currency-assistant-tui
 ```
 
 ### Example Session

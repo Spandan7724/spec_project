@@ -180,7 +180,7 @@ tests/ui/tui/
 
 ```toml
 [project.scripts]
-currency-assistant = "src.ui.tui.app:main"
+currency-assistant-tui = "src.ui.tui.app:main"
 ```
 
 ## Usage
@@ -190,7 +190,7 @@ currency-assistant = "src.ui.tui.app:main"
 python -m src.ui.tui.app
 
 # Installed command (after pip install)
-currency-assistant
+currency-assistant-tui
 
 # With uv
 uv run currency-assistant
@@ -233,10 +233,11 @@ uv run currency-assistant
 
 ## Integration Points
 
-- `src.agentic.conversation.session.ConversationSession`: Session management
-- `src.agentic.nlu.extractor.extract_parameters`: Parameter extraction
-- `src.agentic.graph.create_graph`: LangGraph workflow execution
-- `src.agentic.response.generator.generate_response`: Response formatting
+- `src.supervisor/conversation_manager.py`: Conversation flow + session management
+- `src.supervisor/nlu_extractor.py`: Parameter extraction
+- `src.supervisor/agent_orchestrator.py`: Agent workflow execution
+- `src/agentic/graph.py`: LangGraph workflow
+- `src.supervisor/response_formatter.py`: Response formatting
 
 ## Notes
 

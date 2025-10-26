@@ -3,7 +3,7 @@
 **Status**: In Progress  
 **Start Date**: October 24, 2025  
 **Estimated Duration**: 6-8 weeks  
-**Current Phase**: Phase 4 - Supervisor Agent & Orchestration
+**Current Phase**: Phase 5 - User Interfaces
 
 ---
 
@@ -559,7 +559,7 @@ print(result["price_forecast"]["predictions"]["7"])
 **Priority**: 🔴 Critical  
 **Time Estimate**: 5-6 hours
 
-**Reference**: `/plans/decision-engine.plan.md`
+**Reference**: `plans/decision-engine.plan.md`
 
 **Tasks**:
 - [x] Create utility calculation model
@@ -577,14 +577,19 @@ print(result["price_forecast"]["predictions"]["7"])
 
 **Validation**:
 ```python
-from src.decision.utility import calculate_utility
-utility = calculate_utility(
-    expected_improvement=0.5,
-    risk_penalty=0.2,
-    cost=0.1,
-    urgency_fit=0.3,
-    weights={"profit": 0.4, "risk": 0.3, "cost": 0.2, "urgency": 0.1}
-)
+from src.decision.utility_scorer import UtilityScorer
+from src.decision.config import DecisionConfig
+from src.decision.models import DecisionRequest
+
+config = DecisionConfig()  # use project defaults
+scorer = UtilityScorer(config)
+scores = scorer.score_actions(DecisionRequest(
+    amount=5000,
+    currency_pair="USD/EUR",
+    risk_tolerance="moderate",
+    urgency="normal",
+    timeframe_days=7,
+))
 ```
 
 ---
@@ -605,14 +610,20 @@ utility = calculate_utility(
 
 **Validation**:
 ```python
-from src.decision.staging import create_staged_plan
-plan = create_staged_plan(
+from src.decision.staging_planner import StagingPlanner
+from src.decision.config import DecisionConfig
+from src.decision.models import DecisionRequest
+
+planner = StagingPlanner(DecisionConfig().staging)
+plan = planner.create_staged_plan(DecisionRequest(
     amount=5000,
-    timeframe_days=7,
+    currency_pair="USD/EUR",
+    risk_tolerance="moderate",
     urgency="normal",
-    high_impact_events=[2, 5]
-)
-print(plan.tranches, plan.spacing_days)
+    timeframe_days=7,
+    intelligence={"upcoming_events": []},
+))
+print(len(plan.tranches), plan.spacing_days)
 ```
 
 ---
@@ -668,105 +679,108 @@ print(result["recommendation"]["rationale"])
 
 ---
 
-## 📋 Phase 4: Supervisor Agent & Orchestration (Week 5)
+## 📋 Phase 4: Supervisor Agent & Orchestration (Week 5) ✅ COMPLETE
 
 **Goal**: Implement NLU and workflow orchestration
 
-### 4.1: NLU Parameter Extraction
+### 4.1: NLU Parameter Extraction ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-6 hours
 
 **Reference**: `plans/supervisor-agent.plan.md`
 
 **Tasks**:
-- [ ] Create parameter extractor using LLM (gpt-4o)
-- [ ] Implement currency pair parsing
-- [ ] Implement amount extraction
-- [ ] Implement risk/urgency/timeframe inference
-- [ ] Add validation and clarification prompts
-- [ ] Write extraction tests
+- [x] Create parameter extractor using LLM (gpt-4o)
+- [x] Implement currency pair parsing
+- [x] Implement amount extraction
+- [x] Implement risk/urgency/timeframe inference
+- [x] Add validation and clarification prompts
+- [x] Write extraction tests
 
 **Files to Create**:
-1. `src/agentic/nlu/extractor.py`
-2. `src/agentic/nlu/prompts.py`
-3. `src/agentic/nlu/validation.py`
-4. `tests/agentic/nlu/test_extraction.py`
+1. `src/supervisor/nlu_extractor.py`
+2. `src/supervisor/prompts.py`
+3. `src/supervisor/validation.py`
+4. `tests/supervisor/test_nlu_extractor.py`
 
 **Validation**:
 ```python
-from src.agentic.nlu.extractor import extract_parameters
-params = await extract_parameters("I need to convert 5000 USD to EUR today")
+from src.supervisor.nlu_extractor import NLUExtractor
+extractor = NLUExtractor()
+params = extractor.extract("I need to convert 5000 USD to EUR today")
 print(params.currency_pair, params.amount, params.urgency)
 ```
 
 ---
 
-### 4.2: Conversation Manager
+### 4.2: Conversation Manager ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 3-4 hours
 
 **Tasks**:
-- [ ] Create conversation session manager
-- [ ] Implement memory storage/retrieval
-- [ ] Add clarification flow
-- [ ] Write conversation tests
+- [x] Create conversation session manager
+- [x] Implement memory storage/retrieval
+- [x] Add clarification flow
+- [x] Write conversation tests
 
 **Files to Create**:
-1. `src/agentic/conversation/session.py`
-2. `src/agentic/conversation/memory.py`
-3. `tests/agentic/conversation/test_session.py`
+1. `src/supervisor/conversation_manager.py`
+2. `src/supervisor/session_manager.py`
+3. `tests/supervisor/test_conversation_manager.py`
 
 **Validation**:
 ```python
-from src.agentic.conversation import ConversationSession
-session = ConversationSession(user_id="test")
-session.add_turn("user", "Convert USD to EUR")
-session.add_turn("assistant", "How much?")
-print(session.get_history())
+from src.supervisor.conversation_manager import ConversationManager
+from src.supervisor.models import SupervisorRequest
+
+mgr = ConversationManager()
+resp = mgr.process_input(SupervisorRequest(user_input="Convert USD to EUR"))
+print(resp.message)
 ```
 
 ---
 
-### 4.3: Response Generator
+### 4.3: Response Generator ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 3-4 hours
 
 **Tasks**:
-- [ ] Create response formatter
-- [ ] Generate friendly recommendation text
-- [ ] Add visualization data preparation
-- [ ] Write response tests
+- [x] Create response formatter
+- [x] Generate friendly recommendation text
+- [x] Add visualization data preparation
+- [x] Write response tests
 
 **Files to Create**:
-1. `src/agentic/response/generator.py`
-2. `src/agentic/response/formatter.py`
-3. `tests/agentic/response/test_generator.py`
+1. `src/supervisor/response_formatter.py`
+2. `src/supervisor/message_templates.py`
+3. `tests/supervisor/test_response_formatter.py`
 
 **Validation**:
 ```python
-from src.agentic.response import generate_response
-response = generate_response(recommendation, state)
-print(response.message)
+from src.supervisor.response_formatter import ResponseFormatter
+formatter = ResponseFormatter()
+text = formatter.format_recommendation(recommendation)
+print(text)
 ```
 
 ---
 
-### 4.4: LangGraph Orchestration
+### 4.4: LangGraph Orchestration ✅ COMPLETE
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-6 hours
 
 **Tasks**:
-- [ ] Build complete LangGraph workflow
-- [ ] Add conditional routing logic
-- [ ] Implement Layer 1 parallel dispatch
-- [ ] Add error handling and retries
-- [ ] Create Supervisor node
-- [ ] Write end-to-end tests
+- [x] Build complete LangGraph workflow
+- [x] Add conditional routing logic
+- [x] Implement Layer 1 parallel dispatch
+- [x] Add error handling and retries
+- [x] Create Supervisor node
+- [x] Write end-to-end tests
 
 **Files to Create**:
 1. `src/agentic/graph.py` - Complete graph
-2. `src/agentic/nodes/supervisor.py`
-3. `src/agentic/routing.py` - Conditional edges
+2. `src/supervisor/supervisor.py` - Supervisor entry node
+3. `src/agentic/routing.py` - Conditional edges (optional)
 4. `tests/agentic/test_graph.py`
 
 **Validation**:
@@ -822,9 +836,10 @@ python -m src.ui.tui.app
 
 **Tasks**:
 - [ ] Create FastAPI app
-- [ ] Add REST endpoints (POST /recommend, GET /session/{id})
-- [ ] Add SSE endpoint for streaming
-- [ ] Add health check endpoint
+- [ ] Add conversation endpoint: POST `/api/conversation/message`
+- [ ] Add analysis endpoints: POST `/api/analysis/start`, GET `/api/analysis/status/{id}`, GET `/api/analysis/result/{id}`
+- [ ] Add SSE endpoint (optional): GET `/api/analysis/stream/{id}`
+- [ ] Add health check endpoint: GET `/health`
 - [ ] Add CORS middleware
 - [ ] Write API tests
 
@@ -838,7 +853,9 @@ python -m src.ui.tui.app
 **Validation**:
 ```bash
 uvicorn src.ui.web.main:app --reload
-curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}'
+curl -sS -X POST http://localhost:8000/api/conversation/message \
+  -H 'Content-Type: application/json' \
+  -d '{"user_input": "Convert 5000 USD to EUR"}'
 ```
 
 ---

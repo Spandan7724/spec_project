@@ -892,135 +892,106 @@ import asyncio
 from typing import Dict, Any
 from datetime import datetime
 
-from src.agentic.state import AgentGraphState, AgentRequest
-from src.agentic.nodes.market import MarketAnalysisAgent
-from src.agentic.nodes.economic import EconomicAnalysisAgent
-from src.agentic.nodes.prediction import PredictionAgent
-from src.agentic.nodes.decision import DecisionEngineAgent
+from src.agentic.state import AgentState
+from src.agentic.nodes.market_data import market_data_node
+from src.agentic.nodes.market_intelligence import market_intelligence_node
+from src.agentic.nodes.prediction import prediction_node
+from src.agentic.nodes.decision import decision_node
 
 from .models import ExtractedParameters
 
 logger = logging.getLogger(__name__)
 
 class AgentOrchestrator:
-    """Orchestrate agent execution"""
-    
-    def __init__(self):
-        self.market_agent = MarketAnalysisAgent()
-        self.economic_agent = EconomicAnalysisAgent()
-        self.prediction_agent = PredictionAgent()
-        self.decision_agent = DecisionEngineAgent()
-    
+    """Orchestrate agent execution using existing node functions"""
+
     async def run_analysis(self, parameters: ExtractedParameters, correlation_id: str) -> Dict[str, Any]:
         """Run all agents and generate recommendation"""
-        
+
         logger.info(f"[{correlation_id}] Starting agent orchestration")
-        
-        # Build agent request
-        agent_request = AgentRequest.from_payload({
+
+        # Initialize state from parameters
+        state: AgentState = {
+            "user_query": f"{parameters.currency_pair} {parameters.amount}",
             "currency_pair": parameters.currency_pair,
             "amount": parameters.amount,
             "risk_tolerance": parameters.risk_tolerance,
-            "timeframe_days": parameters.timeframe_days
-        })
-        
-        # Initialize state
-        state = AgentGraphState(request=agent_request)
-        state.meta.correlation_id = correlation_id
-        
-        warnings = []
-        
+            "timeframe_days": parameters.timeframe_days,
+            "processing_stage": "initialized",
+            "errors": [],
+            "warnings": [],
+        }
+
+        warnings: list[str] = []
+
         try:
-            # Layer 1: Market + Economic (parallel)
-            logger.info(f"[{correlation_id}] Running Layer 1: Market + Economic")
-            
-            market_task = self.market_agent(state)
-            economic_task = self.economic_agent(state)
-            
-            state = await market_task
-            state = await economic_task
-            
-            if state.market and state.market.errors:
-                warnings.extend(state.market.errors)
-            
-            if state.economic and state.economic.errors:
-                warnings.extend(state.economic.errors)
-            
+            # Layer 1: Market Data + Market Intelligence (parallel)
+            logger.info(f"[{correlation_id}] Running Layer 1: Market + Intelligence")
+            md_task = market_data_node(state)
+            mi_task = market_intelligence_node(state)
+            md_result, mi_result = await asyncio.gather(md_task, mi_task, return_exceptions=True)
+
+            if isinstance(md_result, Exception):
+                logger.error(f"[{correlation_id}] Market data failed: {md_result}")
+                warnings.append(f"Market data failed: {md_result}")
+            else:
+                state.update(md_result)
+
+            if isinstance(mi_result, Exception):
+                logger.error(f"[{correlation_id}] Market intelligence failed: {mi_result}")
+                warnings.append(f"Market intelligence failed: {mi_result}")
+            else:
+                state.update(mi_result)
+
         except Exception as e:
-            logger.error(f"[{correlation_id}] Layer 1 failed: {e}")
-            warnings.append(f"Market/Economic analysis failed: {str(e)}")
-        
+            logger.error(f"[{correlation_id}] Layer 1 error: {e}")
+            warnings.append(f"Layer 1 error: {e}")
+
         try:
             # Layer 2: Prediction
             logger.info(f"[{correlation_id}] Running Layer 2: Prediction")
-            state = await self.prediction_agent(state)
-            
-            if state.market and state.market.errors:
-                warnings.extend(state.market.errors)
-        
+            pred_result = await prediction_node(state)
+            state.update(pred_result)
         except Exception as e:
             logger.error(f"[{correlation_id}] Prediction failed: {e}")
-            warnings.append(f"Price prediction failed: {str(e)}")
-        
+            warnings.append(f"Price prediction failed: {e}")
+
         try:
             # Layer 3: Decision
             logger.info(f"[{correlation_id}] Running Layer 3: Decision")
-            state = await self.decision_agent(state)
-            
-            if state.decision and state.decision.warnings:
-                warnings.extend(state.decision.warnings)
-        
+            dec_result = decision_node(state)
+            state.update(dec_result)
         except Exception as e:
             logger.error(f"[{correlation_id}] Decision failed: {e}")
-            return {
-                "status": "error",
-                "error": f"Decision engine failed: {str(e)}",
-                "warnings": warnings
-            }
-        
+            return {"status": "error", "error": f"Decision engine failed: {e}", "warnings": warnings}
+
         # Extract recommendation
-        if not state.decision:
-            return {
-                "status": "error",
-                "error": "No decision generated",
-                "warnings": warnings
-            }
-        
-        recommendation = {
+        recommendation = state.get("recommendation")
+        if not recommendation:
+            return {"status": "error", "error": "No decision generated", "warnings": warnings}
+
+        out = {
             "status": "success",
-            "action": state.decision.action,
-            "confidence": state.decision.confidence,
-            "timeline": state.decision.timeline,
-            "rationale": state.decision.rationale,
+            "action": recommendation.get("action"),
+            "confidence": recommendation.get("confidence"),
+            "timeline": recommendation.get("timeline"),
+            "rationale": recommendation.get("rationale", []),
             "warnings": warnings,
-            "metadata": {
-                "correlation_id": correlation_id,
-                "timestamp": datetime.now().isoformat()
-            }
+            "metadata": {"correlation_id": correlation_id, "timestamp": datetime.now().isoformat()},
         }
-        
-        # Add optional fields
-        if hasattr(state.decision, 'staged_plan') and state.decision.staged_plan:
-            recommendation["staged_plan"] = state.decision.staged_plan
-        
-        if hasattr(state.decision, 'expected_rate'):
-            recommendation["expected_outcome"] = {
-                "expected_rate": state.decision.expected_rate
-            }
-        
-        if hasattr(state.decision, 'risk_level'):
-            recommendation["risk_summary"] = {
-                "risk_level": state.decision.risk_level
-            }
-        
-        if hasattr(state.decision, 'cost_estimate_bps'):
-            recommendation["cost_estimate"] = {
-                "total_bps": state.decision.cost_estimate_bps
-            }
-        
-        logger.info(f"[{correlation_id}] Analysis complete: {recommendation['action']}")
-        
-        return recommendation
+
+        # Optional fields if present
+        if recommendation.get("staged_plan"):
+            out["staged_plan"] = recommendation["staged_plan"]
+        if recommendation.get("expected_outcome"):
+            out["expected_outcome"] = recommendation["expected_outcome"]
+        if recommendation.get("risk_summary"):
+            out["risk_summary"] = recommendation["risk_summary"]
+        if recommendation.get("cost_estimate"):
+            out["cost_estimate"] = recommendation["cost_estimate"]
+
+        logger.info(f"[{correlation_id}] Analysis complete: {out['action']}")
+        return out
 ```
 
 ## Response Formatter

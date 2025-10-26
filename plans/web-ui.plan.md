@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build a modern web interface for the Currency Assistant using FastAPI backend with HTML/HTMX frontend. Includes interactive visualizations for market data, predictions, and recommendations.
+Build a modern web interface for the Currency Assistant using a FastAPI backend. This document outlines an HTMX + Jinja2 server-rendered option. For the SPA approach with Next.js + TypeScript, follow `plans/impli/phase_5/phase-5-3.plan.md`. In either case, the backend lives under `src/ui/web` and exposes the same API endpoints.
 
 ## Technology Stack
 
@@ -51,7 +51,7 @@ Build a modern web interface for the Currency Assistant using FastAPI backend wi
 ## Architecture
 
 ```
-src/api/
+src/ui/web/
 ├── __init__.py
 ├── main.py                       # FastAPI app
 ├── routes/
@@ -88,7 +88,7 @@ tests/api/
 
 ### 1. FastAPI Application
 
-**File: `src/api/main.py`**
+**File: `src/ui/web/main.py`**
 
 ```python
 from fastapi import FastAPI, Request
@@ -116,10 +116,10 @@ app.add_middleware(
 )
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="src/api/static"), name="static")
+app.mount("/static", StaticFiles(directory="src/ui/web/static"), name="static")
 
 # Templates
-templates = Jinja2Templates(directory="src/api/templates")
+templates = Jinja2Templates(directory="src/ui/web/templates")
 
 # Include routers
 app.include_router(conversation.router, prefix="/api/conversation", tags=["conversation"])
@@ -139,7 +139,7 @@ async def health():
 
 ### 2. Conversation API Routes
 
-**File: `src/api/routes/conversation.py`**
+**File: `src/ui/web/routes/conversation.py`**
 
 ```python
 from fastapi import APIRouter, HTTPException
@@ -195,7 +195,7 @@ async def reset_conversation(session_id: str):
 
 ### 3. Analysis API Routes
 
-**File: `src/api/routes/analysis.py`**
+**File: `src/ui/web/routes/analysis.py`**
 
 ```python
 from fastapi import APIRouter, HTTPException, BackgroundTasks
@@ -325,7 +325,7 @@ async def get_analysis_result(correlation_id: str):
 
 ### 4. Visualization Data Routes
 
-**File: `src/api/routes/visualization.py`**
+**File: `src/ui/web/routes/visualization.py`**
 
 ```python
 from fastapi import APIRouter, HTTPException
@@ -392,7 +392,7 @@ async def get_price_history(currency_pair: str, days: int = 30) -> Dict[str, Any
 
 ### 5. HTML Templates
 
-**File: `src/api/templates/base.html`**
+**File: `src/ui/web/templates/base.html`**
 
 ```html
 <!DOCTYPE html>
@@ -447,7 +447,7 @@ async def get_price_history(currency_pair: str, days: int = 30) -> Dict[str, Any
 </html>
 ```
 
-**File: `src/api/templates/index.html`**
+**File: `src/ui/web/templates/index.html`**
 
 ```html
 {% extends "base.html" %}
@@ -502,7 +502,7 @@ async def get_price_history(currency_pair: str, days: int = 30) -> Dict[str, Any
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', path='/js/conversation.js') }}"></script>
+<script src="{{ url_for('static', path='/js/app.js') }}"></script>
 {% endblock %}
 ```
 
@@ -577,7 +577,7 @@ pip install fastapi uvicorn jinja2 python-multipart
 uv pip install fastapi uvicorn jinja2 python-multipart
 
 # Run server
-uvicorn src.api.main:app --reload --port 8000
+uvicorn src.ui.web.main:app --reload --port 8000
 
 # Access at http://localhost:8000
 ```
@@ -586,17 +586,17 @@ uvicorn src.api.main:app --reload --port 8000
 
 ```bash
 # With multiple workers
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn src.ui.web.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
 ## Implementation Todos
 
-- [ ] Create FastAPI application in `src/api/main.py`
-- [ ] Implement conversation routes in `src/api/routes/conversation.py`
-- [ ] Implement analysis routes in `src/api/routes/analysis.py`
-- [ ] Implement visualization routes in `src/api/routes/visualization.py`
-- [ ] Create base HTML template in `src/api/templates/base.html`
-- [ ] Create conversation interface in `src/api/templates/index.html`
+- [ ] Create FastAPI application in `src/ui/web/main.py`
+- [ ] Implement conversation routes in `src/ui/web/routes/conversation.py`
+- [ ] Implement analysis routes in `src/ui/web/routes/analysis.py`
+- [ ] Implement visualization routes in `src/ui/web/routes/visualization.py`
+- [ ] Create base HTML template in `src/ui/web/templates/base.html`
+- [ ] Create conversation interface in `src/ui/web/templates/index.html`
 - [ ] Create recommendation display template
 - [ ] Implement Chart.js visualizations in `static/js/charts.js`
 - [ ] Add HTMX interaction handlers in `static/js/app.js`
