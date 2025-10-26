@@ -167,19 +167,23 @@ Here's a recommended strategy for different agent types:
 
 | Agent Type | Recommended Model | Reason |
 |------------|------------------|---------|
-| **Decision** | `gpt-5-mini` or `gpt-4o-mini` | Fast, cost-effective for final synthesis |
+| **Decision** | `gpt-5-mini` | Fast, cost-effective for final synthesis |
 | **Market Analysis** | `gpt-4o` | Balanced performance and accuracy |
-| **Economic Analysis** | `claude-3.7-sonnet` | Excellent reasoning for economic events |
+| **Economic Analysis** | `gpt-4o` | Excellent reasoning for economic events |
 | **Risk Assessment** | `gpt-5-mini` | Quick calculations, pattern recognition |
-| **Complex Reasoning** | `claude-sonnet-4.5` | Best for deep analysis |
-| **Fast Iterations** | `gpt-4o-mini` | Quick responses for testing |
+| **Sentiment Analysis** | `gpt-5-mini` | Fast classification tasks |
+| **NLU & Response Gen** | `gpt-4o` | Balanced for user interaction |
+
+**Note**: We use only 2 models for simplicity and cost efficiency. Claude models are available but not necessary for this project's focused use cases.
 
 ## Cost Optimization Tips
 
-1. **Use cheaper models for simple tasks**: `gpt-5-mini` and `gpt-4o-mini` are great for straightforward tasks
-2. **Use powerful models sparingly**: Save `gpt-4o`, `claude-sonnet-4.5` for complex reasoning
+1. **Use gpt-5-mini for simple tasks**: Perfect for sentiment analysis, classification, data extraction
+2. **Use gpt-4o for everything else**: Balanced performance for reasoning, NLU, and response generation
 3. **Adjust max_tokens**: Reduce `max_tokens` for responses that don't need to be long
 4. **Lower temperature for consistency**: Use `temperature: 0.5` or lower for more deterministic outputs
+
+**Two-Model Strategy**: This project uses only `gpt-5-mini` and `gpt-4o` for simplicity. This provides 50% cost savings vs using gpt-4o for everything, while maintaining excellent quality.
 
 ## Testing Different Models
 

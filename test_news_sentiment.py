@@ -175,8 +175,8 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
     print("=" * 80)
     print(f"NEWS SENTIMENT ANALYSIS: {base}/{quote}")
     print("=" * 80)
-    print(f"Time Range: Last 24 hours")
-    print(f"Using: Serper + gpt-5-mini + gpt-4o")
+    print("Time Range: Last 24 hours")
+    print("Using: Serper + gpt-5-mini + gpt-4o")
     print("=" * 80)
     
     # Step 1: Search for news (3 queries for comprehensive coverage)
@@ -186,7 +186,7 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
         f'("{base}" AND "{quote}") (exchange rate OR forex OR FX)'
     ]
     
-    print(f"\n📰 STEP 1: SEARCHING FOR NEWS")
+    print("\n📰 STEP 1: SEARCHING FOR NEWS")
     print("=" * 80)
     
     all_articles = []
@@ -207,7 +207,7 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
     print(f"\n📊 Deduplication: {len(all_articles)} → {len(unique_articles)} unique articles")
     
     # Step 2: Classify with gpt-5-mini
-    print(f"\n\n🤖 STEP 2: CLASSIFYING WITH gpt-5-mini")
+    print("\n\n🤖 STEP 2: CLASSIFYING WITH gpt-5-mini")
     print("=" * 80)
     
     classifications = []
@@ -236,12 +236,12 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
                   f"{quote}={classification['sentiment'].get(quote, 0):+.2f}")
             
             if classification["quality_flags"].get("clickbait"):
-                print(f"   ⚠️ Flagged: clickbait")
+                print("   ⚠️ Flagged: clickbait")
         
         await asyncio.sleep(0.3)  # Rate limiting
     
     # Step 3: Aggregate sentiment
-    print(f"\n\n📈 STEP 3: SENTIMENT AGGREGATION")
+    print("\n\n📈 STEP 3: SENTIMENT AGGREGATION")
     print("=" * 80)
     
     # Filter for relevance
@@ -284,7 +284,7 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
     print(f"Confidence: {confidence} (n={n_articles}, variance={variance:.3f})")
     
     # Top evidence
-    print(f"\n\n🔝 STEP 4: TOP EVIDENCE")
+    print("\n\n🔝 STEP 4: TOP EVIDENCE")
     print("=" * 80)
     
     top_articles = sorted(relevant, key=lambda c: max(c['relevance'].values()), reverse=True)[:5]
@@ -296,7 +296,7 @@ async def test_news_sentiment_for_pair(base: str, quote: str):
         print(f"   {quote}: sent={article['sentiment'].get(quote, 0):+.2f}, rel={article['relevance'].get(quote, 0):.2f}")
     
     # Step 5: Generate narrative with gpt-4o (optional)
-    print(f"\n\n📝 STEP 5: NARRATIVE GENERATION (gpt-4o)")
+    print("\n\n📝 STEP 5: NARRATIVE GENERATION (gpt-4o)")
     print("=" * 80)
     
     narrative = None
@@ -344,7 +344,7 @@ Write concise, professional summary.'''
         print("⚠️ Skipped (no API key or no articles)")
     
     # Final JSON output
-    print(f"\n\n💾 FINAL JSON OUTPUT")
+    print("\n\n💾 FINAL JSON OUTPUT")
     print("=" * 80)
     
     output = {

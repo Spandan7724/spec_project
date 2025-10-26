@@ -1,9 +1,9 @@
 # Currency Assistant - Implementation Roadmap
 
-**Status**: Ready for Implementation  
+**Status**: In Progress  
 **Start Date**: October 24, 2025  
 **Estimated Duration**: 6-8 weeks  
-**Current Phase**: Foundation Setup
+**Current Phase**: Phase 2 - Price Prediction Agent
 
 ---
 
@@ -86,10 +86,10 @@ python -c "from src.config import load_config; print(load_config())"
 
 ### 0.2: Database Schema & ORM
 **Priority**: 🔴 Critical  
-**Time Estimate**: 3-4 hours
+**Time Estimate**: 2-3 hours (simplified with SQLite)
 
 **Tasks**:
-- [ ] Create PostgreSQL schema (or SQLite for dev)
+- [ ] Create SQLite database file
 - [ ] Set up Alembic for migrations
 - [ ] Create SQLAlchemy ORM models
 - [ ] Create database connection manager
@@ -97,22 +97,23 @@ python -c "from src.config import load_config; print(load_config())"
 
 **Tables**:
 1. `conversations` - Session history for Supervisor
-2. `market_data_cache` - Cached exchange rates
-3. `prediction_history` - ML predictions for tracking
-4. `agent_metrics` - Performance monitoring
-5. `system_logs` - Audit trail
+2. `prediction_history` - ML predictions for tracking
+3. `agent_metrics` - Performance monitoring
+4. `system_logs` - Audit trail
 
 **Files to Create**:
 1. `src/database/models.py` - ORM models
-2. `src/database/connection.py` - DB connection pool
+2. `src/database/connection.py` - SQLite connection
 3. `src/database/session.py` - Session management
-4. `alembic/versions/001_initial_schema.py` - Migration
-5. `alembic.ini` - Alembic config
+4. `src/cache.py` - In-memory cache implementation
+5. `alembic/versions/001_initial_schema.py` - Migration
+6. `alembic.ini` - Alembic config
 
 **Validation**:
 ```bash
 alembic upgrade head
 python -c "from src.database.models import Conversation; print('DB models loaded')"
+python -c "from src.cache import SimpleCache; cache = SimpleCache(); print('Cache ready')"
 ```
 
 ---
@@ -212,15 +213,15 @@ logger.info("Test log", extra={"key": "value"})
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-6 hours
 
-**Reference**: `.cursor/plans/market-data-agent-plan.md`
+**Reference**: `plans/market-data-agent-plan.md`
 
 **Tasks**:
-- [ ] Create base provider interface
-- [ ] Implement ExchangeRate.host client
-- [ ] Implement yfinance client
-- [ ] Add provider health checks
-- [ ] Add rate limiting and retries
-- [ ] Write unit tests for each provider
+- [x] Create base provider interface
+- [x] Implement ExchangeRate.host client
+- [x] Implement yfinance client
+- [x] Add provider health checks
+- [x] Add rate limiting and retries
+- [x] Write unit tests for each provider
 
 **Files to Create**:
 1. `src/data_collection/providers/__init__.py`
@@ -245,13 +246,13 @@ print(rate)
 **Time Estimate**: 4-6 hours
 
 **Tasks**:
-- [ ] Create rate aggregator (median consensus)
-- [ ] Implement technical indicators (SMA, EMA, RSI, MACD, Bollinger, ATR)
-- [ ] Create regime classifier (trend + bias)
-- [ ] Add data quality metrics (dispersion, freshness)
-- [ ] Implement caching layer (5s TTL)
-- [ ] Create snapshot builder
-- [ ] Write integration tests
+- [x] Create rate aggregator (median consensus)
+- [x] Implement technical indicators (SMA, EMA, RSI, MACD, Bollinger, ATR)
+- [x] Create regime classifier (trend + bias)
+- [x] Add data quality metrics (dispersion, freshness)
+- [x] Implement caching layer (5s TTL)
+- [x] Create snapshot builder
+- [x] Write integration tests
 
 **Files to Create**:
 1. `src/data_collection/market_data/aggregator.py`
@@ -276,11 +277,11 @@ print(snapshot.mid_rate, snapshot.indicators.rsi_14)
 **Time Estimate**: 2-3 hours
 
 **Tasks**:
-- [ ] Create Market Data agent node
-- [ ] Integrate with LangGraph state
-- [ ] Add error handling and fallbacks
-- [ ] Add performance logging
-- [ ] Write node integration test
+- [x] Create Market Data agent node
+- [x] Integrate with LangGraph state
+- [x] Add error handling and fallbacks
+- [x] Add performance logging
+- [x] Write node integration test
 
 **Files to Create**:
 1. `src/agentic/nodes/market_data.py`
@@ -301,14 +302,14 @@ assert result["market_snapshot"] is not None
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-5 hours
 
-**Reference**: `.cursor/plans/market-intelligence.md`
+**Reference**: `plans/market-intelligence.md`
 
 **Tasks**:
-- [ ] Create Serper API client
-- [ ] Implement economic calendar search
-- [ ] Implement news search
-- [ ] Add retry and error handling
-- [ ] Write unit tests
+- [x] Create Serper API client
+- [x] Implement economic calendar search
+- [x] Implement news search
+- [x] Add retry and error handling
+- [x] Write unit tests
 
 **Files to Create**:
 1. `src/data_collection/market_intelligence/serper_client.py`
@@ -331,12 +332,12 @@ print(len(results))
 **Time Estimate**: 5-6 hours
 
 **Tasks**:
-- [ ] Create calendar event extractor (gpt-5-mini)
-- [ ] Create news sentiment classifier (gpt-5-mini)
-- [ ] Create narrative generator (gpt-4o)
-- [ ] Implement JSON schema validation
-- [ ] Add LLM error handling and retries
-- [ ] Write extraction tests with mock LLM
+- [x] Create calendar event extractor (gpt-5-mini)
+- [x] Create news sentiment classifier (gpt-5-mini)
+- [x] Create narrative generator (gpt-4o)
+- [x] Implement JSON schema validation
+- [x] Add LLM error handling and retries
+- [x] Write extraction tests with mock LLM
 
 **Files to Create**:
 1. `src/data_collection/market_intelligence/extractors/calendar_extractor.py`
@@ -359,11 +360,11 @@ print(events[0].event_name, events[0].importance)
 **Time Estimate**: 3-4 hours
 
 **Tasks**:
-- [ ] Create intelligence aggregator
-- [ ] Compute policy bias from events
-- [ ] Calculate next high-impact event ETA
-- [ ] Create Market Intelligence node
-- [ ] Write integration tests
+- [x] Create intelligence aggregator
+- [x] Compute policy bias from events
+- [x] Calculate next high-impact event ETA
+- [x] Create Market Intelligence node
+- [x] Write integration tests
 
 **Files to Create**:
 1. `src/data_collection/market_intelligence/aggregator.py`
@@ -388,7 +389,7 @@ print(result["intelligence_report"]["overall_bias"])
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-6 hours
 
-**Reference**: `.cursor/plans/price-prediction.md`
+**Reference**: `plans/price-prediction.md`
 
 **Tasks**:
 - [ ] Create historical OHLC data loader (yfinance)
@@ -417,32 +418,42 @@ print(features.columns)
 
 ### 2.2: Model Registry & Storage
 **Priority**: 🔴 Critical  
-**Time Estimate**: 3-4 hours
+**Time Estimate**: 2-3 hours (simplified with JSON + pickle)
 
 **Tasks**:
-- [ ] Create model registry (JSON + pickle)
-- [ ] Implement model save/load
-- [ ] Add model metadata tracking
-- [ ] Create model versioning
+- [ ] Create simple JSON model registry
+- [ ] Implement model save/load with pickle
+- [ ] Add model metadata tracking (accuracy, currency_pair, version)
 - [ ] Write registry tests
 
 **Files to Create**:
-1. `src/prediction/registry.py`
+1. `src/prediction/registry.py` - JSON + pickle based registry
 2. `src/prediction/config.py`
-3. `models/` - Directory for model artifacts
-4. `tests/prediction/test_registry.py`
+3. `data/models/` - Directory for model files
+4. `data/models/registry.json` - Metadata file
+5. `tests/prediction/test_registry.py`
+
+**Implementation Approach**:
+- Save models as `.pkl` files using pickle
+- Track metadata in single `registry.json` file
+- No external services needed (MLflow skipped for simplicity)
 
 **Validation**:
 ```python
 from src.prediction.registry import ModelRegistry
 registry = ModelRegistry()
-registry.register_model("usd_eur_v1", model_obj, metadata)
+registry.save_model("usd_eur_v1", model_obj, {
+    "accuracy": 0.68,
+    "currency_pair": "USD/EUR",
+    "created_at": "2025-10-25"
+})
 loaded = registry.load_model("usd_eur_v1")
+metadata = registry.get_metadata("usd_eur_v1")
 ```
 
 ---
 
-### 2.3: LightGBM Backend
+### 2.3: LightGBM Backend + SHAP Explainability
 **Priority**: 🔴 Critical  
 **Time Estimate**: 5-7 hours
 
@@ -453,21 +464,33 @@ loaded = registry.load_model("usd_eur_v1")
 - [ ] Add direction probability estimation
 - [ ] Implement quality gates
 - [ ] Create calibration utilities
+- [ ] Integrate SHAP for model explainability
+- [ ] Generate SHAP visualizations (waterfall, force plots)
 - [ ] Write backend tests
 
 **Files to Create**:
 1. `src/prediction/backends/base.py`
 2. `src/prediction/backends/lightgbm_backend.py`
-3. `src/prediction/utils/calibration.py`
-4. `tests/prediction/backends/test_lightgbm.py`
+3. `src/prediction/explainer.py` - SHAP integration for web UI
+4. `src/prediction/utils/calibration.py`
+5. `tests/prediction/backends/test_lightgbm.py`
 
 **Validation**:
 ```python
 from src.prediction.backends import LightGBMBackend
+from src.prediction.explainer import PredictionExplainer
+
 backend = LightGBMBackend(config)
 predictions = await backend.predict(features, horizons=[1, 7, 30])
 print(predictions.mean_change)
+
+# SHAP explanations for web UI
+explainer = PredictionExplainer(backend.model)
+shap_plot_base64 = explainer.generate_waterfall_plot(features, feature_names)
+feature_importance = explainer.get_feature_importance(top_n=5)
 ```
+
+**Note**: SHAP provides visual explanations for web UI, making predictions more interpretable.
 
 ---
 
@@ -527,7 +550,7 @@ print(result["price_forecast"]["predictions"]["7"])
 **Priority**: 🔴 Critical  
 **Time Estimate**: 5-6 hours
 
-**Reference**: `.cursor/plans/decision-engine.plan.md`
+**Reference**: `/plans/decision-engine.plan.md`
 
 **Tasks**:
 - [ ] Create utility calculation model
@@ -642,7 +665,7 @@ print(result["recommendation"]["rationale"])
 **Priority**: 🔴 Critical  
 **Time Estimate**: 4-6 hours
 
-**Reference**: `.cursor/plans/supervisor-agent.plan.md`
+**Reference**: `plans/supervisor-agent.plan.md`
 
 **Tasks**:
 - [ ] Create parameter extractor using LLM (gpt-4o)
@@ -753,7 +776,7 @@ print(result["recommendation"])
 **Priority**: 🔴 Critical  
 **Time Estimate**: 6-8 hours
 
-**Reference**: `.cursor/plans/tui-interface.plan.md`
+**Reference**: `plans/tui-interface.plan.md`
 
 **Tasks**:
 - [ ] Set up Rich library
@@ -784,7 +807,7 @@ python -m src.ui.tui.app
 **Priority**: 🟡 Important  
 **Time Estimate**: 4-5 hours
 
-**Reference**: `.cursor/plans/web-ui.plan.md`
+**Reference**: `plans/web-ui.plan.md`
 
 **Tasks**:
 - [ ] Create FastAPI app
@@ -897,15 +920,13 @@ curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}
 
 **Goal**: Prepare for production deployment
 
-### 7.1: Docker Setup
-**Priority**: 🔴 Critical  
-**Time Estimate**: 3-4 hours
+### 7.1: Docker Setup (Optional)
+**Priority**: 🟡 Optional  
+**Time Estimate**: 2-3 hours
 
 **Tasks**:
 - [ ] Create Dockerfile
 - [ ] Create docker-compose.yml
-- [ ] Add PostgreSQL service
-- [ ] Add Redis service
 - [ ] Test Docker build and run
 
 **Files to Create**:
@@ -913,10 +934,13 @@ curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}
 2. `docker-compose.yml`
 3. `.dockerignore`
 
+**Note**: This is optional. The app works fine with just a virtual environment.
+SQLite and in-memory cache don't need separate services.
+
 **Validation**:
 ```bash
-docker-compose up --build
-docker-compose ps
+docker build -t currency-assistant .
+docker run currency-assistant
 ```
 
 ---
@@ -1090,11 +1114,8 @@ EXCHANGE_RATE_HOST_API_KEY=your_key
 # Market Intelligence
 SERPER_API_KEY=your_key
 
-# Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/currency_assistant
-
-# Redis Cache
-REDIS_URL=redis://localhost:6379/0
+# Database (SQLite - no credentials needed!)
+DATABASE_PATH=data/currency_assistant.db
 
 # Logging
 LOG_LEVEL=INFO
@@ -1118,14 +1139,14 @@ lightgbm = ">=4.0.0"
 scikit-learn = ">=1.3.0"
 pandas = ">=2.0.0"
 numpy = ">=1.24.0"
+shap = ">=0.44.0"  # For model explainability visualizations
 
 # Database
 sqlalchemy = ">=2.0.0"
 alembic = ">=1.12.0"
-psycopg2-binary = ">=2.9.0"
+# SQLite is built into Python - no extra package needed!
 
-# Caching
-redis = ">=5.0.0"
+# Caching - using in-memory Python cache (no Redis needed)
 
 # API
 fastapi = ">=0.110.0"

@@ -1,15 +1,15 @@
 # Currency Assistant - Implementation TODO
 
-**Last Updated**: October 24, 2025  
-**Total Tasks**: 32  
+**Last Updated**: October 25, 2025  
+**Total Tasks**: 33  
 **Estimated Duration**: 6-8 weeks
 
 ---
 
 ## Progress Overview
 
-- [ ] Phase 0: Foundation & Infrastructure (3 tasks)
-- [ ] Phase 1: Layer 1 Agents - Data Collection (6 tasks)
+- [x] Phase 0: Foundation & Infrastructure (4 tasks) ✅ COMPLETE
+- [x] Phase 1: Layer 1 Agents - Data Collection (6 tasks) ✅ COMPLETE
 - [ ] Phase 2: Price Prediction Agent (5 tasks)
 - [ ] Phase 3: Decision Engine Agent (4 tasks)
 - [ ] Phase 4: Supervisor Agent & Orchestration (4 tasks)
@@ -22,15 +22,15 @@
 
 ## 📋 Phase 0: Foundation & Infrastructure
 
-### [ ] 0.1 Project Structure & Configuration
+### [x] 0.1 Project Structure & Configuration ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 2-4 hours
 
 **Tasks**:
-- [ ] Create directory structure for all modules
-- [ ] Create `config.yaml` with all agent configurations
-- [ ] Create `.env.example` template with all required API keys
-- [ ] Create `src/config.py` for centralized config loading
-- [ ] Add configuration validation on startup
+- [x] Create directory structure for all modules
+- [x] Create `config.yaml` with all agent configurations
+- [x] Create `.env.example` template with all required API keys
+- [x] Create `src/config.py` for centralized config loading
+- [x] Add configuration validation on startup
 
 **Files to Create**:
 - `config.yaml`
@@ -47,19 +47,19 @@ python -c "from src.config import load_config; print(load_config())"
 
 ---
 
-### [ ] 0.2 Database Schema & ORM
-**Priority**: 🔴 Critical | **Time**: 3-4 hours
+### [x] 0.2 Database Schema & ORM ✅ COMPLETE
+**Priority**: 🔴 Critical | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Create PostgreSQL schema (or SQLite for dev)
-- [ ] Set up Alembic for migrations
-- [ ] Create SQLAlchemy ORM models
-- [ ] Create database connection manager
-- [ ] Write initial migration
+- [x] Create SQLite database file
+- [x] ~~Set up Alembic for migrations~~ (Skipped - SQLite doesn't need migrations)
+- [x] Create SQLAlchemy ORM models
+- [x] Create database connection manager
+- [x] Create in-memory cache implementation
+- [x] ~~Write initial migration~~ (Skipped)
 
 **Tables**:
 - `conversations` - Session history for Supervisor
-- `market_data_cache` - Cached exchange rates
 - `prediction_history` - ML predictions for tracking
 - `agent_metrics` - Performance monitoring
 - `system_logs` - Audit trail
@@ -68,6 +68,7 @@ python -c "from src.config import load_config; print(load_config())"
 - `src/database/models.py`
 - `src/database/connection.py`
 - `src/database/session.py`
+- `src/cache.py` (in-memory cache with TTL)
 - `alembic/versions/001_initial_schema.py`
 - `alembic.ini`
 
@@ -75,19 +76,21 @@ python -c "from src.config import load_config; print(load_config())"
 ```bash
 alembic upgrade head
 python -c "from src.database.models import Conversation; print('DB models loaded')"
+python -c "from src.cache import SimpleCache; cache = SimpleCache(); print('Cache ready')"
 ```
 
 ---
 
-### [ ] 0.3 LangGraph State Design
+### [x] 0.3 LangGraph State Design ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Define complete state schema (TypedDict)
-- [ ] Create state initialization function
-- [ ] Create state validation utilities
-- [ ] Design state transitions between nodes
-- [ ] Add conversation history to state
+- [x] Define complete state schema (TypedDict)
+- [x] Create state initialization function
+- [x] Create state validation utilities
+- [x] Design state transitions between nodes
+- [x] Add conversation history to state
+- [x] Implement parallel execution with Annotated fields
 
 **Files to Create**:
 - `src/agentic/state.py`
@@ -101,18 +104,52 @@ state = initialize_state("Convert 5000 USD to EUR")
 
 ---
 
+### [x] 0.4 Logging & Error Handling ✅ COMPLETE
+**Priority**: 🔴 Critical | **Time**: 2-3 hours
+
+**Tasks**:
+- [x] Create retry decorator with exponential backoff
+- [x] Create timeout decorator for async functions
+- [x] Create log execution decorator for performance tracking
+- [x] Create system health check functionality
+- [x] Write comprehensive tests for decorators and health checks
+- [x] Create integration tests for health monitoring
+
+**Files Created**:
+- `src/utils/decorators.py` - Retry, timeout, and logging decorators
+- `src/health.py` - System health check functionality
+- `tests/unit/test_decorators.py` - Decorator tests
+- `tests/unit/test_health.py` - Health check tests
+- `tests/integration/test_health_integration.py` - Integration test
+
+**Validation**:
+```python
+from src.utils.decorators import retry, timeout, log_execution
+from src.health import get_health_status
+
+@retry(max_attempts=3, delay=1.0)
+@timeout(5.0)
+@log_execution(log_args=True, log_result=True)
+async def resilient_function():
+    ...
+
+health = await get_health_status()
+```
+
+---
+
 ## 📋 Phase 1: Layer 1 Agents - Data Collection
 
-### [ ] 1.1 Market Data - Provider Clients
+### [x] 1.1 Market Data - Provider Clients ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-6 hours | **Ref**: `market-data-agent-plan.md`
 
 **Tasks**:
-- [ ] Create base provider interface
-- [ ] Implement ExchangeRate.host client
-- [ ] Implement yfinance client
-- [ ] Add provider health checks
-- [ ] Add rate limiting and retries
-- [ ] Write unit tests for each provider
+- [x] Create base provider interface
+- [x] Implement ExchangeRate.host client
+- [x] Implement yfinance client
+- [x] Add provider health checks
+- [x] Add rate limiting and retries
+- [x] Write unit tests for each provider
 
 **Files to Create**:
 - `src/data_collection/providers/__init__.py`
@@ -131,26 +168,27 @@ rate = await client.get_rate("USD", "EUR")
 
 ---
 
-### [ ] 1.2 Market Data - Aggregation & Indicators
+### [x] 1.2 Market Data - Aggregation & Indicators ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-6 hours
 
 **Tasks**:
-- [ ] Create rate aggregator (median consensus)
-- [ ] Implement technical indicators (SMA, EMA, RSI, MACD, Bollinger, ATR)
-- [ ] Create regime classifier (trend + bias)
-- [ ] Add data quality metrics (dispersion, freshness)
-- [ ] Implement caching layer (5s TTL)
-- [ ] Create snapshot builder
-- [ ] Write integration tests
+- [x] Create rate aggregator (median consensus)
+- [x] Implement technical indicators (SMA, EMA, RSI, MACD, Bollinger, ATR)
+- [x] Create regime classifier (trend + bias)
+- [x] Add data quality metrics (dispersion, freshness)
+- [x] Integrate with in-memory cache (5s TTL)
+- [x] Create snapshot builder
+- [x] Write integration tests
 
 **Files to Create**:
 - `src/data_collection/market_data/aggregator.py`
 - `src/data_collection/market_data/indicators.py`
 - `src/data_collection/market_data/regime.py`
 - `src/data_collection/market_data/snapshot.py`
-- `src/data_collection/market_data/cache.py`
 - `tests/market_data/test_aggregator.py`
 - `tests/market_data/test_indicators.py`
+
+Note: Uses `src/cache.py` for caching (already created in Phase 0.2)
 
 **Validation**:
 ```python
@@ -161,15 +199,15 @@ print(snapshot.mid_rate, snapshot.indicators.rsi_14)
 
 ---
 
-### [ ] 1.3 Market Data - LangGraph Node
+### [x] 1.3 Market Data - LangGraph Node ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Create Market Data agent node
-- [ ] Integrate with LangGraph state
-- [ ] Add error handling and fallbacks
-- [ ] Add performance logging
-- [ ] Write node integration test
+- [x] Create Market Data agent node
+- [x] Integrate with LangGraph state
+- [x] Add error handling and fallbacks
+- [x] Add performance logging
+- [x] Write node integration test
 
 **Files to Create**:
 - `src/agentic/nodes/market_data.py`
@@ -186,15 +224,15 @@ assert result["market_snapshot"] is not None
 
 ---
 
-### [ ] 1.4 Market Intelligence - Serper Integration
+### [x] 1.4 Market Intelligence - Serper Integration ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 4-5 hours | **Ref**: `market-intelligence.md`
 
 **Tasks**:
-- [ ] Create Serper API client
-- [ ] Implement economic calendar search
-- [ ] Implement news search
-- [ ] Add retry and error handling
-- [ ] Write unit tests
+- [x] Create Serper API client
+- [x] Implement economic calendar search
+- [x] Implement news search
+- [x] Add retry and error handling
+- [x] Write unit tests
 
 **Files to Create**:
 - `src/data_collection/market_intelligence/serper_client.py`
@@ -211,16 +249,16 @@ results = await client.search("US economic calendar October 2025")
 
 ---
 
-### [ ] 1.5 Market Intelligence - LLM Extraction
+### [x] 1.5 Market Intelligence - LLM Extraction ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 5-6 hours
 
 **Tasks**:
-- [ ] Create calendar event extractor (gpt-5-mini)
-- [ ] Create news sentiment classifier (gpt-5-mini)
-- [ ] Create narrative generator (gpt-4o)
-- [ ] Implement JSON schema validation
-- [ ] Add LLM error handling and retries
-- [ ] Write extraction tests with mock LLM
+- [x] Create calendar event extractor (gpt-5-mini)
+- [x] Create news sentiment classifier (gpt-5-mini)
+- [x] Create narrative generator (gpt-4o)
+- [x] Implement JSON schema validation
+- [x] Add LLM error handling and retries
+- [x] Write extraction tests with mock LLM
 
 **Files to Create**:
 - `src/data_collection/market_intelligence/extractors/calendar_extractor.py`
@@ -237,15 +275,15 @@ events = await extract_calendar_events(search_results, "USD", "EUR")
 
 ---
 
-### [ ] 1.6 Market Intelligence - Aggregation & Node
+### [x] 1.6 Market Intelligence - Aggregation & Node ✅ COMPLETE
 **Priority**: 🔴 Critical | **Time**: 3-4 hours
 
 **Tasks**:
-- [ ] Create intelligence aggregator
-- [ ] Compute policy bias from events
-- [ ] Calculate next high-impact event ETA
-- [ ] Create Market Intelligence node
-- [ ] Write integration tests
+- [x] Create intelligence aggregator
+- [x] Compute policy bias from events
+- [x] Calculate next high-impact event ETA
+- [x] Create Market Intelligence node
+- [x] Write integration tests
 
 **Files to Create**:
 - `src/data_collection/market_intelligence/aggregator.py`
@@ -292,31 +330,34 @@ features = build_features(data, mode="price_only")
 ---
 
 ### [ ] 2.2 Model Registry & Storage
-**Priority**: 🔴 Critical | **Time**: 3-4 hours
+**Priority**: 🔴 Critical | **Time**: 2-3 hours
 
 **Tasks**:
-- [ ] Create model registry (JSON + pickle)
-- [ ] Implement model save/load
-- [ ] Add model metadata tracking
-- [ ] Create model versioning
+- [ ] Create simple JSON model registry
+- [ ] Implement model save/load with pickle
+- [ ] Add model metadata tracking (accuracy, currency_pair, version)
 - [ ] Write registry tests
 
 **Files to Create**:
-- `src/prediction/registry.py`
+- `src/prediction/registry.py` (JSON + pickle based)
 - `src/prediction/config.py`
-- `models/` directory
+- `data/models/` directory
+- `data/models/registry.json` (metadata file)
 - `tests/prediction/test_registry.py`
 
 **Validation**:
 ```python
 from src.prediction.registry import ModelRegistry
 registry = ModelRegistry()
-registry.register_model("usd_eur_v1", model_obj, metadata)
+registry.save_model("usd_eur_v1", model_obj, metadata)
+loaded = registry.load_model("usd_eur_v1")
 ```
+
+**Note**: Using JSON + pickle instead of MLflow for simplicity. No extra services needed!
 
 ---
 
-### [ ] 2.3 LightGBM Backend
+### [ ] 2.3 LightGBM Backend + SHAP Explainability
 **Priority**: 🔴 Critical | **Time**: 5-7 hours
 
 **Tasks**:
@@ -326,19 +367,28 @@ registry.register_model("usd_eur_v1", model_obj, metadata)
 - [ ] Add direction probability estimation
 - [ ] Implement quality gates
 - [ ] Create calibration utilities
+- [ ] Integrate SHAP for explainability
+- [ ] Generate SHAP visualizations for web UI
 - [ ] Write backend tests
 
 **Files to Create**:
 - `src/prediction/backends/base.py`
 - `src/prediction/backends/lightgbm_backend.py`
+- `src/prediction/explainer.py` (SHAP integration)
 - `src/prediction/utils/calibration.py`
 - `tests/prediction/backends/test_lightgbm.py`
 
 **Validation**:
 ```python
 from src.prediction.backends import LightGBMBackend
+from src.prediction.explainer import PredictionExplainer
+
 backend = LightGBMBackend(config)
 predictions = await backend.predict(features, horizons=[1, 7, 30])
+
+# SHAP explanations
+explainer = PredictionExplainer(backend.model)
+shap_plot = explainer.generate_waterfall_plot(features)
 ```
 
 ---
@@ -713,14 +763,12 @@ curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}
 
 ## 📋 Phase 7: Deployment & Production
 
-### [ ] 7.1 Docker Setup
-**Priority**: 🔴 Critical | **Time**: 3-4 hours
+### [ ] 7.1 Docker Setup (Optional)
+**Priority**: 🟡 Optional | **Time**: 2-3 hours
 
 **Tasks**:
 - [ ] Create Dockerfile
 - [ ] Create docker-compose.yml
-- [ ] Add PostgreSQL service
-- [ ] Add Redis service
 - [ ] Test Docker build and run
 
 **Files to Create**:
@@ -728,9 +776,13 @@ curl -X POST http://localhost:8000/recommend -d '{"query": "Convert USD to EUR"}
 - `docker-compose.yml`
 - `.dockerignore`
 
+**Note**: This is optional. The app works fine with just a virtual environment.
+SQLite and in-memory cache don't need separate services.
+
 **Validation**:
 ```bash
-docker-compose up --build
+docker build -t currency-assistant .
+docker run currency-assistant
 ```
 
 ---
@@ -815,26 +867,26 @@ pred = await predictor.predict(...)
 
 | Phase | Tasks | Estimated Time | Status |
 |-------|-------|----------------|--------|
-| Phase 0 | 3 | 7-11 hours | ⏳ Not Started |
-| Phase 1 | 6 | 22-30 hours | ⏳ Not Started |
-| Phase 2 | 5 | 17-24 hours | ⏳ Not Started |
+| Phase 0 | 4 | 8-12 hours | ✅ Complete |
+| Phase 1 | 6 | 22-30 hours | ✅ Complete |
+| Phase 2 | 5 | 16-23 hours | ⏳ Not Started |
 | Phase 3 | 4 | 13-17 hours | ⏳ Not Started |
 | Phase 4 | 4 | 14-20 hours | ⏳ Not Started |
 | Phase 5 | 3 | 16-21 hours | ⏳ Not Started |
 | Phase 6 | 3 | 10-14 hours | ⏳ Not Started |
-| Phase 7 | 3 | 8-11 hours | ⏳ Not Started |
+| Phase 7 | 3 | 7-9 hours | ⏳ Not Started |
 | Phase 8 | 2 | 8-11 hours | ⏳ Not Started |
-| **Total** | **32** | **115-159 hours** | **0% Complete** |
+| **Total** | **33** | **111-152 hours** | **30% Complete** |
 
 ---
 
 ## 🎯 Current Focus
 
-**Next Task**: Phase 0.1 - Project Structure & Configuration
+**Next Task**: Phase 2.1 - Data Pipeline & Feature Engineering
 
 **Command to Start**:
 ```bash
-mkdir -p src/{config,data_collection/{providers,market_data,market_intelligence},prediction,decision,agentic/{nodes,nlu,conversation,response},ui/{tui,web},utils,database}
+mkdir -p src/prediction
 ```
 
 ---

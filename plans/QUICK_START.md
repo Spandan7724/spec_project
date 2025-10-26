@@ -51,21 +51,18 @@ class MyAgent:
 
 All through your `COPILOT_ACCESS_TOKEN`:
 
-**Fast & Cheap:**
-- `gpt-5-mini` - Best for: sentiment, classification, simple extraction
+**Primary Models (Recommended for this project):**
+- `gpt-5-mini` - Best for: sentiment, classification, simple extraction (FAST & CHEAP)
+- `gpt-4o` or `gpt-4o-2024-11-20` - Best for: reasoning, NLU, response generation (BALANCED)
+
+**Alternative Options (Available but not needed):**
 - `gpt-4o-mini` - Alternative fast option
+- `claude-3.5-sonnet` - Complex reasoning (overkill for our use cases)
+- `claude-sonnet-4` - Advanced reasoning (not needed)
+- `gpt-5` - Latest GPT (gpt-4o is sufficient)
+- `gemini-2.5-pro` - Google's latest (not needed)
 
-**Balanced:**
-- `gpt-4o-2024-11-20` - Best for: general tasks, summaries
-- `gpt-4o` - Same, shorter name
-
-**Best Reasoning:**
-- `claude-3.5-sonnet` - Best for: complex analysis, reasoning
-- `claude-sonnet-4` - Even better (if available)
-
-**Other Options:**
-- `gpt-5` - Latest GPT
-- `gemini-2.5-pro` - Google's latest
+**Our Strategy**: Stick with just gpt-5-mini + gpt-4o for simplicity and efficiency.
 
 ## Task Recommendations
 
@@ -74,7 +71,7 @@ from src.llm.agent_helpers import get_recommended_model_for_task
 
 # Get recommended model for a task type
 model = get_recommended_model_for_task("sentiment_analysis")  # Returns "gpt-5-mini"
-model = get_recommended_model_for_task("reasoning")            # Returns "claude-3.5-sonnet"
+model = get_recommended_model_for_task("reasoning")            # Returns "gpt-4o"
 
 response = await chat_with_model(messages, model)
 ```
@@ -83,9 +80,11 @@ response = await chat_with_model(messages, model)
 - `sentiment_analysis` → `gpt-5-mini`
 - `classification` → `gpt-5-mini`
 - `data_extraction` → `gpt-5-mini`
-- `summarization` → `gpt-4o-2024-11-20`
-- `reasoning` → `claude-3.5-sonnet`
-- `analysis` → `claude-3.5-sonnet`
+- `summarization` → `gpt-4o`
+- `reasoning` → `gpt-4o`
+- `analysis` → `gpt-4o`
+- `nlu` → `gpt-4o`
+- `response_generation` → `gpt-4o`
 
 ## Running Examples
 
@@ -104,25 +103,29 @@ Your `config.yaml` has these providers set up:
 ```yaml
 llm:
   providers:
-    copilot:          # gpt-4o-2024-11-20 (default)
-    copilot_mini:     # gpt-5-mini (fast)
-    copilot_claude:   # claude-3.5-sonnet (reasoning)
+    copilot:          # gpt-4o-2024-11-20 (default, balanced)
+    copilot_mini:     # gpt-5-mini (fast & cheap)
 ```
 
-All use your `COPILOT_ACCESS_TOKEN`, so you only need one API key!
+Both use your `COPILOT_ACCESS_TOKEN`, so you only need one API key!
+
+**Simplified 2-Model Strategy**: We only use gpt-4o and gpt-5-mini for this project. This keeps things simple while providing excellent performance and cost efficiency.
 
 ## Cost Optimization
 
-**Strategy:**
-1. Use `gpt-5-mini` for simple/fast tasks (sentiment, classification) - cheapest
-2. Use `claude-3.5-sonnet` for complex reasoning only - expensive
-3. Use `gpt-4o` for everything else - balanced
+**Simple 2-Model Strategy:**
+1. Use `gpt-5-mini` for simple/fast tasks (sentiment, classification, extraction) - **cheapest**
+2. Use `gpt-4o` for everything else (reasoning, NLU, analysis, generation) - **balanced**
 
-**Example in your economic agent:**
+**Example in your agents:**
 - News sentiment: `gpt-5-mini` ✓ Fast, cheap
-- Event classification: `gpt-5-mini` ✓ Fast, cheap
-- Economic impact analysis: `claude-3.5-sonnet` ✓ Best reasoning
-- Summary generation: `gpt-4o-2024-11-20` ✓ Balanced
+- Event classification: `gpt-5-mini` ✓ Fast, cheap  
+- Economic impact analysis: `gpt-4o` ✓ Excellent reasoning
+- Decision rationale: `gpt-4o` ✓ Clear explanations
+- NLU parameter extraction: `gpt-4o` ✓ Accurate parsing
+- Response generation: `gpt-4o` ✓ User-friendly output
 
-This can reduce your costs by **50-70%** compared to using GPT-4o for everything!
+**Cost Savings**: This reduces your costs by **~50%** compared to using GPT-4o for everything, with zero compromise on quality!
+
+**Why not Claude?** gpt-4o handles all the reasoning tasks we need. Claude would add complexity without meaningful benefits for our focused use cases.
 

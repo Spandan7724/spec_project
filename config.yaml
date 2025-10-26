@@ -1,3 +1,98 @@
+app:
+  name: "Currency Assistant"
+  version: "0.1.0"
+  debug: false
+
+database:
+  type: "sqlite"
+  path: "data/currency_assistant.db"
+  echo: false  # SQL logging
+
+cache:
+  type: "memory"
+  default_ttl: 300  # 5 minutes
+  max_size: 1000
+
+api:
+  exchange_rate_host:
+    base_url: "https://api.exchangerate.host"
+    timeout: 10
+  serper:
+    base_url: "https://google.serper.dev"
+    timeout: 10
+    enable_whitelist: true
+    domain_whitelist:
+      - reuters.com
+      - bloomberg.com
+      - ft.com
+      - wsj.com
+      - apnews.com
+      - bbc.com
+      - cnbc.com
+      - marketwatch.com
+      - economist.com
+      - fxstreet.com
+      - forex.com
+      - investing.com
+      - tradingeconomics.com
+
+agents:
+  market_data:
+    cache_ttl: 5  # seconds
+    providers: ["exchange_rate_host", "yfinance"]
+  market_intelligence:
+    cache_ttl: 60
+    lookback_days: 7
+    # Maximum number of articles to classify per pair
+    max_articles: 4
+    # Maximum number of calendar sources to extract events from (per currency)
+    max_calendar_sources: 2
+    # Maximum concurrent LLM requests for parallel processing
+    max_concurrent_llm_calls: 10
+    currency_regions:
+      USD: US
+      EUR: EA
+      GBP: GB
+      JPY: JP
+      CHF: CH
+      CAD: CA
+      AUD: AU
+      NZD: NZ
+      SEK: SE
+      NOK: NO
+      DKK: DK
+      PLN: PL
+      TRY: TR
+      ZAR: ZA
+      CNY: CN
+      HKD: HK
+      SGD: SG
+      KRW: KR
+      INR: IN
+      THB: TH
+      IDR: ID
+      MXN: MX
+      BRL: BR
+      ILS: IL
+      TWD: TW
+      HUF: HU
+      CZK: CZ
+      RON: RO
+  prediction:
+    cache_ttl: 300
+    horizons: [1, 7, 30]
+  decision:
+    risk_levels:
+      conservative: 0.05
+      moderate: 0.10
+      aggressive: 0.15
+
+logging:
+  enabled: false  # Set to true to enable logging, false to disable completely
+  level: "INFO"
+  format: "json"
+  file: "logs/currency_assistant.log"
+
 llm:
   default_provider: "copilot"
   providers:

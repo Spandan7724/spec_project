@@ -229,17 +229,16 @@ This multi-agent system follows a **Supervisor Pattern** with specialized sub-ag
 - Feature importance scores
 
 **ML Models**:
-- **Primary**: LSTM (Long Short-Term Memory) networks for temporal dependencies
-- **Secondary**: DQN (Deep Q-Network) for reinforcement learning optimization
-- **Ensemble**: Combine multiple models for robustness
-- **Baseline**: ARIMA/GARCH for comparison
+- **Primary**: LightGBM for price prediction (fast, accurate)
+- **Baseline**: Simple heuristics (moving averages, RSI) for fallback
+- **Ensemble**: Combine multiple horizons for robustness
 
 **Technology**:
-- TensorFlow/PyTorch for deep learning
+- LightGBM for gradient boosting models
 - Scikit-learn for preprocessing
-- MLflow for model versioning
-- SHAP for explainability
-- Model monitoring and drift detection
+- JSON + pickle for model storage (simple, no extra services)
+- SHAP for explainability (visual charts for web UI)
+- Feature importance tracking
 
 **Success Metrics**:
 - MAPE (Mean Absolute Percentage Error) < 1.5%
@@ -768,51 +767,53 @@ Return to User
 
 ### Data Persistence
 
-**Database Schema** (PostgreSQL):
+**Database Schema** (SQLite):
 
 **Tables**:
 
-1. **conversions**
-   - Tracks user conversion decisions
-   - Fields: id, currency_pair, amount, executed_rate, timestamp, recommendation_followed, user_params
+1. **conversations**
+   - Tracks conversation sessions
+   - Fields: id, session_id, query, response, timestamp, user_params
 
-2. **market_data_cache**
-   - Caches recent market data
-   - Fields: currency_pair, rate, bid, ask, volume, timestamp
-   - TTL: 5 seconds
-
-3. **prediction_history**
+2. **prediction_history**
    - Stores predictions for accuracy tracking
    - Fields: id, currency_pair, prediction_horizon, predicted_rate, confidence, actual_rate, prediction_time, evaluation_time
 
-4. **agent_metrics**
+3. **agent_metrics**
    - Performance monitoring
    - Fields: id, agent_name, execution_time_ms, status, error_message, timestamp
 
-5. **system_logs**
+4. **system_logs**
    - Audit trail and debugging
    - Fields: id, request_id, log_level, message, agent, timestamp
 
+**Caching**: In-memory Python dict with TTL for market data (no Redis needed)
 **No User Profile Tables**: System is stateless, no persistent user data
+**Upgrade Path**: SQLAlchemy ORM makes switching to PostgreSQL easy if needed later
 
 ### Caching Strategy
 
-**Redis Cache Layers**:
+**In-Memory Cache** (Python-based with TTL):
 
-1. **L1 - Hot Cache** (TTL: 5 seconds)
+1. **Hot Cache** (TTL: 5 seconds)
    - Current exchange rates for major pairs (EUR/USD, GBP/USD, etc.)
    - Latest market intelligence scores
    - Real-time technical indicators
 
-2. **L2 - Warm Cache** (TTL: 1 minute)
+2. **Warm Cache** (TTL: 1 minute)
    - Recent price predictions
    - Sentiment scores
    - News summaries
 
-3. **L3 - Cold Cache** (TTL: 1 hour)
+3. **Cold Cache** (TTL: 1 hour)
    - Historical economic data
    - Fundamental analysis results
    - Model outputs
+
+**Implementation**:
+- Simple Python dict with expiration timestamps
+- Can use `functools.lru_cache` for function-level caching
+- Thread-safe with proper locking
 
 **Cache Invalidation**:
 - Time-based expiration (TTL)
@@ -820,9 +821,11 @@ Return to User
 - Manual invalidation for critical updates
 
 **Performance Impact**:
-- Cache hit rate target: > 80% for Layer 1
+- Cache hit rate target: > 80% for hot cache
 - Average response time improvement: 50-70%
 - Reduced API costs: 60-80%
+
+**Upgrade Path**: Can switch to Redis later if multiple processes needed
 
 ---
 
@@ -834,9 +837,9 @@ Return to User
 - **Python 3.11+**: Primary programming language
 
 ### Language Models
-- **OpenAI GPT-4**: Natural language understanding and response generation
-- **Anthropic Claude**: Alternative LLM for comparison/fallback
-- **Local Models**: Option for FinBERT for sentiment analysis
+- **OpenAI GPT-4o** (via Copilot): Primary model for reasoning, NLU, and response generation
+- **OpenAI GPT-5-mini** (via Copilot): Fast model for sentiment analysis, classification, extraction
+- **Simplified Strategy**: Using only 2 models keeps the stack simple while providing excellent performance and cost efficiency
 
 ### Data Sources
 
@@ -862,21 +865,19 @@ Return to User
 ### Machine Learning
 
 **Frameworks**:
-- TensorFlow 2.x or PyTorch: Deep learning models
-- Scikit-learn: Preprocessing and baseline models
-- XGBoost: Gradient boosting for decision optimization
-- Statsmodels: Time series analysis (ARIMA, GARCH)
+- LightGBM: Primary prediction model (fast, accurate)
+- Scikit-learn: Preprocessing and feature engineering
+- Pandas/NumPy: Data manipulation
 
-**MLOps**:
-- MLflow: Model versioning, tracking, deployment
-- SHAP: Model explainability
-- Weights & Biases: Experiment tracking (optional)
+**Model Management**:
+- JSON: Model metadata registry (simple, version control friendly)
+- Pickle: Model binary storage (Python standard library)
+- SHAP: Model explainability and visualizations
 
 **Models**:
-- LSTM networks for price prediction
-- DQN (Deep Q-Network) for reinforcement learning
-- BERT/FinBERT for sentiment analysis
-- Ensemble methods for robustness
+- LightGBM quantile regression for price prediction
+- Simple heuristics for fallback (MA crossover, RSI)
+- Feature importance for decision transparency
 
 ### Data Processing
 - **Pandas**: Data manipulation
@@ -888,9 +889,9 @@ Return to User
 ### Infrastructure
 
 **Database**:
-- PostgreSQL: Primary data storage
-- Redis: Caching layer
-- TimescaleDB: Time-series optimization (optional)
+- SQLite: Primary data storage (simple, file-based, easy to use)
+- In-memory caching: Python-based cache with TTL (simple, no extra services)
+- Upgrade path: Can switch to PostgreSQL + Redis later if needed
 
 **API Framework**:
 - FastAPI: REST API endpoints
@@ -898,10 +899,10 @@ Return to User
 - Uvicorn: ASGI server
 
 **Deployment**:
-- Docker: Containerization
-- Docker Compose: Local development
-- Kubernetes: Production orchestration (optional)
-- AWS/GCP/Azure: Cloud hosting
+- Virtual environment: Development setup
+- Docker: Containerization (optional, for later)
+- Docker Compose: Multi-service setup (optional, for later)
+- AWS/GCP/Azure: Cloud hosting (optional, for later)
 
 **Monitoring**:
 - Prometheus: Metrics collection

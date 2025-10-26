@@ -20,7 +20,7 @@ def test_config():
     print(f"Default provider: {config.default_provider}")
     print(f"Failover enabled: {config.failover_enabled}")
     print(f"Failover order: {config.failover_order}")
-    print(f"\nConfigured providers:")
+    print("\nConfigured providers:")
     
     for name, prov_config in config.providers.items():
         print(f"  - {name}:")

@@ -81,7 +81,7 @@ async def search_economic_calendar(query: str):
 async def extract_calendar_data_mock(search_results: str, currency: str, start_date: str, end_date: str):
     """Mock LLM extraction - shows what the actual LLM would return"""
     
-    print(f"\n🤖 LLM Extraction (Mock)")
+    print("\n🤖 LLM Extraction (Mock)")
     print("-" * 80)
     print(f"Currency: {currency}")
     print(f"Date Range: {start_date} to {end_date}")
@@ -178,7 +178,7 @@ async def test_generalized_calendar_search():
     next_month_name = next_month.strftime("%B %Y")
     
     # Test queries for USD
-    print(f"\n\n📅 SEARCHING FOR USD ECONOMIC EVENTS")
+    print("\n\n📅 SEARCHING FOR USD ECONOMIC EVENTS")
     print("=" * 80)
     
     usd_queries = [
@@ -200,7 +200,7 @@ async def test_generalized_calendar_search():
         usd_events = await extract_calendar_data_mock(combined_usd, "USD", start_date, end_date)
     
     # Test queries for EUR
-    print(f"\n\n📅 SEARCHING FOR EUR ECONOMIC EVENTS")
+    print("\n\n📅 SEARCHING FOR EUR ECONOMIC EVENTS")
     print("=" * 80)
     
     eur_queries = [
@@ -222,7 +222,7 @@ async def test_generalized_calendar_search():
         eur_events = await extract_calendar_data_mock(combined_eur, "EUR", start_date, end_date)
     
     # Show final output
-    print(f"\n\n📊 FINAL CALENDAR SNAPSHOT FOR USD/EUR")
+    print("\n\n📊 FINAL CALENDAR SNAPSHOT FOR USD/EUR")
     print("=" * 80)
     
     # Find next high-impact event
@@ -251,14 +251,14 @@ async def test_generalized_calendar_search():
         event_date = datetime.fromisoformat(next_high['date'])
         days_until = (event_date - today).days
         
-        print(f"\n🔔 NEXT HIGH-IMPACT EVENT:")
+        print("\n🔔 NEXT HIGH-IMPACT EVENT:")
         print(f"   Date: {next_high['date']} ({days_until} days)")
         print(f"   Time: {next_high['time']} {next_high['timezone']}")
         print(f"   Event: {next_high['event']}")
         print(f"   Currency: {next_high['currency']}")
         print(f"   Source: {next_high['source']}")
     
-    print(f"\n\n📋 ALL UPCOMING HIGH-IMPACT EVENTS:")
+    print("\n\n📋 ALL UPCOMING HIGH-IMPACT EVENTS:")
     print("-" * 80)
     
     for event in all_events[:10]:
@@ -268,7 +268,7 @@ async def test_generalized_calendar_search():
             print(f"[{days_until:2d}d] {event['date']} - {event['currency']} - {event['event']}")
     
     # Show what the agent would receive
-    print(f"\n\n💾 JSON OUTPUT (What agent receives):")
+    print("\n\n💾 JSON OUTPUT (What agent receives):")
     print("=" * 80)
     
     output = {
