@@ -132,6 +132,11 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
         ms = state.get("market_snapshot") or {}
         providers = list({p.get("source", "unknown") for p in (ms.get("provider_breakdown") or [])})
         quality_notes = (ms.get("quality") or {}).get("notes") or []
+        mid_rate = ms.get("mid_rate")
+        bid = ms.get("bid")
+        ask = ms.get("ask")
+        spread = ms.get("spread")
+        rate_ts = ms.get("rate_timestamp")
 
         mi = state.get("intelligence_report") or {}
         news_citations = (mi.get("news") or {}).get("top_evidence") or []
@@ -153,15 +158,63 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
             "model_confidence": pf.get("confidence"),
         }
 
+        # Market extras: indicators, regime, and sample provider quotes
+        indicators = ms.get("indicators") or {}
+        regime = ms.get("regime") or {}
+        provider_quotes = []
+        for pr in (ms.get("provider_breakdown") or [])[:5]:
+            provider_quotes.append(
+                {
+                    "source": pr.get("source"),
+                    "rate": pr.get("rate"),
+                    "timestamp": pr.get("timestamp"),
+                }
+            )
+
+        # Intelligence summary
+        intel_summary = {
+            "pair_bias": (mi.get("news") or {}).get("pair_bias"),
+            "news_confidence": (mi.get("news") or {}).get("confidence"),
+            "n_articles_used": (mi.get("news") or {}).get("n_articles_used"),
+            "narrative": (mi.get("news") or {}).get("narrative"),
+            "policy_bias": mi.get("policy_bias"),
+            "next_high_event": (mi.get("calendar") or {}).get("next_high_event"),
+            "total_high_impact_events_7d": (mi.get("calendar") or {}).get("total_high_impact_events_7d"),
+        }
+
+        # Prediction summary
+        pred_summary = None
+        if preds:
+            used = preds.get(used_key) or {}
+            pred_summary = {
+                "horizon_key": used_key,
+                "mean_change_pct": used.get("mean_change_pct"),
+                "quantiles": used.get("quantiles"),
+                "direction_prob": used.get("direction_prob"),
+                "latest_close": pf.get("latest_close"),
+            }
+        predictions_all = {k: (v or {}).get("mean_change_pct") for k, v in (preds or {}).items()} if preds else {}
+
         recommendation["evidence"] = {
             "market": {
                 "providers": providers,
                 "quality_notes": quality_notes,
                 "dispersion_bps": (ms.get("quality") or {}).get("dispersion_bps"),
+                "mid_rate": mid_rate,
+                "bid": bid,
+                "ask": ask,
+                "spread": spread,
+                "rate_timestamp": rate_ts,
+                "indicators": indicators,
+                "regime": regime,
+                "provider_quotes": provider_quotes,
             },
             "news": news_citations[:5],
             "calendar": calendar_sources[:10],
+            "intelligence": intel_summary,
             "model": model_ev,
+            "prediction": pred_summary,
+            "predictions_all": predictions_all,
             "utility_scores": resp.utility_scores,
         }
 

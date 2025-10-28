@@ -8,11 +8,12 @@ from typing import Any, Dict
 
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
 from rich import box
 
 from src.supervisor.conversation_manager import ConversationManager
 from src.supervisor.agent_orchestrator import AgentOrchestrator
+from src.supervisor.answer_generator import AnswerGenerator
 from src.supervisor.response_formatter import ResponseFormatter
 from src.supervisor.models import SupervisorRequest, ConversationState, ExtractedParameters
 
@@ -36,6 +37,7 @@ class CurrencyAssistantTUI:
         self.orchestrator = AgentOrchestrator()
         self.formatter = ResponseFormatter()
         self.session_id = str(uuid.uuid4())
+        self.answer_generator = AnswerGenerator()
 
     def run(self) -> None:
         """Main entry point (sync)."""
@@ -73,9 +75,15 @@ class CurrencyAssistantTUI:
             # Show assistant message
             console.print(f"\n[bold magenta]Assistant[/]: {resp.message}\n")
 
-            # Show parameters table if available
+            # Show parameters table; include current rate at confirmation step
             if resp.parameters:
-                console.print(create_parameter_table(resp.parameters))
+                current_rate = None
+                try:
+                    if resp.state == ConversationState.CONFIRMING and resp.parameters.base_currency and resp.parameters.quote_currency:
+                        current_rate = self._fetch_current_rate(resp.parameters.base_currency, resp.parameters.quote_currency)
+                except Exception:
+                    current_rate = None
+                console.print(create_parameter_table(resp.parameters, current_rate=current_rate))
 
             if resp.requires_input:
                 user_input = get_user_input("You")
@@ -129,23 +137,53 @@ class CurrencyAssistantTUI:
 
         console.print()
         with Progress(
-            SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
+            BarColumn(bar_width=None),
+            TaskProgressColumn(style="cyan"),
+            TimeElapsedColumn(style="cyan"),
             console=console,
         ) as progress:
-            task = progress.add_task("[cyan]Analyzing market conditions...", total=None)
-            time.sleep(0.3)
+            task = progress.add_task("[cyan]Analyzing market conditions...", total=100)
+            # Stage 1 → 25%
+            time.sleep(0.2)
+            progress.advance(task, 25)
             progress.update(task, description="[cyan]Fetching economic calendar and news...")
-            time.sleep(0.3)
+            # Stage 2 → 50%
+            time.sleep(0.2)
+            progress.advance(task, 25)
             progress.update(task, description="[cyan]Generating price predictions...")
-            time.sleep(0.3)
+            # Stage 3 → 75%
+            time.sleep(0.2)
+            progress.advance(task, 25)
             progress.update(task, description="[cyan]Calculating optimal recommendation...")
 
             recommendation = self._run_coro_blocking(self.orchestrator.run_analysis(parameters, correlation_id))
-            progress.update(task, description="[green]✓ Analysis complete!", completed=True)
+            # Stage 4 → 100%
+            progress.update(task, completed=100, description="[green]✓ Analysis complete!")
 
         console.print()
         return recommendation
+
+    def _fetch_current_rate(self, base: str, quote: str) -> float | None:
+        """Fetch a quick current mid rate for the pair (sync wrapper)."""
+        async def _run():
+            from src.config import get_config, load_config
+            from src.data_collection.providers import get_provider
+            from src.data_collection.market_data.snapshot import build_snapshot
+            from src.cache import cache
+            try:
+                cfg = get_config()
+            except Exception:
+                cfg = load_config()
+            provider_names = cfg.get("agents.market_data.providers", ["exchange_rate_host", "yfinance"]) or []
+            providers = [get_provider(name) for name in provider_names]
+            snap = await build_snapshot(base, quote, providers, cache=cache)
+            return snap.mid_rate
+
+        try:
+            return self._run_coro_blocking(_run())
+        except Exception:
+            return None
 
     def _display_recommendation(self, recommendation: Dict[str, Any]) -> None:
         """Display recommendation in rich format and a text summary."""
@@ -210,6 +248,7 @@ class CurrencyAssistantTUI:
                     "- providers                  → list market data providers\n"
                     "- calendar                   → list calendar sources\n"
                     "- model                      → show model top features\n"
+                    "- scenarios                  → compare convert now vs wait 24h/48h\n"
                     "- change <param> [to <value>]→ update parameter (pair, amount, risk, urgency, timeframe)\n"
                     "- rerun                      → rerun analysis\n"
                     "- new                        → start a new analysis\n"
@@ -273,6 +312,14 @@ class CurrencyAssistantTUI:
                     console.print("No model feature info available.")
                 continue
 
+            if low == "scenarios":
+                try:
+                    panel = self._build_scenarios_panel(current_reco)
+                    console.print(panel)
+                except Exception as e:  # noqa: BLE001
+                    console.print(f"[red]Failed to build scenarios:[/] {e}")
+                continue
+
             if low in {"new"}:
                 return "new"
             if low in {"exit", "quit"}:
@@ -282,6 +329,7 @@ class CurrencyAssistantTUI:
                 reco = self._run_agents_sync(parameters, str(uuid.uuid4()))
                 self._display_recommendation(reco)
                 current_reco = reco
+                console.print("[dim]Type 'help' to see available commands. Type 'new' to start over, 'exit' to quit.[/]")
                 continue
 
             # change <param> [to <value>]
@@ -307,11 +355,65 @@ class CurrencyAssistantTUI:
                 continue
 
             # Free-form question answering about current recommendation
-            answer = self._answer_question(user, current_reco, parameters)
+            # Prefer LLM answer when available; fallback to heuristic answer
+            answer = self._llm_answer_safe(user, current_reco, parameters)
+            if not answer:
+                answer = self._answer_question(user, current_reco, parameters)
             if answer:
                 console.print(answer)
             else:
                 console.print("I didn't catch that. Type 'help' for options, or 'new' / 'exit'.")
+
+    def _llm_answer_safe(self, question: str, reco: Dict[str, Any], params: ExtractedParameters) -> str:
+        try:
+            return self._run_coro_blocking(self.answer_generator.agenerate_answer(question, reco, params)) or ""
+        except Exception:
+            return ""
+
+    def _build_scenarios_panel(self, reco: Dict[str, Any]) -> Panel:
+        from rich.table import Table
+        from rich import box as _box
+        ev = reco.get("evidence") or {}
+        mkt = ev.get("market") or {}
+        preds_all = ev.get("predictions_all") or {}
+        current = mkt.get("mid_rate")
+        if current is None:
+            raise ValueError("current rate not available")
+
+        def exp_rate(days: int) -> float | None:
+            # Use matching horizon if present
+            if str(days) in preds_all and isinstance(preds_all[str(days)], (int, float)):
+                return float(current) * (1.0 + float(preds_all[str(days)]) / 100.0)
+            # Approximate 48h using 7d scaled if available
+            if days == 2 and ("7" in preds_all) and isinstance(preds_all["7"], (int, float)):
+                daily = float(preds_all["7"]) / 7.0
+                return float(current) * (1.0 + daily * 2.0 / 100.0)
+            return None
+
+        now_rate = float(current)
+        d1 = exp_rate(1)
+        d2 = exp_rate(2)
+
+        tbl = Table(title="Scenarios (Expected Rate)", box=_box.ROUNDED, show_header=True)
+        tbl.add_column("Scenario", style=f"{THEME.primary} bold", width=20)
+        tbl.add_column("Expected Rate", style=THEME.neutral)
+        tbl.add_column("Change (bps)", style=THEME.neutral)
+
+        def add_row(name: str, rate: float | None):
+            if rate is None:
+                tbl.add_row(name, "—", "—")
+            else:
+                try:
+                    chg_bps = (rate - now_rate) / now_rate * 10000.0
+                    tbl.add_row(name, f"{rate:.6f}", f"{chg_bps:.1f}")
+                except Exception:
+                    tbl.add_row(name, str(rate), "—")
+
+        add_row("Convert Now", now_rate)
+        add_row("Wait 24h", d1)
+        add_row("Wait 48h", d2)
+
+        return Panel(tbl, title="Scenarios", border_style=THEME.primary, box=box.ROUNDED)
 
     def _answer_question(self, question: str, reco: Dict[str, Any], params: ExtractedParameters) -> str:
         """Heuristic Q&A over the current recommendation and evidence."""
@@ -371,6 +473,26 @@ class CurrencyAssistantTUI:
             if parts:
                 lines.append("Estimated cost: " + ", ".join(parts) + ".")
 
+        # Current rate / price / quote
+        if any(k in low for k in ["rate", "price", "quote", "current"]):
+            ev = reco.get("evidence") or {}
+            market = ev.get("market") or {}
+            mr = market.get("mid_rate")
+            bid = market.get("bid")
+            ask = market.get("ask")
+            ts = market.get("rate_timestamp")
+            if mr is not None:
+                try:
+                    lines.append(f"Current rate (mid): {float(mr):.6f}.")
+                except Exception:
+                    lines.append(f"Current rate (mid): {mr}.")
+                if isinstance(bid, (int, float)) and isinstance(ask, (int, float)):
+                    lines.append(f"Bid/Ask: {bid:.6f} / {ask:.6f}.")
+                elif bid is not None or ask is not None:
+                    lines.append(f"Bid/Ask: {bid} / {ask}.")
+                if ts:
+                    lines.append(f"As of: {ts}.")
+
         # Providers / sources
         if any(k in low for k in ["provider", "source", "data source"]):
             ev = reco.get("evidence") or {}
@@ -387,6 +509,42 @@ class CurrencyAssistantTUI:
             if cal:
                 examples = ", ".join(f"{e.get('currency','')}: {e.get('event','')}" for e in cal[:3])
                 lines.append(f"Upcoming events (examples): {examples}.")
+
+        # Technicals / regime
+        if any(k in low for k in ["technical", "rsi", "macd", "trend", "bias", "regime"]):
+            ev = reco.get("evidence") or {}
+            mkt = ev.get("market") or {}
+            tech = mkt.get("indicators") or {}
+            reg = mkt.get("regime") or {}
+            rsi = tech.get("rsi_14")
+            macd = tech.get("macd")
+            macd_sig = tech.get("macd_signal")
+            trend = reg.get("trend_direction")
+            bias = reg.get("bias")
+            if isinstance(rsi, (int, float)):
+                lines.append(f"RSI(14): {rsi:.1f}.")
+            if isinstance(macd, (int, float)) and isinstance(macd_sig, (int, float)):
+                lines.append(f"MACD/Signal: {macd:.6f} / {macd_sig:.6f}.")
+            if trend:
+                lines.append(f"Trend: {str(trend).title()}.")
+            if bias:
+                lines.append(f"Bias: {str(bias).title()}.")
+
+        # Forecast / prediction
+        if any(k in low for k in ["forecast", "prediction", "expected", "mean change", "quantile"]):
+            ev = reco.get("evidence") or {}
+            pred = ev.get("prediction") or {}
+            if pred:
+                mc = pred.get("mean_change_pct")
+                if isinstance(mc, (int, float)):
+                    lines.append(f"Forecast mean change: {mc:.2f}%.")
+                q = pred.get("quantiles") or {}
+                lo = q.get("0.05") or q.get(0.05)
+                hi = q.get("0.95") or q.get(0.95)
+                if isinstance(lo, (int, float)) and isinstance(hi, (int, float)):
+                    lines.append(f"95% interval: {lo:.2f}% to {hi:.2f}%.")
+            else:
+                lines.append("No forecast summary available.")
 
         # Model / features / why
         if any(k in low for k in ["model", "feature", "shap", "why"]):

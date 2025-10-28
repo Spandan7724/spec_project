@@ -52,19 +52,25 @@ async def prediction_node(state: AgentState) -> Dict[str, Any]:
     try:
         # Build prediction request
         cfg = PredictionConfig.from_yaml()
+        # Determine effective timeframe string using Option A (bucket from timeframe_days when needed)
+        def _bucket_timeframe(tf_days: int | None) -> str:
+            if tf_days is None:
+                return cfg.default_timeframe or "1_day"
+            if tf_days <= 0:
+                return "immediate"
+            if tf_days <= 1:
+                return "1_day"
+            if tf_days < 30:
+                return "1_week"
+            return "1_month"
+
         user_tf = state.get("timeframe")
+        tf_days = state.get("timeframe_days")
         if cfg.use_user_timeframe:
-            # Strictly require timeframe from user when enabled
-            if not user_tf:
-                logger.error("Prediction node: missing timeframe from user while use_user_timeframe=true")
-                return {
-                    "prediction_status": "error",
-                    "prediction_error": "missing_timeframe",
-                    "price_forecast": None,
-                }
-            timeframe = user_tf
+            # Accept either categorical timeframe or derive from days
+            timeframe = user_tf or _bucket_timeframe(tf_days)
         else:
-            timeframe = cfg.default_timeframe or "1_day"
+            timeframe = user_tf or _bucket_timeframe(tf_days)
         daily_h, intraday_h = _timeframe_to_horizons(timeframe, cfg)
         req = PredictionRequest(
             currency_pair=currency_pair,

@@ -47,6 +47,6 @@ def get_parameter_prompt(param_name: str) -> str:
         "amount": "What amount? (e.g., 5000)",
         "risk_tolerance": "What is your risk tolerance? (conservative/moderate/aggressive)",
         "urgency": "What is your urgency? (urgent/normal/flexible)",
-        "timeframe": "What is your timeframe? (e.g., immediate, 1_day, 1_week, 1_month, or 'in 10 days')",
+        "timeframe": "What is your timeframe? (e.g., immediate, 1_day, 1_week, 1_month, 'in 10 days', 'by 2025-11-15', '3-5 days', 'in 12 hours')",
     }
     return prompts.get(param_name, "Could you clarify?")

@@ -33,6 +33,12 @@ class ExtractedParameters:
     urgency: Optional[str] = None  # urgent|normal|flexible
     timeframe: Optional[str] = None  # immediate|1_day|1_week|1_month
     timeframe_days: Optional[int] = None
+    # Flexible timeframe extensions
+    timeframe_mode: Optional[str] = None  # immediate | deadline | duration
+    deadline_utc: Optional[str] = None  # ISO timestamp when provided (e.g., 'by Nov 15')
+    window_days: Optional[Dict[str, int]] = None  # {"start": int, "end": int} for ranges like 3-5 days
+    time_unit: Optional[str] = None  # 'hours' | 'days' (optional hint)
+    timeframe_hours: Optional[int] = None  # sub-day horizons (e.g., 'in 12 hours')
 
     def is_complete(self) -> bool:
         """Check if all required parameters are set."""
@@ -62,8 +68,13 @@ class ExtractedParameters:
             missing.append("risk_tolerance")
         if not self.urgency:
             missing.append("urgency")
-        # Timeframe: accept either categorical timeframe or explicit days
-        if self.timeframe is None and self.timeframe_days is None:
+        # Timeframe: accept categorical, explicit days, deadline, or range
+        if (
+            self.timeframe is None
+            and self.timeframe_days is None
+            and self.deadline_utc is None
+            and not self.window_days
+        ):
             missing.append("timeframe")
         # If categorical timeframe was provided but numeric days not derived yet
         if self.timeframe is not None and self.timeframe_days is None:

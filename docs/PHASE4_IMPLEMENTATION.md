@@ -35,3 +35,5 @@ Concise overview of Phase 4: Supervisor Agent, NLU, Conversation, Orchestration,
 ## Phase Outcome
 - End-to-end supervision with LLM NLU, multi-turn parameter collection, robust orchestration across agents, and polished responses. Conversation runs outside the graph for simplicity; the graph remains a deterministic compute pipeline.
 
+## Context Reference
+- For a concise list of everything included in the chat/answer context (parameters, recommendation fields, market/intelligence/prediction evidence), see: [CONTEXT_REFERENCE.md](CONTEXT_REFERENCE.md)

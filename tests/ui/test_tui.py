@@ -6,7 +6,8 @@ from src.supervisor.models import ExtractedParameters
 
 def test_create_welcome_panel_renderable():
     panel = create_welcome_panel()
-    assert hasattr(panel, "render")  # basic sanity: Rich renderable
+    # Rich renderables implement __rich_console__
+    assert hasattr(panel, "__rich_console__")
 
 
 def test_parameter_table_basic():
@@ -22,4 +23,3 @@ def test_parameter_table_basic():
     )
     table = create_parameter_table(params)
     assert table.row_count >= 5
-

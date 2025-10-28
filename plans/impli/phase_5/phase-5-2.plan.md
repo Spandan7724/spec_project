@@ -265,6 +265,26 @@ tests/ui/web/
 - `status: str` - healthy/degraded/unhealthy
 - `components: Dict[str, Dict]` - Component health details
 
+### Flexible Timeframe Handling (API Models)
+
+To align with flexible timeframe parsing added in Phase 5.1, the API should accept both legacy and flexible inputs. This is a contract update; implementation can reuse Supervisor NLU later.
+
+Accept on request:
+- Legacy categorical: `timeframe: str` (immediate | 1_day | 1_week | 1_month)
+- Free‑text: `timeframe_text: Optional[str]` (e.g., "in 10 days", "by 2025-11-15", "3-5 days", "in 12 hours")
+- Canonical fields (optional):
+  - `timeframe_days: Optional[int]`
+  - `timeframe_mode: Optional[str]` (immediate|deadline|duration)
+  - `deadline_utc: Optional[str]` (ISO)
+  - `window_days: Optional[Dict[str, int]]`
+  - `time_unit: Optional[str]` (hours|days)
+  - `timeframe_hours: Optional[int]`
+
+Normalization guidance (to implement in code phase):
+- If canonical fields provided → trust and forward to orchestrator.
+- Else if `timeframe_text` provided → normalize using Supervisor NLU parser utilities.
+- Else → use legacy categorical timeframe and derive `timeframe_days` via existing mapping.
+
 ### 8. `src/ui/web/middleware.py`
 
 **Purpose**: Middleware for CORS, logging, and error handling.
@@ -369,6 +389,7 @@ tests/ui/web/
 8. **Implement main FastAPI app** (`main.py`)
 
 9. **Write API tests** (test all endpoints)
+10. **Extend request models to accept flexible timeframe inputs** (contract only; parsing wired during implementation)
 
 10. **Test with curl/Postman/httpie**
 
@@ -511,6 +532,7 @@ curl http://localhost:8000/health
 - **Unit tests**: Test each route independently with mocked dependencies
 - **Integration tests**: Test complete API flows with real agent execution
 - **Load tests**: Test concurrent requests and performance
+- **Timeframe tests**: Validate legacy categorical, `timeframe_text`, and canonical field variants are accepted by the models
 
 ## Success Criteria
 

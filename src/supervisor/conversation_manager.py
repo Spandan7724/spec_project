@@ -196,11 +196,31 @@ class ConversationManager:
             else:
                 session.parameters.urgency = extracted.urgency
         elif param_name == "timeframe":
-            if extracted.timeframe is None:
-                error_msg = "Please specify: immediate, 1_day, 1_week, or 1_month."
+            # Accept either categorical timeframe or flexible canonical fields
+            if (
+                extracted.timeframe is None
+                and extracted.timeframe_days is None
+                and not extracted.deadline_utc
+                and not extracted.window_days
+                and extracted.timeframe_hours is None
+            ):
+                error_msg = (
+                    "Please provide a timeframe (e.g., immediate, 1_day, 1_week, 1_month, "
+                    "'in 10 days', 'by 2025-11-15', '3-5 days', 'in 12 hours')."
+                )
             else:
-                session.parameters.timeframe = extracted.timeframe
-                session.parameters.timeframe_days = timeframe_to_days(extracted.timeframe)
+                if extracted.timeframe:
+                    session.parameters.timeframe = extracted.timeframe
+                    session.parameters.timeframe_days = timeframe_to_days(extracted.timeframe)
+                else:
+                    session.parameters.timeframe = None
+                    session.parameters.timeframe_days = extracted.timeframe_days
+                # Copy flexible fields
+                session.parameters.timeframe_mode = extracted.timeframe_mode
+                session.parameters.deadline_utc = extracted.deadline_utc
+                session.parameters.window_days = extracted.window_days
+                session.parameters.time_unit = extracted.time_unit
+                session.parameters.timeframe_hours = extracted.timeframe_hours
 
         if error_msg:
             # Re-ask the same parameter with the error message
@@ -349,11 +369,29 @@ class ConversationManager:
             else:
                 session.parameters.urgency = extracted.urgency
         elif param_name == "timeframe":
-            if extracted.timeframe is None:
-                error_msg = "Please specify: immediate, 1_day, 1_week, or 1_month."
+            if (
+                extracted.timeframe is None
+                and extracted.timeframe_days is None
+                and not extracted.deadline_utc
+                and not extracted.window_days
+                and extracted.timeframe_hours is None
+            ):
+                error_msg = (
+                    "Please provide a timeframe (e.g., immediate, 1_day, 1_week, 1_month, "
+                    "'in 10 days', 'by 2025-11-15', '3-5 days', 'in 12 hours')."
+                )
             else:
-                session.parameters.timeframe = extracted.timeframe
-                session.parameters.timeframe_days = timeframe_to_days(extracted.timeframe)
+                if extracted.timeframe:
+                    session.parameters.timeframe = extracted.timeframe
+                    session.parameters.timeframe_days = timeframe_to_days(extracted.timeframe)
+                else:
+                    session.parameters.timeframe = None
+                    session.parameters.timeframe_days = extracted.timeframe_days
+                session.parameters.timeframe_mode = extracted.timeframe_mode
+                session.parameters.deadline_utc = extracted.deadline_utc
+                session.parameters.window_days = extracted.window_days
+                session.parameters.time_unit = extracted.time_unit
+                session.parameters.timeframe_hours = extracted.timeframe_hours
 
         if error_msg:
             return self._ask_for_parameter(session, param_name, prefix_parts=[error_msg])
@@ -444,6 +482,22 @@ class ConversationManager:
         if name == "timeframe":
             if p.timeframe:
                 return f"✓ Timeframe: {p.timeframe}"
+            if p.deadline_utc:
+                return f"✓ Timeframe: by {p.deadline_utc}"
+            if p.window_days:
+                try:
+                    s = int(p.window_days.get("start", 0))
+                    e = int(p.window_days.get("end", 0))
+                    return f"✓ Timeframe: {s}-{e} days"
+                except Exception:
+                    pass
+            if p.timeframe_hours is not None and (p.timeframe_days is None or int(p.timeframe_days) == 0):
+                try:
+                    h = int(p.timeframe_hours)
+                    unit = "hour" if h == 1 else "hours"
+                    return f"✓ Timeframe: {h} {unit}"
+                except Exception:
+                    return f"✓ Timeframe: {p.timeframe_hours} hours"
             if p.timeframe_days is not None:
                 label = "day" if p.timeframe_days == 1 else "days"
                 return f"✓ Timeframe: {p.timeframe_days} {label}"

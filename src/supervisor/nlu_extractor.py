@@ -6,6 +6,9 @@ import os
 import re
 from dataclasses import asdict
 from typing import Any, Dict, Optional, Tuple
+from datetime import datetime, timezone
+from dateutil import parser as dateparser
+import math
 
 from src.llm.manager import LLMManager
 from src.supervisor.models import ExtractedParameters
@@ -98,6 +101,11 @@ class NLUExtractor:
         urgency = data.get("urgency")
         timeframe = data.get("timeframe")
         tf_days = data.get("timeframe_days")
+        timeframe_mode = data.get("timeframe_mode")
+        deadline_utc = data.get("deadline_utc")
+        window_days = data.get("window_days")
+        time_unit = data.get("time_unit")
+        timeframe_hours = data.get("timeframe_hours")
 
         # Normalize currency codes
         base_n = normalize_currency_code(base)
@@ -149,6 +157,11 @@ class NLUExtractor:
             urgency=urgency,
             timeframe=timeframe,
             timeframe_days=tf_days,
+            timeframe_mode=timeframe_mode,
+            deadline_utc=deadline_utc,
+            window_days=window_days,
+            time_unit=time_unit,
+            timeframe_hours=timeframe_hours,
         )
         return params
 
@@ -192,7 +205,7 @@ class NLUExtractor:
         base, quote = self._extract_currency_codes(text)
         cp = f"{base}/{quote}" if base and quote else None
 
-        # Risk/urgency/timeframe via simple keyword checks
+        # Risk/urgency via simple keyword checks
         low = text.lower()
         risk = (
             "conservative"
@@ -207,30 +220,108 @@ class NLUExtractor:
             "flexible" if any(k in low for k in ["whenever", "no rush", "take time", "flexible"]) else
             "normal" if any(k in low for k in ["soon", "few days"]) else None
         )
-        timeframe = (
-            "immediate"
-            if any(k in low for k in ["immediate", "today", "now", "asap"]) else
-            "1_day" if any(k in low for k in ["tomorrow", "1 day", "24 hours"]) else
-            "1_week" if any(k in low for k in ["week", "7 days", "this week"]) else
-            "1_month" if any(k in low for k in ["month", "30 days", "next month"]) else None
-        )
 
-        # Flexible natural timeframe like "in 10 days" or "2 weeks"
-        tf_days = timeframe_to_days(timeframe) if timeframe else None
+        # Determine timeframe first using robust patterns
+        tf_days: Optional[int] = None
+        timeframe_mode: Optional[str] = None
+        deadline_utc: Optional[str] = None
+        window_days: Optional[Dict[str, int]] = None
+        time_unit: Optional[str] = None
+        timeframe_hours: Optional[int] = None
+        # Explicit numeric days/weeks
+        # Ranges like "in 3-5 days" or "in 2 to 4 weeks"
+        m = re.search(r"\b(\d+)\s*(?:-|to|–)\s*(\d+)\s*day(s)?\b", low)
+        if m:
+            s, e = int(m.group(1)), int(m.group(2))
+            window_days = {"start": min(s, e), "end": max(s, e)}
+            tf_days = int(round((window_days["start"] + window_days["end"]) / 2))
+            timeframe_mode = "duration"
+            time_unit = "days"
         if tf_days is None:
-            m = re.search(r"\b(\d+)\s*(day|days|d)\b", low)
+            m = re.search(r"\b(\d+)\s*(?:-|to|–)\s*(\d+)\s*week(s)?\b", low)
+            if m:
+                s, e = int(m.group(1)) * 7, int(m.group(2)) * 7
+                window_days = {"start": min(s, e), "end": max(s, e)}
+                tf_days = int(round((window_days["start"] + window_days["end"]) / 2))
+                timeframe_mode = "duration"
+                time_unit = "days"
+
+        # Hours like "in 12 hours"
+        if tf_days is None:
+            m = re.search(r"\b(\d+)\s*hour(s)?\b", low)
+            if m:
+                timeframe_hours = int(m.group(1))
+                tf_days = 0
+                timeframe_mode = "duration"
+                time_unit = "hours"
+
+        # Explicit numeric days/weeks
+        if tf_days is None:
+            m = re.search(r"\b(\d+)\s*day(s)?\b", low)
             if m:
                 try:
                     tf_days = max(0, int(m.group(1)))
+                    timeframe_mode = "duration"
+                    time_unit = "days"
                 except Exception:
                     tf_days = None
         if tf_days is None:
-            m = re.search(r"\b(\d+)\s*(week|weeks|w)\b", low)
+            m = re.search(r"\b(\d+)\s*week(s)?\b", low)
             if m:
                 try:
                     tf_days = max(0, int(m.group(1)) * 7)
+                    timeframe_mode = "duration"
+                    time_unit = "days"
                 except Exception:
                     tf_days = None
+        # Natural phrases
+        if tf_days is None and re.search(r"\btomorrow\b|\bin\s*24\s*hours?\b", low):
+            tf_days = 1
+            timeframe_mode = "duration"
+        if tf_days is None and re.search(r"\bthis\s*week\b|\bnext\s*week\b", low):
+            tf_days = 7
+            timeframe_mode = "duration"
+        if tf_days is None and re.search(r"\bnext\s*month\b", low):
+            tf_days = 30
+            timeframe_mode = "duration"
+
+        # Absolute deadline like "by 2025-11-15" or "by Nov 15"
+        if deadline_utc is None:
+            m = re.search(r"\b(?:by|before|on)\s+([\w\-/:, ]{3,})\b", text, re.IGNORECASE)
+            if m:
+                raw_date = m.group(1).strip()
+                try:
+                    # Parse using dateutil; assume local tz if naive
+                    dt = dateparser.parse(raw_date, fuzzy=True)
+                    if dt is not None:
+                        if dt.tzinfo is None:
+                            local_tz = datetime.now().astimezone().tzinfo
+                            dt = dt.replace(tzinfo=local_tz)
+                        dt_utc = dt.astimezone(timezone.utc)
+                        deadline_utc = dt_utc.isoformat()
+                        # Derive days remaining (ceil)
+                        now_utc = datetime.now(timezone.utc)
+                        delta_days = (dt_utc - now_utc).total_seconds() / 86400.0
+                        tf_days = max(0, int(math.ceil(delta_days)))
+                        timeframe_mode = "deadline"
+                except Exception:
+                    pass
+
+        # Categorical timeframe only if we did not find other forms
+        timeframe = None
+        if tf_days is None:
+            if re.search(r"\b(immediate|today|now|asap)\b", low):
+                timeframe = "immediate"
+                timeframe_mode = "immediate"
+            elif re.search(r"\b1\s*day(s)?\b|\btomorrow\b|\bin\s*24\s*hours?\b", low):
+                timeframe = "1_day"
+                timeframe_mode = "duration"
+            elif re.search(r"\b(1\s*week|7\s*days|this\s*week|next\s*week)\b", low):
+                timeframe = "1_week"
+                timeframe_mode = "duration"
+            elif re.search(r"\b(1\s*month|30\s*days|next\s*month)\b", low):
+                timeframe = "1_month"
+                timeframe_mode = "duration"
 
         return {
             "currency_pair": cp,
@@ -241,19 +332,24 @@ class NLUExtractor:
             "urgency": urgency,
             "timeframe": timeframe,
             "timeframe_days": tf_days,
+            "timeframe_mode": timeframe_mode,
+            "deadline_utc": deadline_utc,
+            "window_days": window_days,
+            "time_unit": time_unit,
+            "timeframe_hours": timeframe_hours,
         }
 
     def _extract_currency_codes(self, text: str) -> Tuple[Optional[str], Optional[str]]:
-        # Pattern: USD/EUR or USD-EUR or USDEUR
-        m = re.search(r"\b([A-Z]{3})\s*[/\-]?\s*([A-Z]{3})\b", text)
+        # Pattern: USD/EUR or USD-EUR or USDEUR (case-insensitive)
+        m = re.search(r"\b([A-Za-z]{3})\s*[/\-]?\s*([A-Za-z]{3})\b", text, re.IGNORECASE)
         if m:
             b, q = m.groups()
-            b_n, q_n = normalize_currency_code(b), normalize_currency_code(q)
+            b_n, q_n = normalize_currency_code(b.upper()), normalize_currency_code(q.upper())
             if b_n and q_n:
                 return b_n, q_n
 
-        # Pattern: USD to EUR
-        m = re.search(r"\b([A-Z]{3})\s+(?:to|into|→)\s+([A-Z]{3})\b", text, re.IGNORECASE)
+        # Pattern: USD to EUR (case-insensitive)
+        m = re.search(r"\b([A-Za-z]{3})\s+(?:to|into|→)\s+([A-Za-z]{3})\b", text, re.IGNORECASE)
         if m:
             b, q = m.groups()
             b_n, q_n = normalize_currency_code(b.upper()), normalize_currency_code(q.upper())

@@ -44,7 +44,10 @@ Build a modern, type-safe web frontend using Next.js 14+ with TypeScript, React 
 ### API Communication
 
 - **Axios** or **Fetch API**: HTTP requests
-- **EventSource**: Server-Sent Events for real-time updates
+- **EventSource**: Server-Sent Events for real-time updates (SSE)
+  - `GET /api/analysis/stream/{correlation_id}` streams `{status, progress, message}` events
+  - Fallback to polling `GET /api/analysis/status/{correlation_id}` every 500–1000ms
+  - See backend contract: `docs/API.md`
 
 ## Architecture
 
@@ -397,6 +400,13 @@ tests/
 - `getResult(correlationId: string): Promise<AnalysisResult>`
 - `streamProgress(correlationId: string): EventSource`
 
+**Notes**:
+- Generate `correlation_id` on the client (UUID) and pass to `/api/analysis/start`.
+- Flexible timeframe inputs:
+  - Prefer `timeframe_text` (e.g., "in 10 days"); backend normalizes via Supervisor NLU (no LLM network).
+  - If canonical fields exist client-side, send: `timeframe_days`, `timeframe_mode`, `deadline_utc`, `window_days`, `time_unit`, `timeframe_hours`.
+  - Legacy `timeframe` still supported.
+
 #### `lib/api/visualization.ts`
 
 **Purpose**: Visualization data API functions.
@@ -442,10 +452,10 @@ tests/
 
 **Implementation**:
 
-- Starts analysis
-- Polls status endpoint
-- Fetches final result
-- Uses React Query
+- Starts analysis and returns `correlation_id`
+- Subscribes to SSE: `EventSource(/api/analysis/stream/{id})` and updates progress
+- On completed/error, fetches final result via `GET /api/analysis/result/{id}`
+- Fallback: polling `GET /api/analysis/status/{id}` if SSE fails
 
 #### `lib/hooks/useSSE.ts`
 
@@ -463,6 +473,29 @@ tests/
 - EventSource API wrapper
 - Auto-reconnect logic
 - Cleanup on unmount
+
+**Example**:
+
+```ts
+export function streamStatus(
+  id: string,
+  onStatus: (s: AnalysisStatus) => void,
+  onDone: (ok: boolean) => void
+) {
+  const es = new EventSource(`${API}/api/analysis/stream/${id}`)
+  es.addEventListener('status', (e: MessageEvent) => {
+    try {
+      const payload = JSON.parse(e.data) as AnalysisStatus
+      onStatus(payload)
+      if (payload.status === 'completed' || payload.status === 'error') {
+        es.close(); onDone(payload.status === 'completed')
+      }
+    } catch {}
+  })
+  es.addEventListener('error', () => { es.close(); onDone(false) })
+  return () => es.close()
+}
+```
 
 #### `lib/hooks/useChat.ts`
 
@@ -509,7 +542,14 @@ tests/
 
 - `ConversationInput`
 - `ConversationOutput`
-- `AnalysisRequest`
+- `AnalysisRequest` (include flexible timeframe fields)
+  - `timeframe_text?: string`
+  - `timeframe_days?: number`
+  - `timeframe_mode?: 'immediate'|'deadline'|'duration'`
+  - `deadline_utc?: string`
+  - `window_days?: { start: number; end: number }`
+  - `time_unit?: 'hours'|'days'`
+  - `timeframe_hours?: number`
 - `AnalysisStatus`
 - `AnalysisResult`
 - `HealthResponse`
@@ -683,6 +723,7 @@ npm install
 npm run dev
 
 # Access at http://localhost:3000
+ # Ensure the backend is running at NEXT_PUBLIC_API_URL (e.g., http://localhost:8000)
 ```
 
 ### Production Build
@@ -779,6 +820,9 @@ NEXT_PUBLIC_WS_URL=ws://localhost:8000
 - Consider adding i18n for multiple languages
 - Use React Suspense for loading states
 - Consider adding error boundaries for graceful error handling
+
+### Backend contract reference
+- See `docs/API.md` for complete request/response schemas.
 
 ### To-dos
 

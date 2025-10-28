@@ -238,3 +238,8 @@
  
  For a GUI/Web UI, you can render top features as chips/bars and (optionally) the SHAP waterfall (base64) when explain_include_plots is true.
  
+
+
+ ## TO start the fast api backend 
+
+ uvicorn backend.main:app --reload

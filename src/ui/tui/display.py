@@ -17,7 +17,7 @@ def create_welcome_panel() -> Panel:
     return Panel(WELCOME_TEXT, title="Welcome", border_style=THEME.primary, box=getattr(box, BOX.welcome))
 
 
-def create_parameter_table(params: Any) -> Table:
+def create_parameter_table(params: Any, current_rate: Optional[float] = None) -> Table:
     table = Table(title="Parameters", box=box.SIMPLE, show_header=False)
     table.add_column("Field", style=f"{THEME.primary} bold", width=22)
     table.add_column("Value", style=THEME.neutral)
@@ -30,8 +30,26 @@ def create_parameter_table(params: Any) -> Table:
     # Timeframe: show categorical timeframe if set, otherwise use numeric days if available
     tf_val = getattr(params, "timeframe", None)
     tf_days_val = getattr(params, "timeframe_days", None)
+    tf_hours_val = getattr(params, "timeframe_hours", None)
+    window = getattr(params, "window_days", None)
+    deadline = getattr(params, "deadline_utc", None)
     if tf_val:
         tf = str(tf_val)
+    elif deadline:
+        tf = f"by {deadline}"
+    elif window and isinstance(window, dict) and window.get("start") is not None and window.get("end") is not None:
+        try:
+            s = int(window.get("start"))
+            e = int(window.get("end"))
+            tf = f"{s}-{e} days"
+        except Exception:
+            tf = f"{window}"
+    elif tf_hours_val is not None and (tf_days_val is None or int(tf_days_val) == 0):
+        try:
+            h = int(tf_hours_val)
+            tf = f"{h} hour" if h == 1 else f"{h} hours"
+        except Exception:
+            tf = str(tf_hours_val)
     elif tf_days_val is not None:
         try:
             d = int(tf_days_val)
@@ -46,6 +64,11 @@ def create_parameter_table(params: Any) -> Table:
     table.add_row("Risk Tolerance", str(risk).capitalize())
     table.add_row("Urgency", str(urg).capitalize())
     table.add_row("Timeframe", tf)
+    if current_rate is not None:
+        try:
+            table.add_row("Current Rate", f"{float(current_rate):.6f}")
+        except Exception:
+            table.add_row("Current Rate", str(current_rate))
     return table
 
 
@@ -72,6 +95,14 @@ def create_recommendation_panel(reco: Dict[str, Any]) -> Panel:
     table.add_row("Action", action)
     table.add_row("Confidence", f"[{conf_color}]{float(conf):.2f}[/] ({conf_label})" if isinstance(conf, (int, float)) else "—")
     table.add_row("Timeline", str(timeline))
+
+    # Current rate if available (from evidence.market)
+    ev_market = (reco.get("evidence") or {}).get("market") or {}
+    if ev_market.get("mid_rate") is not None:
+        try:
+            table.add_row("Current Rate", f"{float(ev_market.get('mid_rate')):.6f}")
+        except Exception:
+            table.add_row("Current Rate", str(ev_market.get("mid_rate")))
 
     # Build body renderables
     renders: List[RenderableType] = [table]
@@ -187,6 +218,26 @@ def create_evidence_panel(evidence: Dict[str, Any]) -> Panel:
                 mt.add_row("Note", str(n))
         renders.append(mt)
 
+    # Technicals & Regime
+    tech = (evidence.get("market") or {}).get("indicators") or {}
+    regime = (evidence.get("market") or {}).get("regime") or {}
+    if tech or regime:
+        tt = Table(title="Technical Signals", box=box.SIMPLE, show_header=False)
+        tt.add_column("Indicator", style=f"{THEME.primary} bold", width=24)
+        tt.add_column("Value", style=THEME.neutral)
+        if tech.get("rsi_14") is not None:
+            tt.add_row("RSI (14)", f"{float(tech.get('rsi_14')):.1f}")
+        if tech.get("macd") is not None and tech.get("macd_signal") is not None:
+            try:
+                tt.add_row("MACD / Signal", f"{float(tech.get('macd')):.6f} / {float(tech.get('macd_signal')):.6f}")
+            except Exception:
+                tt.add_row("MACD / Signal", f"{tech.get('macd')} / {tech.get('macd_signal')}")
+        if regime.get("trend_direction"):
+            tt.add_row("Trend", str(regime.get("trend_direction")).title())
+        if regime.get("bias"):
+            tt.add_row("Bias", str(regime.get("bias")).title())
+        renders.append(tt)
+
     # News citations
     news = evidence.get("news") or []
     if news:
@@ -210,6 +261,50 @@ def create_evidence_panel(evidence: Dict[str, Any]) -> Panel:
         for e in cal[:5]:
             ct.add_row(str(e.get("currency", "")), str(e.get("event", ""))[:40], str(e.get("importance", "")), str(e.get("source_url", ""))[:80])
         renders.append(ct)
+
+    # Intelligence summary
+    intel = evidence.get("intelligence") or {}
+    if intel:
+        it = Table(title="Intelligence Summary", box=box.SIMPLE, show_header=False)
+        it.add_column("Field", style=f"{THEME.primary} bold", width=28)
+        it.add_column("Value", style=THEME.neutral)
+        if intel.get("pair_bias") is not None:
+            it.add_row("News Pair Bias", f"{float(intel.get('pair_bias')):.2f}" if isinstance(intel.get('pair_bias'), (int,float)) else str(intel.get('pair_bias')))
+        if intel.get("news_confidence"):
+            it.add_row("News Confidence", str(intel.get("news_confidence")).title())
+        if intel.get("n_articles_used") is not None:
+            it.add_row("Articles Used", str(intel.get("n_articles_used")))
+        if intel.get("policy_bias") is not None:
+            it.add_row("Policy Bias", f"{float(intel.get('policy_bias')):.2f}" if isinstance(intel.get('policy_bias'), (int,float)) else str(intel.get('policy_bias')))
+        nhe = intel.get("next_high_event") or {}
+        if nhe:
+            it.add_row("Next High Event", f"{nhe.get('currency','')}: {nhe.get('event','')} ({nhe.get('when_utc','')})")
+        if intel.get("total_high_impact_events_7d") is not None:
+            it.add_row("High-Impact Events (7d)", str(intel.get("total_high_impact_events_7d")))
+        if intel.get("narrative"):
+            it.add_row("Narrative", str(intel.get("narrative"))[:120] + ("…" if len(str(intel.get("narrative"))) > 120 else ""))
+        renders.append(it)
+
+    # Prediction summary
+    pred = evidence.get("prediction") or {}
+    if pred:
+        pt = Table(title="Prediction Summary", box=box.SIMPLE, show_header=False)
+        pt.add_column("Field", style=f"{THEME.primary} bold", width=24)
+        pt.add_column("Value", style=THEME.neutral)
+        if pred.get("horizon_key"):
+            pt.add_row("Horizon (days)", str(pred.get("horizon_key")))
+        if pred.get("mean_change_pct") is not None:
+            try:
+                pt.add_row("Mean Change", f"{float(pred.get('mean_change_pct')):.2f}%")
+            except Exception:
+                pt.add_row("Mean Change", str(pred.get("mean_change_pct")))
+        q = pred.get("quantiles") or {}
+        if q:
+            lo = q.get("0.05") or q.get(0.05)
+            hi = q.get("0.95") or q.get(0.95)
+            if isinstance(lo, (int, float)) and isinstance(hi, (int, float)):
+                pt.add_row("95% Interval", f"{lo:.2f}% to {hi:.2f}%")
+        renders.append(pt)
 
     # Model evidence (top features)
     model = evidence.get("model") or {}
