@@ -55,3 +55,25 @@ def get_session(session_id: str, cm=Depends(get_conversation_manager)):
     except Exception as e:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=str(e)) from e
 
+
+@router.get("/sessions/active")
+def get_active_sessions(cm=Depends(get_conversation_manager)):
+    """Get all active conversation sessions."""
+    try:
+        sessions_list = []
+        for session_id, session in cm.sessions.items():
+            sessions_list.append({
+                "session_id": session.session_id,
+                "state": session.state.value,
+                "has_parameters": bool(session.parameters and not session.parameters.missing_parameters()),
+                "currency_pair": getattr(session.parameters, "currency_pair", None) if session.parameters else None,
+                "message_count": len(session.conversation_history),
+            })
+
+        return {
+            "total": len(sessions_list),
+            "sessions": sessions_list,
+        }
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(e)) from e
+

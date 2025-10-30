@@ -15,6 +15,9 @@ from src.data_collection.market_intelligence.bias_calculator import (
     next_high_impact_event,
 )
 from src.llm.manager import LLMManager
+from src.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class MarketIntelligenceService:
@@ -63,6 +66,12 @@ class MarketIntelligenceService:
             self.cal_extractor.extract_events_batch(quote_cal, quote)
         )
         all_events = base_events + quote_events
+
+        # Concise evidence pipeline logging for calendar path
+        logger.info(
+            "MI.Calendar: base_cal=%d quote_cal=%d base_events=%d quote_events=%d total=%d",
+            len(base_cal), len(quote_cal), len(base_events), len(quote_events), len(all_events)
+        )
 
         policy_bias = calculate_policy_bias(all_events)
         next_event = next_high_impact_event(all_events)

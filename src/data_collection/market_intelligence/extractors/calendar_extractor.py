@@ -161,4 +161,11 @@ Return a JSON array of events with fields:
             if key not in seen:
                 seen.add(key)
                 deduped.append(ev)
-        return sorted(deduped, key=lambda ev: ev.when_utc)
+        out_sorted = sorted(deduped, key=lambda ev: ev.when_utc)
+        logger.info(
+            "MI.CalendarExtractor: currency=%s results=%d extracted=%d",
+            currency,
+            len(results),
+            len(out_sorted),
+        )
+        return out_sorted

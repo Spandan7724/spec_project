@@ -37,6 +37,7 @@ dependencies = [
     "torch>=2.9.0",
     "torchvision>=0.24.0",
     "python-dateutil>=2.9.0.post0",
+    "watchfiles>=1.1.0",
 ]
 
 [project.scripts]
