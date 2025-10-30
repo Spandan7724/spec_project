@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import NewsTab from './NewsTab';
-import EventsTab from './EventsTab';
 import MarketDataTab from './MarketDataTab';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface EvidenceData {
   news?: any[];
-  events?: any[];
+  // events intentionally omitted from UI for now
   market_data?: any;
 }
 
@@ -14,7 +13,7 @@ interface EvidenceViewerProps {
   data: EvidenceData;
 }
 
-type TabType = 'news' | 'events' | 'market_data';
+type TabType = 'news' | 'market_data';
 
 export default function EvidenceViewer({ data }: EvidenceViewerProps) {
   const [activeTab, setActiveTab] = useState<TabType>('news');
@@ -22,7 +21,6 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
 
   const tabs = [
     { id: 'news' as TabType, label: 'News', count: data.news?.length || 0 },
-    { id: 'events' as TabType, label: 'Events', count: data.events?.length || 0 },
     { id: 'market_data' as TabType, label: 'Market Data', count: data.market_data ? 1 : 0 },
   ];
 
@@ -66,7 +64,6 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
           {/* Tab content */}
           <div className="min-h-[200px]">
             {activeTab === 'news' && <NewsTab data={data.news || []} />}
-            {activeTab === 'events' && <EventsTab data={data.events || []} />}
             {activeTab === 'market_data' && <MarketDataTab data={data.market_data} />}
           </div>
         </div>
