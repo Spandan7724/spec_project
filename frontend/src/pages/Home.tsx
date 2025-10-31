@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold">Currency Assistant</h1>
+        <h1 className="text-4xl font-bold">Forex</h1>
         <p className="text-muted-foreground mt-2">
           AI-powered currency conversion recommendations
         </p>

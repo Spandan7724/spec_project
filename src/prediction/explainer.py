@@ -1,6 +1,8 @@
 import base64
 from io import BytesIO
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+
+import numpy as np
 
 import matplotlib.pyplot as plt
 import shap
@@ -25,28 +27,75 @@ class PredictionExplainer:
         mapping = dict(zip(self.feature_names, importance))
         return dict(sorted(mapping.items(), key=lambda x: x[1], reverse=True)[:top_n])
 
-    def generate_waterfall_plot(self, X, output_format: str = "base64") -> Optional[str]:
+    def compute_waterfall_data(self, X) -> Optional[Dict[str, Any]]:
         try:
             shap_values = self.explainer.shap_values(X)
+            if isinstance(shap_values, list):
+                shap_vector = np.array(shap_values[0])[0]
+            else:
+                shap_vector = np.array(shap_values)[0]
+
+            base_value_raw = self.explainer.expected_value
+            base_value = float(np.array(base_value_raw).flatten()[0])
+            feature_values = X.iloc[0].values
+
+            features = []
+            for name, value, contribution in zip(self.feature_names, feature_values, shap_vector):
+                features.append(
+                    {
+                        "feature": name,
+                        "value": float(value),
+                        "contribution": float(contribution),
+                    }
+                )
+
+            output_value = float(base_value + float(np.sum(shap_vector)))
+
+            return {
+                "base_value": base_value,
+                "output_value": output_value,
+                "features": features,
+            }
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"Error computing SHAP waterfall data: {e}")
+            return None
+
+    def generate_waterfall(self, X, include_plot: bool = True) -> Dict[str, Optional[str]]:
+        payload = {"plot_base64": None, "data": self.compute_waterfall_data(X)}
+
+        if not include_plot:
+            return payload
+
+        try:
+            shap_values = self.explainer.shap_values(X)
+            if isinstance(shap_values, list):
+                shap_vector = shap_values[0]
+            else:
+                shap_vector = shap_values
+
             plt.figure(figsize=(10, 6))
             shap.waterfall_plot(
                 shap.Explanation(
-                    values=shap_values[0],
+                    values=np.array(shap_vector)[0],
                     base_values=self.explainer.expected_value,
                     data=X.iloc[0].values,
                     feature_names=self.feature_names,
                 ),
                 show=False,
             )
-            if output_format == "base64":
-                buf = BytesIO()
-                plt.savefig(buf, format="png", bbox_inches="tight", dpi=100)
-                buf.seek(0)
-                image_b64 = base64.b64encode(buf.read()).decode()
-                plt.close()
-                return image_b64
-            return None
+            buf = BytesIO()
+            plt.savefig(buf, format="png", bbox_inches="tight", dpi=100)
+            buf.seek(0)
+            payload["plot_base64"] = base64.b64encode(buf.read()).decode()
+            plt.close()
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"Error generating SHAP waterfall plot: {e}")
+        return payload
+
+    def generate_waterfall_plot(self, X, output_format: str = "base64") -> Optional[str]:
+        try:
+            result = self.generate_waterfall(X, include_plot=(output_format == "base64"))
+            return result.get("plot_base64")
         except Exception as e:
             logger.error(f"Error generating SHAP waterfall: {e}")
             return None
-

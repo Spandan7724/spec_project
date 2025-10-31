@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import numpy as np
+import pandas as pd
 from fastapi import APIRouter, HTTPException, Depends
 
 from backend.dependencies import get_analysis_repository
@@ -203,3 +205,427 @@ def evidence(correlation_id: str, analysis_repo=Depends(get_analysis_repository)
         "market": market_summary,
         "policy_bias": intelligence.get("policy_bias"),
     }
+
+
+@router.get("/historical-prices/{correlation_id}")
+async def historical_prices(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get historical OHLC price data with technical indicators."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    try:
+        # Fetch historical data using yfinance
+        from src.data_collection.market_data.snapshot import _load_historical
+        from src.data_collection.market_data.indicators import calculate_indicators
+
+        base = record.base_currency
+        quote = record.quote_currency
+        days = 90  # 3 months of history
+
+        df = await _load_historical(base, quote, days)
+
+        if df is None or df.empty:
+            return {
+                "correlation_id": correlation_id,
+                "currency_pair": record.currency_pair,
+                "data": [],
+                "error": "No historical data available"
+            }
+
+        # Calculate indicators
+        indicators = calculate_indicators(df)
+
+        # Format for frontend - calculate SMA(5) manually since it's not in Indicators
+        sma_5 = df['Close'].rolling(window=5).mean().iloc[-1] if len(df) >= 5 else None
+
+        # Format for frontend
+        chart_data = []
+        for idx, row in df.iterrows():
+            point = {
+                "date": idx.isoformat(),
+                "open": float(row.get("Open", 0)),
+                "high": float(row.get("High", 0)),
+                "low": float(row.get("Low", 0)),
+                "close": float(row.get("Close", 0)),
+                "volume": float(row.get("Volume", 0)),
+            }
+            chart_data.append(point)
+
+        # Add indicators as separate series
+        indicator_data = {
+            "sma_5": float(sma_5) if sma_5 is not None and not pd.isna(sma_5) else None,
+            "sma_20": indicators.sma_20,
+            "sma_50": indicators.sma_50,
+            "ema_12": indicators.ema_12,
+            "ema_26": indicators.ema_26,
+            "bb_upper": indicators.bb_upper,
+            "bb_middle": indicators.bb_middle,
+            "bb_lower": indicators.bb_lower,
+        }
+
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "data": chart_data,
+            "indicators": indicator_data,
+        }
+    except Exception as e:
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "data": [],
+            "error": str(e)
+        }
+
+
+@router.get("/technical-indicators/{correlation_id}")
+async def technical_indicators(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get technical indicators (RSI, MACD, ATR, volatility)."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    try:
+        from src.data_collection.market_data.snapshot import _load_historical
+        from src.data_collection.market_data.indicators import calculate_indicators
+
+        base = record.base_currency
+        quote = record.quote_currency
+        days = 90
+
+        df = await _load_historical(base, quote, days)
+
+        if df is None or df.empty:
+            return {
+                "correlation_id": correlation_id,
+                "data": {},
+                "error": "No historical data available"
+            }
+
+        indicators = calculate_indicators(df)
+
+        # Calculate 20-day volatility manually
+        volatility_20d = df['Close'].pct_change().rolling(window=20).std().iloc[-1] * np.sqrt(252) if len(df) >= 20 else None
+
+        # Format time series data for charts
+        chart_data = []
+        for idx in df.index:
+            chart_data.append({
+                "date": idx.isoformat(),
+                "close": float(df.loc[idx, "Close"]),
+            })
+
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "data": chart_data,
+            "indicators": {
+                "rsi": indicators.rsi_14,
+                "macd": indicators.macd,
+                "macd_signal": indicators.macd_signal,
+                "macd_histogram": indicators.macd_histogram,
+                "atr": indicators.atr_14,
+                "volatility_20d": float(volatility_20d) if volatility_20d is not None and not pd.isna(volatility_20d) else None,
+                "volatility_30d": indicators.realized_vol_30d,
+            },
+        }
+    except Exception as e:
+        return {
+            "correlation_id": correlation_id,
+            "data": {},
+            "error": str(e)
+        }
+
+
+@router.get("/sentiment-timeline/{correlation_id}")
+def sentiment_timeline(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get news sentiment analysis over time."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    intelligence = record.intelligence or {}
+    news_data = intelligence.get("news", {})
+
+    # Current sentiment scores
+    sent_base = news_data.get("sent_base", 0.0)
+    sent_quote = news_data.get("sent_quote", 0.0)
+    pair_bias = news_data.get("pair_bias", "neutral")
+
+    # Get articles with sentiment
+    articles = news_data.get("top_evidence", [])
+
+    # Build timeline from articles
+    timeline_data = []
+    for article in articles:
+        if isinstance(article, dict):
+            pub_date = article.get("published_utc") or article.get("date")
+            sentiment = article.get("sentiment", {})
+
+            if pub_date:
+                timeline_data.append({
+                    "date": pub_date,
+                    "sentiment_base": sentiment.get(record.base_currency, 0.0) if isinstance(sentiment, dict) else 0.0,
+                    "sentiment_quote": sentiment.get(record.quote_currency, 0.0) if isinstance(sentiment, dict) else 0.0,
+                    "title": article.get("title", ""),
+                    "source": article.get("source", ""),
+                })
+
+    # Sort by date
+    timeline_data.sort(key=lambda x: x["date"] if x["date"] else "")
+
+    return {
+        "correlation_id": correlation_id,
+        "currency_pair": record.currency_pair,
+        "current_sentiment": {
+            "base_currency": record.base_currency,
+            "quote_currency": record.quote_currency,
+            "sentiment_base": sent_base,
+            "sentiment_quote": sent_quote,
+            "pair_bias": pair_bias,
+            "narrative": news_data.get("narrative", ""),
+        },
+        "timeline": timeline_data,
+        "n_articles": len(articles),
+    }
+
+
+@router.get("/events-timeline/{correlation_id}")
+def events_timeline(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get economic events timeline with impact ratings."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    intelligence = record.intelligence or {}
+    calendar_data = intelligence.get("calendar", {})
+
+    events = calendar_data.get("events_extracted", [])
+    next_high_event = calendar_data.get("next_high_event")
+
+    # Normalize events for UI
+    formatted_events = []
+    for event in events:
+        if isinstance(event, dict):
+            formatted_events.append({
+                "date": event.get("when_utc") or event.get("date"),
+                "title": event.get("event") or event.get("title", "Economic Event"),
+                "country": event.get("country", ""),
+                "currency": event.get("currency", ""),
+                "importance": event.get("importance", "medium"),
+                "impact": event.get("importance", "medium"),  # Alias for importance
+                "description": event.get("note") or event.get("description", ""),
+                "source": event.get("source", ""),
+            })
+
+    # Add next high impact event if not in list
+    if next_high_event and isinstance(next_high_event, dict):
+        event_exists = any(
+            e.get("title") == next_high_event.get("event")
+            for e in formatted_events
+        )
+        if not event_exists:
+            formatted_events.append({
+                "date": next_high_event.get("when_utc"),
+                "title": next_high_event.get("event", "High Impact Event"),
+                "country": next_high_event.get("country", ""),
+                "currency": next_high_event.get("currency", ""),
+                "importance": "high",
+                "impact": "high",
+                "description": next_high_event.get("note", ""),
+                "source": next_high_event.get("source", ""),
+            })
+
+    # Sort by date
+    formatted_events.sort(key=lambda x: x["date"] if x["date"] else "")
+
+    return {
+        "correlation_id": correlation_id,
+        "currency_pair": record.currency_pair,
+        "events": formatted_events,
+        "total_high_impact_7d": calendar_data.get("total_high_impact_events_7d", 0),
+        "next_high_impact": next_high_event,
+    }
+
+
+@router.get("/shap-explanations/{correlation_id}")
+def shap_explanations(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get SHAP explanations and feature importance for predictions."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    prediction = record.prediction or {}
+    explanations = prediction.get("explanations") or {}
+
+    if not explanations:
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "feature_importance": [],
+            "waterfall_plot": None,
+            "has_waterfall": False,
+            "error": "SHAP explanations not available for this analysis",
+        }
+
+    selected = prediction.get("selected_prediction") or {}
+    target_horizon = str(selected.get("horizon_key")) if selected.get("horizon_key") is not None else None
+
+    daily_expl = explanations.get("daily") or {}
+    intraday_expl = explanations.get("intraday") or {}
+
+    target = None
+    if target_horizon and target_horizon in daily_expl:
+        target = daily_expl[target_horizon]
+    elif daily_expl:
+        target = next(iter(daily_expl.values()))
+    elif intraday_expl:
+        target = next(iter(intraday_expl.values()))
+
+    if not target:
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "feature_importance": [],
+            "waterfall_plot": None,
+            "has_waterfall": False,
+            "error": "No SHAP explanation payload available",
+        }
+
+    top_features = target.get("top_features") or {}
+    importance_data = [
+        {"feature": feature, "importance": float(score)}
+        for feature, score in top_features.items()
+    ]
+    importance_data.sort(key=lambda item: abs(item["importance"]), reverse=True)
+
+    waterfall_plot = target.get("shap_waterfall_base64")
+    waterfall_data = target.get("shap_waterfall_data")
+
+    return {
+        "correlation_id": correlation_id,
+        "currency_pair": record.currency_pair,
+        "feature_importance": importance_data,
+        "waterfall_plot": waterfall_plot,
+        "has_waterfall": waterfall_plot is not None or bool(waterfall_data),
+        "waterfall_data": waterfall_data,
+    }
+
+
+@router.get("/prediction-quantiles/{correlation_id}")
+def prediction_quantiles(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get enhanced prediction data with full quantile information for fan charts."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+    prediction = record.prediction or {}
+
+    predictions = prediction.get("predictions", {})
+    latest_close = prediction.get("latest_close", 0.0)
+
+    # Format for fan chart with full quantile data
+    chart_data = []
+    for horizon_key, pred_data in predictions.items():
+        if isinstance(pred_data, dict):
+            horizon = int(horizon_key) if str(horizon_key).isdigit() else horizon_key
+            mean_change = pred_data.get("mean_change_pct", 0.0) or 0.0
+            quantiles = pred_data.get("quantiles") or {}
+
+            # Calculate rates from percentage changes
+            base_rate = latest_close if latest_close > 0 else 1.0
+
+            def _quantile_or_mean(key: str) -> float:
+                value = quantiles.get(key)
+                return mean_change if value is None else value
+
+            chart_data.append({
+                "horizon": horizon,
+                "horizon_label": f"{horizon}d" if isinstance(horizon, int) else str(horizon),
+                "mean_rate": base_rate * (1 + mean_change / 100),
+                "mean_change_pct": mean_change,
+                "p10_rate": base_rate * (1 + _quantile_or_mean("p10") / 100),
+                "p25_rate": base_rate * (1 + _quantile_or_mean("p25") / 100),
+                "p50_rate": base_rate * (1 + _quantile_or_mean("p50") / 100),
+                "p75_rate": base_rate * (1 + _quantile_or_mean("p75") / 100),
+                "p90_rate": base_rate * (1 + _quantile_or_mean("p90") / 100),
+                "p10": quantiles.get("p10"),
+                "p25": quantiles.get("p25"),
+                "p50": quantiles.get("p50"),
+                "p75": quantiles.get("p75"),
+                "p90": quantiles.get("p90"),
+                "direction_probability": pred_data.get("direction_prob"),
+                "confidence": pred_data.get("confidence"),
+            })
+
+    # Sort by horizon
+    chart_data.sort(key=lambda x: x["horizon"] if isinstance(x["horizon"], (int, float)) else 0)
+
+    return {
+        "correlation_id": correlation_id,
+        "currency_pair": record.currency_pair,
+        "latest_close": latest_close,
+        "predictions": chart_data,
+        "overall_confidence": prediction.get("confidence"),
+    }
+
+
+@router.get("/market-regime/{correlation_id}")
+async def market_regime(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
+    """Get market regime classification over time."""
+    record = _get_completed_record(correlation_id, analysis_repo)
+
+    try:
+        from src.data_collection.market_data.snapshot import _load_historical
+        from src.data_collection.market_data.regime import classify_regime
+        from src.data_collection.market_data.indicators import calculate_indicators
+
+        base = record.base_currency
+        quote = record.quote_currency
+        days = 90
+
+        df = await _load_historical(base, quote, days)
+
+        if df is None or df.empty:
+            # Return current regime only
+            market_data = record.market_data or {}
+            return {
+                "correlation_id": correlation_id,
+                "currency_pair": record.currency_pair,
+                "current_regime": market_data.get("regime", "unknown"),
+                "regime_history": [],
+            }
+
+        # Calculate regime for each point (using rolling window)
+        regime_data = []
+        for idx in df.index[-30:]:  # Last 30 days
+            window_df = df.loc[:idx].tail(30)  # 30-day lookback
+            if len(window_df) >= 20:
+                indicators = calculate_indicators(window_df)
+                latest_price = float(df.loc[idx, "Close"])
+                regime_obj = classify_regime(latest_price, indicators)
+
+                # Convert regime object to simple string
+                if regime_obj.trend_direction == "up":
+                    regime_str = "trending_up"
+                elif regime_obj.trend_direction == "down":
+                    regime_str = "trending_down"
+                elif regime_obj.trend_direction == "sideways":
+                    regime_str = "ranging"
+                else:
+                    regime_str = "unknown"
+
+                regime_data.append({
+                    "date": idx.isoformat(),
+                    "regime": regime_str,
+                    "close": latest_price,
+                })
+
+        # Current regime from market data
+        market_data = record.market_data or {}
+        current_regime = market_data.get("regime", "unknown")
+
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "current_regime": current_regime,
+            "regime_history": regime_data,
+        }
+    except Exception as e:
+        # Fallback: just return current regime
+        market_data = record.market_data or {}
+        return {
+            "correlation_id": correlation_id,
+            "currency_pair": record.currency_pair,
+            "current_regime": market_data.get("regime", "unknown"),
+            "regime_history": [],
+            "error": str(e)
+        }

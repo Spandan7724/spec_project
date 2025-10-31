@@ -198,14 +198,15 @@ class MLPredictor:
                         if h in predictions and h in self.backend_gbm.models:
                             tf = self.backend_gbm.get_feature_importance(h, top_n=top_n)
                             item = {"top_features": tf}
-                            if include_plots:
-                                try:
-                                    expl = PredictionExplainer(self.backend_gbm.models[h], self.backend_gbm.feature_names)
-                                    img = expl.generate_waterfall_plot(X_latest)
-                                    if img:
-                                        item["shap_waterfall_base64"] = img
-                                except Exception:
-                                    pass
+                            try:
+                                expl = PredictionExplainer(self.backend_gbm.models[h], self.backend_gbm.feature_names)
+                                waterfall_payload = expl.generate_waterfall(X_latest, include_plot=include_plots)
+                                if waterfall_payload.get("plot_base64"):
+                                    item["shap_waterfall_base64"] = waterfall_payload["plot_base64"]
+                                if waterfall_payload.get("data"):
+                                    item["shap_waterfall_data"] = waterfall_payload["data"]
+                            except Exception as exc:  # noqa: BLE001
+                                logger.error(f"Waterfall generation failed for horizon {h}: {exc}")
                             explanations["daily"][str(h)] = item
                 except Exception:
                     pass

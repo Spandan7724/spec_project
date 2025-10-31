@@ -213,7 +213,18 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
                 "direction_prob": used.get("direction_prob"),
                 "latest_close": pf.get("latest_close"),
             }
-        predictions_all = {k: (v or {}).get("mean_change_pct") for k, v in (preds or {}).items()} if preds else {}
+
+        predictions_all = {}
+        if preds:
+            for key, payload in preds.items():
+                payload = payload or {}
+                predictions_all[str(key)] = {
+                    "mean_change_pct": payload.get("mean_change_pct"),
+                    "quantiles": payload.get("quantiles"),
+                    "direction_prob": payload.get("direction_prob"),
+                }
+
+        prediction_explanations = (pf or {}).get("explanations")
 
         recommendation["evidence"] = {
             "market": {
@@ -235,6 +246,7 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
             "model": model_ev,
             "prediction": pred_summary,
             "predictions_all": predictions_all,
+            "prediction_explanations": prediction_explanations,
             "utility_scores": resp.utility_scores,
         }
 

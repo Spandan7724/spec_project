@@ -380,14 +380,24 @@ class CurrencyAssistantTUI:
         if current is None:
             raise ValueError("current rate not available")
 
+        def _mean_change_pct(payload: Any) -> float | None:
+            if isinstance(payload, dict):
+                val = payload.get("mean_change_pct")
+                return float(val) if val is not None else None
+            if isinstance(payload, (int, float)):
+                return float(payload)
+            return None
+
         def exp_rate(days: int) -> float | None:
-            # Use matching horizon if present
-            if str(days) in preds_all and isinstance(preds_all[str(days)], (int, float)):
-                return float(current) * (1.0 + float(preds_all[str(days)]) / 100.0)
-            # Approximate 48h using 7d scaled if available
-            if days == 2 and ("7" in preds_all) and isinstance(preds_all["7"], (int, float)):
-                daily = float(preds_all["7"]) / 7.0
-                return float(current) * (1.0 + daily * 2.0 / 100.0)
+            key = str(days)
+            pct = _mean_change_pct(preds_all.get(key))
+            if pct is not None:
+                return float(current) * (1.0 + pct / 100.0)
+            if days == 2 and "7" in preds_all:
+                weekly = _mean_change_pct(preds_all.get("7"))
+                if weekly is not None:
+                    daily = weekly / 7.0
+                    return float(current) * (1.0 + daily * 2.0 / 100.0)
             return None
 
         now_rate = float(current)

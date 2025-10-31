@@ -139,7 +139,7 @@ decision:
     default_spread_bps: 5.0
     default_fee_bps: 0.0
     staging_cost_multiplier: 1.2
-  
+
   heuristics:
     enabled: false
     trigger_policy: strict
@@ -182,7 +182,7 @@ prediction:
   model_storage_dir: "data/models/prediction/"
   # Explanations (Phase 2 evidence for UI)
   explain_enabled: true
-  explain_include_plots: false
+  explain_include_plots: true
   explain_top_n: 5
   # Horizon routing
   default_timeframe: "1_day"  # or "immediate", "1_week", "1_month"

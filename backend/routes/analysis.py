@@ -192,13 +192,24 @@ def _run_analysis_task(analysis_repo, orchestrator, params: ExtractedParameters,
         # Prediction mapping (minimal, enough for chart endpoint)
         pred_summary = ev.get("prediction") or {}
         preds_all = ev.get("predictions_all") or {}
-        predictions = {
-            str(k): {"mean_change_pct": v, "quantiles": {}}
-            for k, v in preds_all.items()
-        }
+        prediction_explanations = ev.get("prediction_explanations") or {}
+        prediction_model = ev.get("model") or {}
+
+        predictions = {}
+        for key, payload in preds_all.items():
+            payload = payload or {}
+            predictions[str(key)] = {
+                "mean_change_pct": payload.get("mean_change_pct"),
+                "quantiles": payload.get("quantiles"),
+                "direction_prob": payload.get("direction_prob"),
+            }
+
         prediction = {
             "latest_close": pred_summary.get("latest_close"),
             "predictions": predictions,
+            "selected_prediction": pred_summary,
+            "explanations": prediction_explanations,
+            "model": prediction_model,
         }
 
         # Update with full result

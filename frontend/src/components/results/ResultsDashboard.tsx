@@ -2,15 +2,23 @@ import { useState, useEffect, useRef } from 'react';
 import { analysisService } from '../../services/analysis';
 import { visualizationService } from '../../services/visualization';
 import type { AnalysisResult, AnalysisStatus } from '../../types/api';
-import { Loader2, AlertCircle, CheckCircle2, TrendingUp, Clock, DollarSign, Download, FileText, FileSpreadsheet, LineChart, Newspaper, Cpu } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, TrendingUp, Clock, DollarSign, Download, FileText, FileSpreadsheet, LineChart, Newspaper, Cpu, BarChart3, TrendingDown, Brain, Activity } from 'lucide-react';
 import { exportAnalysisPDF, exportAnalysisCSV, exportJSON } from '../../lib/export';
 import { useSession } from '../../contexts/SessionContext';
 import { toast } from 'sonner';
+import { ChartSyncProvider } from '../../contexts/ChartSyncContext';
 import ConfidenceChart from '../visualizations/ConfidenceChart';
 import RiskChart from '../visualizations/RiskChart';
 import CostChart from '../visualizations/CostChart';
 import TimelineChart from '../visualizations/TimelineChart';
 import PredictionChart from '../visualizations/PredictionChart';
+import HistoricalPriceChart from '../visualizations/HistoricalPriceChart';
+import TechnicalIndicatorsChart from '../visualizations/TechnicalIndicatorsChart';
+import SentimentChart from '../visualizations/SentimentChart';
+import EventsTimelineChart from '../visualizations/EventsTimelineChart';
+import SHAPChart from '../visualizations/SHAPChart';
+import QuantileFanChart from '../visualizations/QuantileFanChart';
+import MarketRegimeChart from '../visualizations/MarketRegimeChart';
 import EvidenceViewer from '../evidence/EvidenceViewer';
 
 interface ResultsDashboardProps {
@@ -28,8 +36,22 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
     timeline: [],
     prediction: [],
     evidence: {},
+    historicalPrices: null,
+    technicalIndicators: null,
+    sentimentTimeline: null,
+    eventsTimeline: null,
+    shapExplanations: null,
+    predictionQuantiles: null,
+    marketRegime: null,
   });
+  const [activeTab, setActiveTab] = useState<'overview' | 'technical' | 'sentiment' | 'predictions' | 'explainability'>('overview');
   const { addAnalysisToHistory, updateAnalysisInHistory } = useSession();
+
+  const renderChartFallback = (message: string) => (
+    <div className="flex h-72 w-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+      {message}
+    </div>
+  );
 
   useEffect(() => {
     // Setup SSE stream for real-time updates
@@ -76,7 +98,14 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
         visualizationService.getTimelineData(correlationId),
         visualizationService.getPredictionChart(correlationId),
         visualizationService.getEvidence(correlationId),
-      ]).then(([confidence, risk, cost, timeline, prediction, evidence]) => {
+        visualizationService.getHistoricalPrices(correlationId),
+        visualizationService.getTechnicalIndicators(correlationId),
+        visualizationService.getSentimentTimeline(correlationId),
+        visualizationService.getEventsTimeline(correlationId),
+        visualizationService.getSHAPExplanations(correlationId),
+        visualizationService.getPredictionQuantiles(correlationId),
+        visualizationService.getMarketRegime(correlationId),
+      ]).then(([confidence, risk, cost, timeline, prediction, evidence, historicalPrices, technicalIndicators, sentimentTimeline, eventsTimeline, shapExplanations, predictionQuantiles, marketRegime]) => {
         const ev = evidence.status === 'fulfilled' ? evidence.value : {};
         // Normalize events into UI shape expected by EventsTab
         const rawEvents = Array.isArray(ev?.calendar?.upcoming_events)
@@ -103,6 +132,13 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
           timeline: timeline.status === 'fulfilled' ? timeline.value : [],
           prediction: prediction.status === 'fulfilled' ? prediction.value : [],
           evidence: mappedEvidence,
+          historicalPrices: historicalPrices.status === 'fulfilled' ? historicalPrices.value : null,
+          technicalIndicators: technicalIndicators.status === 'fulfilled' ? technicalIndicators.value : null,
+          sentimentTimeline: sentimentTimeline.status === 'fulfilled' ? sentimentTimeline.value : null,
+          eventsTimeline: eventsTimeline.status === 'fulfilled' ? eventsTimeline.value : null,
+          shapExplanations: shapExplanations.status === 'fulfilled' ? shapExplanations.value : null,
+          predictionQuantiles: predictionQuantiles.status === 'fulfilled' ? predictionQuantiles.value : null,
+          marketRegime: marketRegime.status === 'fulfilled' ? marketRegime.value : null,
         });
       });
     } catch (err) {
@@ -550,50 +586,237 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
         </div>
       )}
 
-      {/* Visualization Charts */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold">Detailed Analytics</h2>
+      {/* Tabbed Visualization Section */}
+      <ChartSyncProvider>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Detailed Analytics</h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Confidence Chart */}
-          {vizData.confidence.length > 0 && (
-            <div className="border rounded-lg p-4">
-              <ConfidenceChart data={vizData.confidence} />
+          {/* Tab Navigation */}
+          <div className="border-b">
+            <div className="flex gap-1 overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'overview'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <BarChart3 size={16} />
+                  Overview
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('technical')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'technical'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingDown size={16} />
+                  Technical Analysis
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('sentiment')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'sentiment'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Newspaper size={16} />
+                  Sentiment & Events
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('predictions')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'predictions'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Activity size={16} />
+                  Predictions
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('explainability')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'explainability'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Brain size={16} />
+                  ML Explainability
+                </div>
+              </button>
             </div>
-          )}
-
-          {/* Risk Chart */}
-          {vizData.risk.length > 0 && (
-            <div className="border rounded-lg p-4">
-              <RiskChart data={vizData.risk} />
-            </div>
-          )}
-
-          {/* Cost Chart */}
-          {vizData.cost.length > 0 && (
-            <div className="border rounded-lg p-4">
-              <CostChart data={vizData.cost} />
-            </div>
-          )}
-
-          {/* Prediction Chart */}
-          {vizData.prediction.length > 0 && (
-            <div className="border rounded-lg p-4">
-              <PredictionChart
-                data={vizData.prediction}
-                currency_pair={result.metadata?.currency_pair}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Timeline Chart (full width) */}
-        {vizData.timeline.length > 0 && (
-          <div className="border rounded-lg p-4">
-            <TimelineChart data={vizData.timeline} />
           </div>
-        )}
-      </div>
+
+          {/* Tab Content */}
+          <div className="min-h-[400px]">
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="border rounded-lg p-4">
+                    {vizData.confidence.length > 0 ? (
+                      <ConfidenceChart data={vizData.confidence} />
+                    ) : (
+                      renderChartFallback('Confidence metrics are not available for this analysis yet.')
+                    )}
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    {vizData.risk.length > 0 ? (
+                      <RiskChart data={vizData.risk} />
+                    ) : (
+                      renderChartFallback('Risk breakdown requires completed risk analytics. Start a new analysis to generate this view.')
+                    )}
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    {vizData.cost.length > 0 ? (
+                      <CostChart data={vizData.cost} />
+                    ) : (
+                      renderChartFallback('Cost breakdown is unavailable. Ensure transaction cost analysis is enabled for this workspace.')
+                    )}
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    {vizData.prediction.length > 0 ? (
+                      <PredictionChart
+                        data={vizData.prediction}
+                        currency_pair={result.metadata?.currency_pair}
+                      />
+                    ) : (
+                      renderChartFallback('Prediction data was not returned. Train forecasting models or re-run the analysis to populate this chart.')
+                    )}
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4">
+                  {vizData.timeline.length > 0 ? (
+                    <TimelineChart data={vizData.timeline} />
+                  ) : (
+                    renderChartFallback('Timeline data is not available for this recommendation.')
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Technical Analysis Tab */}
+            {activeTab === 'technical' && (
+              <div className="space-y-6">
+                <div className="border rounded-lg p-4">
+                  {vizData.historicalPrices && vizData.historicalPrices.data?.length ? (
+                    <HistoricalPriceChart
+                      data={vizData.historicalPrices.data || []}
+                      indicators={vizData.historicalPrices.indicators}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Historical price data is unavailable. YFinance access may be disabled or the pair lacks history.')
+                  )}
+                </div>
+                <div className="border rounded-lg p-4">
+                  {vizData.technicalIndicators && vizData.technicalIndicators.data?.length ? (
+                    <TechnicalIndicatorsChart
+                      data={vizData.technicalIndicators.data || []}
+                      indicators={vizData.technicalIndicators.indicators}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Technical indicators were not generated for this analysis.')
+                  )}
+                </div>
+                <div className="border rounded-lg p-4">
+                  {vizData.marketRegime ? (
+                    <MarketRegimeChart
+                      regime_history={vizData.marketRegime.regime_history || []}
+                      current_regime={vizData.marketRegime.current_regime}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Market regime classification requires historical data. Re-run the analysis when data is available.')
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Sentiment & Events Tab */}
+            {activeTab === 'sentiment' && (
+              <div className="space-y-6">
+                <div className="border rounded-lg p-4">
+                  {vizData.sentimentTimeline ? (
+                    <SentimentChart
+                      current_sentiment={vizData.sentimentTimeline.current_sentiment}
+                      timeline={vizData.sentimentTimeline.timeline || []}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Sentiment analytics were not returned. Enable news intelligence to populate this view.')
+                  )}
+                </div>
+                <div className="border rounded-lg p-4">
+                  {vizData.eventsTimeline ? (
+                    <EventsTimelineChart
+                      events={vizData.eventsTimeline.events || []}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Economic event data is unavailable for this analysis.')
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Predictions Tab */}
+            {activeTab === 'predictions' && (
+              <div className="space-y-6">
+                <div className="border rounded-lg p-4">
+                  {vizData.predictionQuantiles && vizData.predictionQuantiles.predictions?.length ? (
+                    <QuantileFanChart
+                      predictions={vizData.predictionQuantiles.predictions || []}
+                      latest_close={vizData.predictionQuantiles.latest_close || 0}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  ) : (
+                    renderChartFallback('Quantile forecasts are not available. Train a prediction model or re-run the analysis to generate these bands.')
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ML Explainability Tab */}
+            {activeTab === 'explainability' && (
+              <div className="space-y-6">
+                {vizData.shapExplanations && (
+                  <div className="border rounded-lg p-4">
+                    <SHAPChart
+                      feature_importance={vizData.shapExplanations.feature_importance || []}
+                      waterfall_plot={vizData.shapExplanations.waterfall_plot}
+                      has_waterfall={vizData.shapExplanations.has_waterfall}
+                      waterfall_data={vizData.shapExplanations.waterfall_data}
+                      currency_pair={result.metadata?.currency_pair}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </ChartSyncProvider>
 
       {/* Evidence Viewer */}
       {vizData.evidence && Object.keys(vizData.evidence).length > 0 && (

@@ -29,6 +29,7 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
   return (
     <div className="border rounded-lg overflow-hidden">
       <button
+        type="button"
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full px-4 py-3 bg-accent hover:bg-accent/80 transition-colors flex items-center justify-between text-accent-foreground"
       >
@@ -42,6 +43,7 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
           <div className="flex gap-2 border-b mb-4">
             {tabs.map((tab) => (
               <button
+                type="button"
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 transition-colors relative ${

@@ -74,7 +74,7 @@ export default function NewsTab({ data }: NewsTabProps) {
               </div>
             </div>
 
-            {article.url && (
+            {/^https?:\/\//i.test(article.url ?? '') ? (
               <a
                 href={article.url}
                 target="_blank"
@@ -84,7 +84,7 @@ export default function NewsTab({ data }: NewsTabProps) {
               >
                 <ExternalLink size={16} />
               </a>
-            )}
+            ) : null}
           </div>
         </div>
       ))}

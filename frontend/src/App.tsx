@@ -8,6 +8,7 @@ import Analysis from './pages/Analysis';
 import Results from './pages/Results';
 import Models from './pages/Models';
 import History from './pages/History';
+import { Toaster } from 'sonner';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        <Toaster position="top-right" richColors />
       </SessionProvider>
     </ThemeProvider>
   );

@@ -7,6 +7,7 @@ import MessageBubble from './MessageBubble';
 import { useSession, type ChatMessage, type ChatSession } from '../../contexts/SessionContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import type { AnalysisResult } from '../../types/api';
+import { toast } from 'sonner';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -282,6 +283,54 @@ export default function ChatInterface() {
     }
   };
 
+  const handleCopySessionId = async () => {
+    if (!sessionId) {
+      console.log('No session ID available');
+      return;
+    }
+    console.log('Attempting to copy session ID:', sessionId);
+    console.log('Secure context:', window.isSecureContext);
+    console.log('Clipboard API available:', !!navigator.clipboard);
+    
+    try {
+      // Modern clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        console.log('Using modern clipboard API');
+        await navigator.clipboard.writeText(sessionId);
+        toast.success('Session ID copied to clipboard');
+      } else {
+        console.log('Using fallback method');
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = sessionId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          const successful = document.execCommand('copy');
+          console.log('Fallback copy successful:', successful);
+          textArea.remove();
+          if (successful) {
+            toast.success('Session ID copied to clipboard');
+          } else {
+            toast.error('Failed to copy. Session ID: ' + sessionId);
+          }
+        } catch (err) {
+          console.error('Fallback copy failed:', err);
+          textArea.remove();
+          toast.error('Failed to copy. Session ID: ' + sessionId);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to copy session ID:', error);
+      console.error('Error details:', error);
+      toast.error('Copy failed. Session ID: ' + sessionId);
+    }
+  };
+
   const handleReset = useCallback(async () => {
     if (sessionId) {
       try {
@@ -403,7 +452,7 @@ export default function ChatInterface() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="text-xl font-bold hover:text-primary transition-colors">
-              Currency Assistant
+              Forex
             </Link>
 
             <div className="flex items-center gap-6">
@@ -451,9 +500,13 @@ export default function ChatInterface() {
 
               <div className="flex items-center gap-3">
                 {sessionId && (
-                  <span className="hidden rounded-full border border-border/40 bg-muted/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground sm:inline-flex">
+                  <button
+                    onClick={handleCopySessionId}
+                    className="hidden rounded-full border border-border/40 bg-muted/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:border-border/60 sm:inline-flex cursor-pointer"
+                    title="Click to copy full session ID"
+                  >
                     ...{sessionId.slice(-6)}
-                  </span>
+                  </button>
                 )}
                 <button
                   onClick={handleReset}
