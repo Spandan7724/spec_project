@@ -3,7 +3,8 @@ from __future__ import annotations
 import re
 import uuid
 import logging
-from typing import Dict, Optional, List
+from datetime import datetime
+from typing import Any, Dict, Optional, List
 
 from .models import (
     ConversationSession,
@@ -21,6 +22,7 @@ from .message_templates import (
     ERROR_MESSAGES,
     GREETING_MESSAGE,
 )
+from .response_formatter import ResponseFormatter
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +55,11 @@ class ConversationManager:
                 requires_input=True,
                 parameters=session.parameters,
             )
+
+        # Chat continuity: Check if session has completed analysis
+        if session.state == ConversationState.RESULTS_READY and session.analysis_result:
+            # This is a follow-up question about analysis
+            return self.handle_followup_question(session.session_id, request.user_input)
 
         # Route based on state
         if session.state == ConversationState.INITIAL:
@@ -93,6 +100,11 @@ class ConversationManager:
                 requires_input=True,
                 parameters=session.parameters,
             )
+
+        # Chat continuity: Check if session has completed analysis
+        if session.state == ConversationState.RESULTS_READY and session.analysis_result:
+            # This is a follow-up question about analysis
+            return await self.ahandle_followup_question(session.session_id, request.user_input)
 
         if session.state == ConversationState.INITIAL:
             return await self._ahandle_initial(session, request.user_input)
@@ -503,3 +515,306 @@ class ConversationManager:
                 return f"✓ Timeframe: {p.timeframe_days} {label}"
             return "✓ Timeframe: —"
         return ""
+
+    def update_with_analysis_result(
+        self,
+        session_id: str,
+        correlation_id: str,
+        result: Dict[str, Any]
+    ) -> None:
+        """Update session with completed analysis results (for chat continuity)."""
+        session = self.sessions.get(session_id)
+        if not session:
+            logger.warning(f"Session {session_id} not found for analysis update")
+            return
+
+        session.analysis_correlation_id = correlation_id
+        session.analysis_result = result
+        session.state = ConversationState.RESULTS_READY
+        session.last_updated = datetime.now()
+
+        # Format summary for chat display
+        formatter = ResponseFormatter()
+        summary = formatter.format_recommendation(result)
+        session.result_summary = summary
+
+        # Add to message history
+        message = f"""Analysis Complete!
+
+{summary}
+
+You can now:
+• Ask me questions about this analysis
+• Request clarification on any recommendations
+• View the detailed dashboard with charts and evidence
+
+What would you like to know?"""
+
+        session.add_message("assistant", message)
+
+        logger.info(
+            f"Updated session {session_id} with analysis results. "
+            f"Correlation: {correlation_id}, Action: {result.get('action')}"
+        )
+
+    def handle_followup_question(
+        self,
+        session_id: str,
+        question: str
+    ) -> SupervisorResponse:
+        """Answer questions about completed analysis using LLM with context."""
+        session = self.sessions[session_id]
+        result = session.analysis_result
+
+        if not result:
+            return SupervisorResponse(
+                session_id=session_id,
+                state=session.state,
+                message="I don't have analysis results to discuss. Would you like to start a new conversion request?",
+                requires_input=True,
+                parameters=None,
+                recommendation=None
+            )
+
+        # Check for reset/new request keywords
+        reset_keywords = ['new request', 'start over', 'new analysis', 'different conversion']
+        if any(kw in question.lower() for kw in reset_keywords):
+            # Reset session to initial state
+            session.state = ConversationState.INITIAL
+            session.parameters = ExtractedParameters()
+            session.analysis_result = None
+            session.analysis_correlation_id = None
+            return SupervisorResponse(
+                session_id=session_id,
+                state=ConversationState.INITIAL,
+                message="Let's start fresh! What currency pair would you like to analyze?",
+                requires_input=True,
+                parameters=None,
+                recommendation=None
+            )
+
+        # Build context from analysis results
+        context = self._build_analysis_context(result)
+
+        # Use LLM to answer question with context
+        answer = self._answer_with_llm(context, question)
+
+        # Add to message history
+        session.add_message("assistant", answer)
+        session.last_updated = datetime.now()
+
+        return SupervisorResponse(
+            session_id=session_id,
+            state=ConversationState.RESULTS_READY,
+            message=answer,
+            requires_input=True,
+            parameters=session.parameters,
+            recommendation=result
+        )
+
+    async def ahandle_followup_question(
+        self,
+        session_id: str,
+        question: str
+    ) -> SupervisorResponse:
+        """Async version of handle_followup_question."""
+        session = self.sessions[session_id]
+        result = session.analysis_result
+
+        if not result:
+            return SupervisorResponse(
+                session_id=session_id,
+                state=session.state,
+                message="I don't have analysis results to discuss. Would you like to start a new conversion request?",
+                requires_input=True,
+                parameters=None,
+                recommendation=None
+            )
+
+        # Check for reset/new request keywords
+        reset_keywords = ['new request', 'start over', 'new analysis', 'different conversion']
+        if any(kw in question.lower() for kw in reset_keywords):
+            # Reset session to initial state
+            session.state = ConversationState.INITIAL
+            session.parameters = ExtractedParameters()
+            session.analysis_result = None
+            session.analysis_correlation_id = None
+            return SupervisorResponse(
+                session_id=session_id,
+                state=ConversationState.INITIAL,
+                message="Let's start fresh! What currency pair would you like to analyze?",
+                requires_input=True,
+                parameters=None,
+                recommendation=None
+            )
+
+        # Build context from analysis results
+        context = self._build_analysis_context(result)
+
+        # Use LLM to answer question with context (async)
+        answer = await self._aanswer_with_llm(context, question)
+
+        # Add to message history
+        session.add_message("assistant", answer)
+        session.last_updated = datetime.now()
+
+        return SupervisorResponse(
+            session_id=session_id,
+            state=ConversationState.RESULTS_READY,
+            message=answer,
+            requires_input=True,
+            parameters=session.parameters,
+            recommendation=result
+        )
+
+    def _build_analysis_context(self, result: Dict[str, Any]) -> str:
+        """Build comprehensive context from analysis results."""
+        # Extract key information
+        action = result.get('action', 'unknown')
+        confidence = result.get('confidence', 0)
+        timeline = result.get('timeline', 'Not specified')
+        rationale = result.get('rationale', [])
+        warnings = result.get('warnings', [])
+
+        risk_summary = result.get('risk_summary', {})
+        cost_estimate = result.get('cost_estimate', {})
+        expected_outcome = result.get('expected_outcome', {})
+
+        # Format context
+        context = f"""Analysis Results Summary:
+
+**Recommendation:** {action.replace('_', ' ').title()}
+**Confidence Level:** {confidence * 100:.1f}%
+**Timeline:** {timeline}
+
+**Rationale:**
+"""
+        for i, point in enumerate(rationale, 1):
+            context += f"{i}. {point}\n"
+
+        if warnings:
+            context += "\n**Warnings:**\n"
+            for warning in warnings:
+                context += f"⚠ {warning}\n"
+
+        context += f"""
+**Risk Assessment:**
+- Risk Level: {risk_summary.get('risk_level', 'Unknown')}
+- Volatility (30d): {risk_summary.get('realized_vol_30d', 'N/A')}
+- Event Risk: {risk_summary.get('event_risk', 'N/A')}
+
+**Cost Estimate:**
+- Spread: {cost_estimate.get('spread_bps', 'N/A')} bps
+- Fees: {cost_estimate.get('fee_bps', 'N/A')} bps
+- Total: {cost_estimate.get('total_bps', 'N/A')} bps
+
+**Expected Outcome:**
+- Expected Rate: {expected_outcome.get('expected_rate', 'N/A')}
+- Potential Improvement: {expected_outcome.get('expected_improvement_bps', 'N/A')} bps
+"""
+
+        # Add evidence summary if available
+        evidence = result.get('evidence', {})
+        if evidence:
+            context += "\n**Supporting Evidence:**\n"
+
+            market = evidence.get('market', {})
+            if market:
+                context += f"- Current Rate: {market.get('mid_rate', 'N/A')}\n"
+                context += f"- Market Regime: {market.get('regime', {}).get('regime_name', 'N/A')}\n"
+
+            intel = evidence.get('intelligence', {})
+            if intel:
+                context += f"- News Sentiment: {intel.get('pair_bias', 'N/A')}\n"
+                if intel.get('next_high_event'):
+                    context += f"- Next High-Impact Event: {intel['next_high_event']}\n"
+
+        return context
+
+    def _answer_with_llm(self, context: str, question: str) -> str:
+        """Use LLM to generate contextual answer."""
+        from src.llm.agent_helpers import chat_with_model_for_task
+
+        system_prompt = """You are a helpful currency trading assistant.
+You have just completed an analysis for the user and they are asking follow-up questions.
+
+Based on the analysis results provided, answer their question clearly and concisely.
+- Be specific and cite data from the analysis
+- Use the exact numbers and facts from the results
+- If the question is about something not in the analysis, say so politely
+- Keep answers conversational but professional
+- Format numbers clearly (e.g., "85% confidence", "15 basis points")
+"""
+
+        user_prompt = f"""Here are the analysis results:
+
+{context}
+
+User Question: {question}
+
+Answer the question based on the analysis results above. Be specific and helpful."""
+
+        try:
+            # Use synchronous LLM call (for non-async version)
+            from src.llm.manager import LLMManager
+            llm_manager = LLMManager()
+
+            response = llm_manager.complete(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                provider="conversation",  # Will route to appropriate model
+                temperature=0.7,
+                max_tokens=500
+            )
+
+            return response.content.strip()
+
+        except Exception as e:
+            logger.error(f"LLM follow-up answer failed: {e}")
+            return f"I understand you're asking about the analysis, but I'm having trouble generating a response right now. Could you rephrase your question?"
+
+    async def _aanswer_with_llm(self, context: str, question: str) -> str:
+        """Async version of _answer_with_llm."""
+        from src.llm.agent_helpers import chat_with_model_for_task
+
+        system_prompt = """You are a helpful currency trading assistant.
+You have just completed an analysis for the user and they are asking follow-up questions.
+
+Based on the analysis results provided, answer their question clearly and concisely.
+- Be specific and cite data from the analysis
+- Use the exact numbers and facts from the results
+- If the question is about something not in the analysis, say so politely
+- Keep answers conversational but professional
+- Format numbers clearly (e.g., "85% confidence", "15 basis points")
+"""
+
+        user_prompt = f"""Here are the analysis results:
+
+{context}
+
+User Question: {question}
+
+Answer the question based on the analysis results above. Be specific and helpful."""
+
+        try:
+            # Use async LLM call
+            from src.llm.manager import LLMManager
+            llm_manager = LLMManager()
+
+            response = await llm_manager.acomplete(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                provider="conversation",  # Will route to appropriate model
+                temperature=0.7,
+                max_tokens=500
+            )
+
+            return response.content.strip()
+
+        except Exception as e:
+            logger.error(f"LLM follow-up answer failed: {e}")
+            return f"I understand you're asking about the analysis, but I'm having trouble generating a response right now. Could you rephrase your question?"

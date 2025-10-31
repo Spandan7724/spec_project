@@ -35,6 +35,7 @@ def start_analysis(
         urgency=request.urgency,
         timeframe=request.timeframe,
         timeframe_days=request.timeframe_days,
+        session_id=request.session_id,  # Link to conversation session
     )
 
     # Fill base/quote/currency_pair if not consistent
@@ -208,6 +209,25 @@ def _run_analysis_task(analysis_repo, orchestrator, params: ExtractedParameters,
             intelligence=intelligence,
             prediction=prediction,
         )
+
+        # Notify conversation session if linked (for chat continuity)
+        if params.session_id:
+            from backend.dependencies import get_conversation_manager
+            cm = get_conversation_manager()
+            try:
+                cm.update_with_analysis_result(
+                    session_id=params.session_id,
+                    correlation_id=correlation_id,
+                    result=recommendation
+                )
+                logging.info(
+                    f"[{correlation_id}] Updated conversation session "
+                    f"{params.session_id} with results"
+                )
+            except Exception as e:
+                logging.error(
+                    f"[{correlation_id}] Failed to update conversation session: {e}"
+                )
 
     except Exception as e:  # noqa: BLE001
         analysis_repo.update_error(correlation_id=correlation_id, error_message=str(e))

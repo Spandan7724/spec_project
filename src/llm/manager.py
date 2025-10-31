@@ -3,7 +3,7 @@ LLM Provider Manager with failover capabilities
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, AsyncGenerator
 from datetime import datetime, timedelta
 
 from .config import LLMConfig, load_config
@@ -203,7 +203,87 @@ class LLMManager:
         error_msg = f"All providers failed. Last error: {last_error}"
         logger.error(error_msg)
         raise Exception(error_msg)
-    
+
+    async def stream_chat(self, messages: List[Dict[str, Any]],
+                          tools: Optional[List[Dict[str, Any]]] = None,
+                          provider_name: Optional[str] = None) -> AsyncGenerator[dict, None]:
+        """
+        Stream a chat request with automatic failover.
+
+        Yields dictionaries with 'content', 'model', 'finish_reason', 'provider' keys.
+        """
+        # Periodic health check
+        if await self._should_check_health():
+            await self.health_check_all()
+
+        # Determine provider order
+        if provider_name:
+            # Use specific provider if requested
+            providers_to_try = [provider_name] if provider_name in self.providers else []
+        else:
+            # Use failover order
+            providers_to_try = self.get_failover_order()
+
+        if not providers_to_try:
+            raise Exception("No available providers configured")
+
+        last_error = None
+
+        for provider_name in providers_to_try:
+            provider = self.providers.get(provider_name)
+            if not provider:
+                continue
+
+            # Check if provider supports streaming
+            features = provider.get_supported_features()
+            if not features.get("streaming", False):
+                logger.warning(f"Provider {provider_name} does not support streaming, skipping")
+                continue
+
+            # Skip unhealthy providers (but still try if it's the only one)
+            provider_health_info = self.provider_health.get(provider_name, {})
+            is_healthy = provider_health_info.get('healthy', True)
+
+            if not is_healthy and len(providers_to_try) > 1:
+                logger.warning(f"Skipping unhealthy provider: {provider_name}")
+                continue
+
+            try:
+                logger.info(f"Attempting streaming request with provider: {provider_name}")
+
+                # Stream from provider
+                async for chunk in provider.stream_chat(messages, tools):
+                    yield chunk
+
+                # Mark provider as healthy on successful request
+                self.provider_health[provider_name]['healthy'] = True
+                self.provider_health[provider_name]['error_count'] = 0
+                self.provider_health[provider_name]['last_error'] = None
+
+                logger.info(f"Successful streaming from {provider_name}")
+
+                # If we got here, streaming was successful, don't try other providers
+                return
+
+            except Exception as e:
+                logger.error(f"Provider {provider_name} streaming failed: {e}")
+                last_error = e
+
+                # Update provider health
+                health_info = self.provider_health[provider_name]
+                health_info['error_count'] += 1
+                health_info['last_error'] = str(e)
+
+                # Mark as unhealthy if too many errors
+                if health_info['error_count'] >= 3:
+                    health_info['healthy'] = False
+                    logger.warning(f"Marking provider {provider_name} as unhealthy due to repeated failures")
+
+        # If we get here, all providers failed
+        error_msg = f"All providers failed streaming. Last error: {last_error}"
+        logger.error(error_msg)
+        raise Exception(error_msg)
+
     def get_default_provider(self) -> Optional[BaseLLMProvider]:
         """Get the default provider instance"""
         provider_name = self.config.default_provider

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.llm.agent_helpers import chat_with_model, get_recommended_model_for_task
+from src.llm.agent_helpers import chat_with_model_for_task
 from src.utils.logging import get_logger
 
 
@@ -8,7 +8,12 @@ logger = get_logger(__name__)
 
 
 class NarrativeGenerator:
-    """Generate a concise narrative summary for a pair's news snapshot."""
+    """Generate a concise narrative summary for a pair's news snapshot.
+
+    Model: Uses {provider}_main for narrative generation.
+    Rationale: Creating coherent, user-facing summaries requires good language
+    understanding and generation capabilities, making the main model the better choice.
+    """
 
     def __init__(self, llm_manager):
         self.llm_manager = llm_manager
@@ -43,7 +48,7 @@ Top headlines:
             {"role": "system", "content": "You are a financial analyst. Be concise and objective."},
             {"role": "user", "content": prompt},
         ]
-        model = get_recommended_model_for_task("summarization")
-        resp = await chat_with_model(messages, model, self.llm_manager)
+        # Use provider's main model for narrative generation
+        resp = await chat_with_model_for_task(messages, "summarization", self.llm_manager)
         return resp.content.strip()
 

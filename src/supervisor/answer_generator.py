@@ -11,6 +11,7 @@ import os
 from typing import Any, Dict, Optional
 
 from src.llm.manager import LLMManager
+from src.llm.agent_helpers import chat_with_model_for_task
 from src.supervisor.models import ExtractedParameters
 
 
@@ -83,5 +84,6 @@ class AnswerGenerator:
             },
         ]
 
-        response = await self.llm.chat(messages)
+        # Use provider's main model for conversational Q&A (user-facing, requires good reasoning)
+        response = await chat_with_model_for_task(messages, "conversation", self.llm)
         return response.content.strip() if response and response.content else ""

@@ -3,8 +3,9 @@ OpenAI API provider for Currency Assistant.
 """
 
 import os
+import json
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, AsyncGenerator
 import httpx
 
 from ..types import BaseLLMProvider, ChatResponse, ProviderConfig
@@ -149,7 +150,77 @@ class OpenAIProvider(BaseLLMProvider):
         except Exception as e:
             logger.error(f"OpenAI chat error: {e}")
             raise e
-    
+
+    async def stream_chat(self, messages: List[Dict[str, Any]],
+                         tools: Optional[List[Dict[str, Any]]] = None) -> AsyncGenerator[dict, None]:
+        """
+        Stream a chat completion request to OpenAI API.
+        """
+        try:
+            # Prepare the request payload
+            payload = {
+                "model": self.model,
+                "messages": messages,
+                "stream": True,
+                **self.kwargs
+            }
+
+            # Add tools if provided
+            if tools:
+                payload["tools"] = tools
+                payload["tool_choice"] = "auto"
+                logger.debug(f"Added {len(tools)} tools to OpenAI streaming request")
+
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                async with client.stream(
+                    "POST",
+                    f"{self.api_base}/chat/completions",
+                    headers=self.headers,
+                    json=payload
+                ) as response:
+
+                    if response.status_code != 200:
+                        error_text = await response.aread()
+                        logger.error(f"OpenAI streaming error {response.status_code}: {error_text}")
+                        raise Exception(f"OpenAI streaming failed: {response.status_code}")
+
+                    async for line in response.aiter_lines():
+                        if line.startswith("data: "):
+                            data = line[6:]  # Remove "data: " prefix
+
+                            if data.strip() == "[DONE]":
+                                break
+
+                            try:
+                                chunk = json.loads(data)
+
+                                # Extract delta content
+                                choices = chunk.get("choices", [])
+                                if choices:
+                                    delta = choices[0].get("delta", {})
+                                    content = delta.get("content", "")
+
+                                    if content:
+                                        yield {
+                                            "content": content,
+                                            "model": chunk.get("model", self.model),
+                                            "finish_reason": choices[0].get("finish_reason"),
+                                            "provider": "openai"
+                                        }
+
+                            except json.JSONDecodeError:
+                                continue  # Skip invalid JSON lines
+
+        except httpx.TimeoutException:
+            logger.error("OpenAI streaming request timed out")
+            raise Exception("OpenAI streaming timed out")
+        except httpx.RequestError as e:
+            logger.error(f"OpenAI streaming error: {e}")
+            raise Exception(f"OpenAI streaming failed: {e}")
+        except Exception as e:
+            logger.error(f"OpenAI streaming error: {e}")
+            raise e
+
     def get_available_models(self) -> List[str]:
         """
         Get available OpenAI models.

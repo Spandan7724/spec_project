@@ -6,6 +6,9 @@ export interface ConversationMessage {
   message: string;
   requires_input: boolean;
   parameters: Record<string, any> | null;
+  // Chat continuity: analysis results when available
+  recommendation?: AnalysisResult;
+  correlation_id?: string;
 }
 
 export interface AnalysisStartResponse {

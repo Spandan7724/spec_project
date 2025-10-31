@@ -11,6 +11,7 @@ from dateutil import parser as dateparser
 import math
 
 from src.llm.manager import LLMManager
+from src.llm.agent_helpers import chat_with_model_for_task
 from src.supervisor.models import ExtractedParameters
 from src.supervisor.prompts import get_system_prompt, get_user_prompt, get_tools_schema
 from src.supervisor.validation import (
@@ -63,13 +64,17 @@ class NLUExtractor:
             return asyncio.run(self.aextract(text))
 
     async def _extract_with_llm(self, text: str) -> Dict[str, Any]:
-        """Use tool/function-calling to get structured parameters."""
+        """Use tool/function-calling to get structured parameters.
+
+        Uses {provider}_main for complex NLU with function calling.
+        """
         messages = [
             {"role": "system", "content": get_system_prompt()},
             {"role": "user", "content": get_user_prompt(text)},
         ]
         tools = get_tools_schema()
-        response = await self.llm.chat(messages, tools=tools)
+        # Use provider's main model for complex NLU reasoning with function calling
+        response = await chat_with_model_for_task(messages, "nlu", self.llm, tools=tools)
 
         # Prefer tool-calls if present
         if response.tool_calls:

@@ -198,38 +198,62 @@ logging:
   file: "logs/currency_assistant.log"
 
 llm:
-  default_provider: "copilot"
+  default_provider: "copilot"  # Base provider name (without _main/_fast suffix)
   providers:
-    copilot:
+    # GitHub Copilot variants
+    copilot_main:
       model: "gpt-4o-2024-11-20"
       enabled: true
       kwargs:
         temperature: 0.7
         max_tokens: 128000
-    copilot_mini:
+    copilot_fast:
       model: "gpt-5-mini"
       enabled: true
       kwargs:
         temperature: 0.7
+        max_tokens: 8192
+
+    # OpenAI variants
+    openai_main:
+      model: "gpt-5"
+      enabled: true
+      kwargs:
+        temperature: 0.7
         max_tokens: 128000
+    openai_fast:
+      model: "gpt-5-mini"
+      enabled: true
+      kwargs:
+        temperature: 0.7
+        max_tokens: 8192
+
+    # Claude variants
+    claude_main:
+      model: "claude-sonnet-4"
+      enabled: true
+      kwargs:
+        temperature: 0.7
+        max_tokens: 200000
+    claude_fast:
+      model: "claude-3.5-sonnet"
+      enabled: true
+      kwargs:
+        temperature: 0.7
+        max_tokens: 8192
+
+    # Legacy provider for backward compatibility (uses copilot via GitHub)
     copilot_claude:
       model: "claude-3.5-sonnet"
       enabled: true
       kwargs:
         temperature: 0.7
-        max_tokens: 128000
-    openai:
-      model: "gpt-4"
-      enabled: false
-      kwargs:
-        temperature: 0.7
-        max_tokens: 200000
-    claude:
-      model: "claude-4"
-      enabled: false
-      kwargs:
-        temperature: 0.7
-        max_tokens: 200000
+        max_tokens: 8192
+
   failover:
     enabled: true
-    order: ["copilot", "copilot_mini", "openai", "claude"]
+    # Failover within same tier (main with main, fast with fast), then across tiers
+    main_order: ["copilot_main", "openai_main", "claude_main"]
+    fast_order: ["copilot_fast", "openai_fast", "claude_fast"]
+    # Legacy order for backward compatibility
+    order: ["copilot_main", "copilot_fast", "openai_main", "claude_main"]

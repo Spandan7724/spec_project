@@ -7,7 +7,7 @@ import asyncio
 from typing import Dict, List
 
 from src.data_collection.market_intelligence.models import NewsClassification
-from src.llm.agent_helpers import chat_with_model, get_recommended_model_for_task
+from src.llm.agent_helpers import chat_with_model_for_task
 from src.utils.decorators import retry, log_execution, timeout
 from src.utils.logging import get_logger
 
@@ -16,7 +16,12 @@ logger = get_logger(__name__)
 
 
 class NewsClassifier:
-    """Classify news article sentiment and relevance using an LLM."""
+    """Classify news article sentiment and relevance using an LLM.
+
+    Model: Uses {provider}_fast for fast, cost-effective classification.
+    Rationale: News classification is a simple categorization task that doesn't
+    require complex reasoning, making it ideal for the cheaper, faster model.
+    """
 
     def __init__(self, llm_manager):
         self.llm_manager = llm_manager
@@ -43,8 +48,8 @@ quality_flags: clickbait, rumor_speculative, non_econ
             {"role": "system", "content": "Return ONLY JSON."},
             {"role": "user", "content": prompt},
         ]
-        model = get_recommended_model_for_task("classification")
-        resp = await chat_with_model(messages, model, self.llm_manager)
+        # Use provider's fast model for simple classification
+        resp = await chat_with_model_for_task(messages, "classification", self.llm_manager)
         content = resp.content.strip()
         if content.startswith("```"):
             content = content.strip("`")

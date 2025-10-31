@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { analysisService } from '../../services/analysis';
 import { visualizationService } from '../../services/visualization';
 import type { AnalysisResult, AnalysisStatus } from '../../types/api';
-import { Loader2, AlertCircle, CheckCircle2, TrendingUp, Clock, DollarSign, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, TrendingUp, Clock, DollarSign, Download, FileText, FileSpreadsheet, LineChart, Newspaper, Cpu } from 'lucide-react';
 import { exportAnalysisPDF, exportAnalysisCSV, exportJSON } from '../../lib/export';
 import { useSession } from '../../contexts/SessionContext';
 import { toast } from 'sonner';
@@ -78,9 +78,21 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
         visualizationService.getEvidence(correlationId),
       ]).then(([confidence, risk, cost, timeline, prediction, evidence]) => {
         const ev = evidence.status === 'fulfilled' ? evidence.value : {};
+        // Normalize events into UI shape expected by EventsTab
+        const rawEvents = Array.isArray(ev?.calendar?.upcoming_events)
+          ? ev.calendar.upcoming_events
+          : [];
+        const events = rawEvents.map((e: any) => ({
+          title: e.event || e.title || 'Event',
+          date: e.when_utc || e.date || undefined,
+          category: e.category,
+          impact: (e.importance || e.impact || 'medium').toLowerCase(),
+          description: e.description || e.note,
+          countries: e.currency ? [e.currency] : undefined,
+        }));
         const mappedEvidence = {
           news: Array.isArray(ev?.news?.articles) ? ev.news.articles : [],
-          events: Array.isArray(ev?.calendar?.upcoming_events) ? ev.calendar.upcoming_events : [],
+          events,
           market_data: ev?.market || {},
         };
 
@@ -132,23 +144,172 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
     }
   };
 
+  // Smooth animated progress + live activity feed
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+  const prevProgressRef = useRef(0);
+  const [activity, setActivity] = useState<{ time: number; message: string }[]>([]);
+  const progressHistoryRef = useRef<{ t: number; p: number }[]>([]);
+  const [etaLabel, setEtaLabel] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (status?.message) {
+      setLastUpdate(Date.now());
+      setActivity((prev) => {
+        const last = prev[prev.length - 1];
+        if (!last || last.message !== status.message) {
+          const next = [...prev, { time: Date.now(), message: status.message }];
+          return next.slice(-8);
+        }
+        return prev;
+      });
+    }
+  }, [status?.message]);
+
+  useEffect(() => {
+    const end = Math.max(0, Math.min(100, status?.progress ?? 0));
+    const start = prevProgressRef.current;
+    if (end === start) return;
+    const duration = 500;
+    const startTs = performance.now();
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+    let raf = 0;
+    const step = (ts: number) => {
+      const t = Math.min(1, (ts - startTs) / duration);
+      const val = start + (end - start) * ease(t);
+      setAnimatedProgress(val);
+      if (t < 1) raf = requestAnimationFrame(step);
+      else prevProgressRef.current = end;
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [status?.progress]);
+
+  // Track ETA based on progress velocity
+  useEffect(() => {
+    const p = Math.max(0, Math.min(100, status?.progress ?? 0));
+    const now = Date.now() / 1000;
+    const hist = progressHistoryRef.current;
+    // Append point
+    if (hist.length === 0 || Math.abs(hist[hist.length - 1].p - p) >= 0.5) {
+      hist.push({ t: now, p });
+      // Keep last ~10 points
+      if (hist.length > 10) hist.shift();
+    }
+    if (hist.length >= 2) {
+      const first = hist[0];
+      const last = hist[hist.length - 1];
+      const dp = last.p - first.p;
+      const dt = last.t - first.t;
+      if (dp > 0 && dt > 0.5) {
+        const rate = dp / dt; // % per second
+        const remaining = Math.max(0, 100 - last.p);
+        const etaSec = remaining / rate;
+        if (isFinite(etaSec)) {
+          const m = Math.floor(etaSec / 60);
+          const s = Math.max(0, Math.round(etaSec - m * 60));
+          setEtaLabel(m > 0 ? `~${m}m ${s}s` : `~${s}s`);
+        }
+      } else {
+        setEtaLabel(null);
+      }
+    }
+  }, [status?.progress]);
+
   // Loading state
   if (status?.status === 'pending' || status?.status === 'processing') {
+    const p = Math.max(0, Math.min(100, animatedProgress));
+    const stageIdx = p < 25 ? 0 : p < 50 ? 1 : p < 75 ? 2 : 3;
+    const stages = [
+      { label: 'Market Data', icon: LineChart },
+      { label: 'Intelligence', icon: Newspaper },
+      { label: 'Prediction', icon: Cpu },
+      { label: 'Decision', icon: CheckCircle2 },
+    ];
     return (
       <div className="max-w-4xl mx-auto">
         <div className="border rounded-lg p-8 text-center">
-          <Loader2 className="animate-spin mx-auto mb-4" size={48} />
-          <h2 className="text-2xl font-bold mb-2">Analyzing...</h2>
-          <p className="text-muted-foreground mb-4">{status.message}</p>
+          {/* Radial progress donut */}
+          <div className="relative w-40 h-40 mx-auto mb-6">
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                backgroundImage: `conic-gradient(hsl(var(--primary)) ${p * 3.6}deg, hsl(var(--muted)) 0deg)`,
+              }}
+            />
+            <div className="absolute inset-2 rounded-full bg-card" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-3xl font-bold">{p}%</div>
+            </div>
+          </div>
 
-          <div className="max-w-md mx-auto">
-            <div className="w-full bg-secondary rounded-full h-2 mb-2">
+          <h2 className="text-2xl font-bold mb-1">Analyzing...</h2>
+          <p className="text-muted-foreground mb-2">{status.message}</p>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-6">
+            <span className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+              </span>
+              Live
+            </span>
+            {etaLabel && <span>ETA {etaLabel}</span>}
+            {lastUpdate && (
+              <span>Updated {Math.max(0, Math.floor((Date.now() - lastUpdate) / 1000))}s ago</span>
+            )}
+          </div>
+
+          {/* Pipeline stage tracker with animated connector */}
+          <div className="max-w-2xl mx-auto mt-2">
+            <div className="grid grid-cols-4 gap-3 mb-3">
+              {stages.map((s, i) => {
+                const Icon = s.icon;
+                const active = i <= stageIdx;
+                return (
+                  <div key={s.label} className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center border transition-colors ${
+                        active ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground'
+                      }`}
+                      title={s.label}
+                    >
+                      <Icon size={20} />
+                    </div>
+                    <span className={`mt-2 text-xs ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{s.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
               <div
-                className="bg-primary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${status.progress}%` }}
+                className="absolute left-0 top-0 h-full bg-primary rounded-full transition-[width] duration-500 ease-out"
+                style={{ width: `${p}%` }}
+              />
+              {/* Moving indicator */}
+              <div
+                className="absolute -top-1.5 w-5 h-5 rounded-full bg-primary border-2 border-card shadow"
+                style={{ left: `calc(${p}% - 10px)` }}
               />
             </div>
-            <p className="text-sm text-muted-foreground">{status.progress}% complete</p>
+          </div>
+
+          {/* Live activity feed */}
+          <div className="max-w-2xl mx-auto text-left mt-6">
+            <h3 className="text-sm font-semibold mb-2">Live activity</h3>
+            <div className="border rounded-lg p-3 bg-accent/30 max-h-40 overflow-y-auto">
+              {activity.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Waiting for updates…</p>
+              ) : (
+                <ul className="space-y-1">
+                  {activity.map((a, idx) => (
+                    <li key={idx} className="text-sm text-muted-foreground">
+                      <span className="text-xs opacity-70 mr-2">{new Date(a.time).toLocaleTimeString()}</span>
+                      {a.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>

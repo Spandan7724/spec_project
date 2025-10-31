@@ -140,11 +140,20 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
 
         mi = state.get("intelligence_report") or {}
         news_citations = (mi.get("news") or {}).get("top_evidence") or []
-        # Keep only future events for cleaner UI (proximity_minutes >= 0)
+        # Get all calendar events (including past ones for debugging)
         calendar_all = (mi.get("calendar") or {}).get("events_extracted") or []
-        calendar_sources = [
-            e for e in calendar_all if isinstance(e.get("proximity_minutes"), (int, float)) and e.get("proximity_minutes") >= 0
-        ]
+        # Debug logging
+        logger.info(
+            "[%s] Decision.Evidence: news=%d calendar_total=%d",
+            correlation_id,
+            len(news_citations),
+            len(calendar_all)
+        )
+        if calendar_all:
+            # Log first event for debugging
+            logger.info("[%s] First calendar event: %s", correlation_id, calendar_all[0])
+        # Show all events temporarily to debug why they're empty
+        calendar_sources = calendar_all[:10]  # Just cap at 10 for UI
 
         # Model evidence
         explanations = ((pf.get("explanations") or {}).get("daily") or {})

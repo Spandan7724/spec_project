@@ -17,6 +17,7 @@ class ConversationState(Enum):
     COLLECTING_TIMEFRAME = "collecting_timeframe"
     CONFIRMING = "confirming"
     PROCESSING = "processing"
+    RESULTS_READY = "results_ready"  # Analysis complete, can answer questions
     COMPLETED = "completed"
     ERROR = "error"
 
@@ -39,6 +40,8 @@ class ExtractedParameters:
     window_days: Optional[Dict[str, int]] = None  # {"start": int, "end": int} for ranges like 3-5 days
     time_unit: Optional[str] = None  # 'hours' | 'days' (optional hint)
     timeframe_hours: Optional[int] = None  # sub-day horizons (e.g., 'in 12 hours')
+    # Chat continuity: link to conversation session
+    session_id: Optional[str] = None
 
     def is_complete(self) -> bool:
         """Check if all required parameters are set."""
@@ -93,6 +96,11 @@ class ConversationSession:
     warnings: List[str] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
     last_updated: datetime = field(default_factory=datetime.now)
+
+    # Chat continuity: link to analysis results
+    analysis_correlation_id: Optional[str] = None
+    analysis_result: Optional[Dict[str, Any]] = None
+    result_summary: Optional[str] = None
 
     def add_message(self, role: str, content: str) -> None:
         """Add message to conversation history."""

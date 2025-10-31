@@ -7,7 +7,7 @@ from typing import List
 from src.data_collection.market_intelligence.models import EconomicEvent
 from src.data_collection.market_intelligence.serper_client import SerperSearchResult
 from src.config import get_config, load_config
-from src.llm.agent_helpers import chat_with_model, get_recommended_model_for_task
+from src.llm.agent_helpers import chat_with_model_for_task
 from src.utils.decorators import retry, log_execution, timeout
 from src.utils.logging import get_logger
 
@@ -16,7 +16,12 @@ logger = get_logger(__name__)
 
 
 class CalendarExtractor:
-    """Extract economic events from search results using an LLM."""
+    """Extract economic events from search results using an LLM.
+
+    Model: Uses {provider}_fast for fast data extraction.
+    Rationale: Extracting structured event data from text is a straightforward
+    task that benefits from the speed and cost-effectiveness of the fast model.
+    """
 
     # Expanded default mapping for common currencies (ISO 3166-1 alpha-2 or region code)
     DEFAULT_CURRENCY_TO_COUNTRY = {
@@ -95,8 +100,8 @@ Return a JSON array of events with fields:
             {"role": "system", "content": "Extract economic events. Return ONLY a JSON array."},
             {"role": "user", "content": prompt},
         ]
-        model = get_recommended_model_for_task("data_extraction")
-        resp = await chat_with_model(messages, model, self.llm_manager)
+        # Use provider's fast model for simple data extraction
+        resp = await chat_with_model_for_task(messages, "data_extraction", self.llm_manager)
         content = resp.content.strip()
         # Strip code fences if present
         if content.startswith("```"):
