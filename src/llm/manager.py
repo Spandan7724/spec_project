@@ -3,6 +3,7 @@ LLM Provider Manager with failover capabilities
 """
 
 import logging
+import asyncio
 from typing import Dict, Any, List, Optional, AsyncGenerator
 from datetime import datetime, timedelta
 
@@ -335,3 +336,34 @@ class LLMManager:
             'enabled_providers': list(self.providers.keys()),
             'total_providers': len(self.config.providers)
         }
+
+    def complete(
+        self,
+        messages: List[Dict[str, Any]],
+        provider_name: Optional[str] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> ChatResponse:
+        """Synchronous chat completion helper."""
+
+        async def _run_chat():
+            return await self.chat(messages, tools=tools, provider_name=provider_name)
+
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
+            return asyncio.run_coroutine_threadsafe(_run_chat(), loop).result()
+
+        return asyncio.run(_run_chat())
+
+    async def acomplete(
+        self,
+        messages: List[Dict[str, Any]],
+        provider_name: Optional[str] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> ChatResponse:
+        """Async chat completion helper."""
+
+        return await self.chat(messages, tools=tools, provider_name=provider_name)

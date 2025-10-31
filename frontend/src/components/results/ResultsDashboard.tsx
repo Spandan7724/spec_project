@@ -410,7 +410,7 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
             <ul className="space-y-1">
               {result.rationale.map((reason, index) => (
                 <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
+                  <span className="text-primary leading-[1.4]">•</span>
                   <span>{reason}</span>
                 </li>
               ))}
@@ -458,13 +458,20 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               <DollarSign size={16} />
               <h3 className="font-semibold">Estimated Cost</h3>
             </div>
-            <p className="text-2xl font-bold">
-              {result.cost_estimate.total_cost_bps?.toFixed(1)} bps
-            </p>
-            {result.cost_estimate.total_cost_absolute && (
-              <p className="text-sm text-muted-foreground mt-1">
-                ≈ ${result.cost_estimate.total_cost_absolute.toFixed(2)}
-              </p>
+            {result.cost_estimate.total_bps != null ? (
+              <>
+                <p className="text-2xl font-bold">
+                  {result.cost_estimate.total_bps.toFixed(1)} bps
+                </p>
+                {result.cost_estimate.spread_bps != null && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Spread: {result.cost_estimate.spread_bps.toFixed(1)} bps
+                    {result.cost_estimate.fee_bps > 0 && ` + Fee: ${result.cost_estimate.fee_bps.toFixed(1)} bps`}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-2xl font-bold text-muted-foreground">N/A</p>
             )}
           </div>
         )}
@@ -476,13 +483,19 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               <TrendingUp size={16} />
               <h3 className="font-semibold">Expected Rate</h3>
             </div>
-            <p className="text-2xl font-bold">
-              {result.expected_outcome.expected_rate?.toFixed(4)}
-            </p>
-            {result.expected_outcome.expected_improvement_bps && (
-              <p className="text-sm text-green-600 mt-1">
-                +{result.expected_outcome.expected_improvement_bps.toFixed(1)} bps improvement
-              </p>
+            {result.expected_outcome.expected_rate != null && result.expected_outcome.expected_rate > 0 ? (
+              <>
+                <p className="text-2xl font-bold">
+                  {result.expected_outcome.expected_rate.toFixed(4)}
+                </p>
+                {result.expected_outcome.expected_improvement_bps != null && result.expected_outcome.expected_improvement_bps !== 0 && (
+                  <p className={`text-sm mt-1 ${result.expected_outcome.expected_improvement_bps > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {result.expected_outcome.expected_improvement_bps > 0 ? '+' : ''}{result.expected_outcome.expected_improvement_bps.toFixed(1)} bps {result.expected_outcome.expected_improvement_bps > 0 ? 'improvement' : 'worse'}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-2xl font-bold text-muted-foreground">N/A</p>
             )}
           </div>
         )}

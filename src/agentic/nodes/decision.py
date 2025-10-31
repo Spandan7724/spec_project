@@ -37,6 +37,17 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
         tf_days = int(state.get("timeframe_days") or _timeframe_to_days(timeframe))
         amount = float(state.get("amount") or 0.0)
 
+        # Extract spread from market snapshot and convert to basis points
+        market_snapshot = state.get("market_snapshot") or {}
+        spread_bps = None
+        if market_snapshot:
+            spread_abs = market_snapshot.get("spread")
+            mid_rate = market_snapshot.get("mid_rate")
+            if spread_abs is not None and mid_rate and mid_rate > 0:
+                # Convert absolute spread to basis points: (spread / mid_rate) * 10000
+                spread_bps = float((spread_abs / mid_rate) * 10000)
+                logger.debug(f"[{correlation_id}] Calculated spread_bps: {spread_bps:.2f} from spread={spread_abs}, mid_rate={mid_rate}")
+
         # Build DecisionRequest
         req = DecisionRequest(
             amount=amount,
@@ -45,13 +56,13 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
             timeframe=timeframe,
             timeframe_days=tf_days,
             currency_pair=state.get("currency_pair"),
-            market=state.get("market_snapshot") or {},
+            market=market_snapshot,
             intelligence=state.get("intelligence_report") or None,
             prediction=state.get("price_forecast") or None,
-            spread_bps=None,
+            spread_bps=spread_bps,
             fee_bps=None,
             components_available={
-                "market": bool(state.get("market_snapshot")),
+                "market": bool(market_snapshot),
                 "intelligence": bool(state.get("intelligence_report")),
                 "prediction": bool(state.get("price_forecast")),
             },

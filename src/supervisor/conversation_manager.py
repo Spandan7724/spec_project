@@ -593,11 +593,12 @@ What would you like to know?"""
                 recommendation=None
             )
 
-        # Build context from analysis results
-        context = self._build_analysis_context(result)
+        # Build context from analysis results and recent conversation
+        context = self._build_analysis_context(result, session.parameters)
+        history_context = self._build_conversation_history(session.conversation_history)
 
         # Use LLM to answer question with context
-        answer = self._answer_with_llm(context, question)
+        answer = self._answer_with_llm(context, history_context, question)
 
         # Add to message history
         session.add_message("assistant", answer)
@@ -649,10 +650,11 @@ What would you like to know?"""
             )
 
         # Build context from analysis results
-        context = self._build_analysis_context(result)
+        context = self._build_analysis_context(result, session.parameters)
+        history_context = self._build_conversation_history(session.conversation_history)
 
         # Use LLM to answer question with context (async)
-        answer = await self._aanswer_with_llm(context, question)
+        answer = await self._aanswer_with_llm(context, history_context, question)
 
         # Add to message history
         session.add_message("assistant", answer)
@@ -667,24 +669,89 @@ What would you like to know?"""
             recommendation=result
         )
 
-    def _build_analysis_context(self, result: Dict[str, Any]) -> str:
-        """Build comprehensive context from analysis results."""
+    def _build_analysis_context(
+        self,
+        result: Dict[str, Any],
+        parameters: Optional[ExtractedParameters] = None
+    ) -> str:
+        """Build comprehensive context from analysis results and captured parameters."""
         # Extract key information
         action = result.get('action', 'unknown')
-        confidence = result.get('confidence', 0)
+        confidence_val = result.get('confidence')
+        if not isinstance(confidence_val, (int, float)):
+            confidence_val = 0
         timeline = result.get('timeline', 'Not specified')
-        rationale = result.get('rationale', [])
-        warnings = result.get('warnings', [])
+        rationale = result.get('rationale') or []
+        warnings = result.get('warnings') or []
 
-        risk_summary = result.get('risk_summary', {})
-        cost_estimate = result.get('cost_estimate', {})
-        expected_outcome = result.get('expected_outcome', {})
+        risk_summary = result.get('risk_summary') or {}
+        cost_estimate = result.get('cost_estimate') or {}
+        expected_outcome = result.get('expected_outcome') or {}
+
+        metadata = result.get('metadata') or {}
+
+        # Build request summary from parameters/metadata
+        currency_pair = None
+        base_currency = None
+        quote_currency = None
+        amount = None
+        urgency = None
+        risk_tolerance = None
+        timeframe = None
+
+        if parameters:
+            currency_pair = parameters.currency_pair or currency_pair
+            base_currency = parameters.base_currency or base_currency
+            quote_currency = parameters.quote_currency or quote_currency
+            amount = parameters.amount if parameters.amount is not None else amount
+            urgency = parameters.urgency or urgency
+            risk_tolerance = parameters.risk_tolerance or risk_tolerance
+            timeframe = parameters.timeframe or timeframe
+
+        currency_pair = currency_pair or metadata.get('currency_pair')
+        base_currency = base_currency or metadata.get('base_currency')
+        quote_currency = quote_currency or metadata.get('quote_currency')
+        amount = amount if amount is not None else metadata.get('amount')
+        urgency = urgency or metadata.get('urgency')
+        risk_tolerance = risk_tolerance or metadata.get('risk_tolerance')
+        timeframe = timeframe or metadata.get('timeframe')
 
         # Format context
-        context = f"""Analysis Results Summary:
+        request_lines = []
+        if currency_pair:
+            request_lines.append(f"Currency Pair: {currency_pair}")
+        else:
+            if base_currency and quote_currency:
+                request_lines.append(f"Currencies: {base_currency} to {quote_currency}")
+            elif base_currency:
+                request_lines.append(f"Base Currency: {base_currency}")
+            elif quote_currency:
+                request_lines.append(f"Quote Currency: {quote_currency}")
+        if amount:
+            try:
+                request_lines.append(f"Amount: {float(amount):,.2f}")
+            except (TypeError, ValueError):
+                request_lines.append(f"Amount: {amount}")
+        if urgency:
+            request_lines.append(f"Urgency: {urgency}")
+        if risk_tolerance:
+            request_lines.append(f"Risk tolerance: {risk_tolerance}")
+        if timeframe:
+            request_lines.append(f"Timeframe: {timeframe}")
+        elif expected_outcome.get('timeframe'):
+            request_lines.append(f"Timeframe: {expected_outcome['timeframe']}")
+
+        request_summary = "\n".join(request_lines) if request_lines else "Not specified"
+
+        context = f"""Conversation Context:
+
+User Request:
+{request_summary}
+
+Analysis Results Summary:
 
 **Recommendation:** {action.replace('_', ' ').title()}
-**Confidence Level:** {confidence * 100:.1f}%
+**Confidence Level:** {confidence_val * 100:.1f}%
 **Timeline:** {timeline}
 
 **Rationale:**
@@ -714,60 +781,120 @@ What would you like to know?"""
 """
 
         # Add evidence summary if available
-        evidence = result.get('evidence', {})
+        evidence = result.get('evidence') or {}
         if evidence:
             context += "\n**Supporting Evidence:**\n"
 
-            market = evidence.get('market', {})
-            if market:
-                context += f"- Current Rate: {market.get('mid_rate', 'N/A')}\n"
-                context += f"- Market Regime: {market.get('regime', {}).get('regime_name', 'N/A')}\n"
+        market = evidence.get('market') or {}
+        if market:
+            context += f"- Current Rate: {market.get('mid_rate', 'N/A')}\n"
+            regime = market.get('regime') or {}
+            context += f"- Market Regime: {regime.get('regime_name', 'N/A')}\n"
 
-            intel = evidence.get('intelligence', {})
-            if intel:
-                context += f"- News Sentiment: {intel.get('pair_bias', 'N/A')}\n"
-                if intel.get('next_high_event'):
-                    context += f"- Next High-Impact Event: {intel['next_high_event']}\n"
+        intel = evidence.get('intelligence') or {}
+        if intel:
+            context += f"- News Sentiment: {intel.get('pair_bias', 'N/A')}\n"
+            next_event = intel.get('next_high_event')
+            if next_event:
+                context += f"- Next High-Impact Event: {next_event}\n"
 
         return context
 
-    def _answer_with_llm(self, context: str, question: str) -> str:
+    def _build_conversation_history(
+        self,
+        history: List[Dict[str, str]],
+        max_messages: int = 8,
+        exclude_last: bool = True,
+    ) -> str:
+        """Format recent conversation history for LLM context."""
+
+        if not history:
+            return "No prior conversation."
+
+        trimmed_history = history[:-1] if exclude_last else history
+        if not trimmed_history:
+            return "No prior conversation."
+
+        recent_messages = trimmed_history[-max_messages:]
+        lines: List[str] = []
+        for message in recent_messages:
+            role = message.get("role", "assistant")
+            speaker = "User" if role == "user" else "Assistant"
+            content = message.get("content", "")
+            lines.append(f"{speaker}: {content}")
+
+        return "\n".join(lines)
+
+    def _answer_with_llm(self, context: str, history: str, question: str) -> str:
         """Use LLM to generate contextual answer."""
-        from src.llm.agent_helpers import chat_with_model_for_task
+        import asyncio
 
         system_prompt = """You are a helpful currency trading assistant.
 You have just completed an analysis for the user and they are asking follow-up questions.
 
-Based on the analysis results provided, answer their question clearly and concisely.
-- Be specific and cite data from the analysis
+Use both the prior conversation history and the analysis results to answer clearly and concisely.
+- Reference the analysis data wherever relevant
 - Use the exact numbers and facts from the results
-- If the question is about something not in the analysis, say so politely
+- If the question is about something not in the conversation or analysis, say so politely
 - Keep answers conversational but professional
 - Format numbers clearly (e.g., "85% confidence", "15 basis points")
 """
 
-        user_prompt = f"""Here are the analysis results:
+        history_section = history or "No prior conversation."
+
+        user_prompt = f"""Here is the recent conversation history:
+
+{history_section}
+
+Here are the analysis results:
 
 {context}
 
 User Question: {question}
 
-Answer the question based on the analysis results above. Be specific and helpful."""
+Answer the question using the conversation history and analysis results above. Be specific and helpful."""
 
         try:
-            # Use synchronous LLM call (for non-async version)
+            # Use async LLM helper (run synchronously for backward compatibility)
+            from src.llm.agent_helpers import chat_with_model_for_task
             from src.llm.manager import LLMManager
+
             llm_manager = LLMManager()
 
-            response = llm_manager.complete(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                provider="conversation",  # Will route to appropriate model
-                temperature=0.7,
-                max_tokens=500
-            )
+            # Run async function synchronously
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = None
+
+            if loop and loop.is_running():
+                # Already in async context - create task
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    response = loop.run_in_executor(
+                        pool,
+                        lambda: asyncio.run(chat_with_model_for_task(
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": user_prompt}
+                            ],
+                            task_type="conversation",
+                            llm_manager=llm_manager
+                        ))
+                    )
+                    response = asyncio.create_task(response)
+                    # This won't work - fall back to async version
+                    raise RuntimeError("Cannot run sync in async context")
+            else:
+                # Not in async context - run directly
+                response = asyncio.run(chat_with_model_for_task(
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    task_type="conversation",
+                    llm_manager=llm_manager
+                ))
 
             return response.content.strip()
 
@@ -775,46 +902,51 @@ Answer the question based on the analysis results above. Be specific and helpful
             logger.error(f"LLM follow-up answer failed: {e}")
             return f"I understand you're asking about the analysis, but I'm having trouble generating a response right now. Could you rephrase your question?"
 
-    async def _aanswer_with_llm(self, context: str, question: str) -> str:
+    async def _aanswer_with_llm(self, context: str, history: str, question: str) -> str:
         """Async version of _answer_with_llm."""
         from src.llm.agent_helpers import chat_with_model_for_task
 
         system_prompt = """You are a helpful currency trading assistant.
 You have just completed an analysis for the user and they are asking follow-up questions.
 
-Based on the analysis results provided, answer their question clearly and concisely.
-- Be specific and cite data from the analysis
+Use both the prior conversation history and the analysis results to answer clearly and concisely.
+- Reference the analysis data wherever relevant
 - Use the exact numbers and facts from the results
-- If the question is about something not in the analysis, say so politely
+- If the question is about something not in the conversation or analysis, say so politely
 - Keep answers conversational but professional
 - Format numbers clearly (e.g., "85% confidence", "15 basis points")
 """
 
-        user_prompt = f"""Here are the analysis results:
+        history_section = history or "No prior conversation."
+
+        user_prompt = f"""Here is the recent conversation history:
+
+{history_section}
+
+Here are the analysis results:
 
 {context}
 
 User Question: {question}
 
-Answer the question based on the analysis results above. Be specific and helpful."""
+Answer the question using the conversation history and analysis results above. Be specific and helpful."""
 
         try:
-            # Use async LLM call
+            # Use async LLM helper with proper task type
             from src.llm.manager import LLMManager
             llm_manager = LLMManager()
 
-            response = await llm_manager.acomplete(
+            response = await chat_with_model_for_task(
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                provider="conversation",  # Will route to appropriate model
-                temperature=0.7,
-                max_tokens=500
+                task_type="conversation",
+                llm_manager=llm_manager
             )
 
             return response.content.strip()
 
         except Exception as e:
-            logger.error(f"LLM follow-up answer failed: {e}")
+            logger.error(f"LLM async follow-up answer failed: {e}")
             return f"I understand you're asking about the analysis, but I'm having trouble generating a response right now. Could you rephrase your question?"

@@ -13,30 +13,36 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
           to="/chat"
-          className="p-6 border rounded-lg hover:bg-accent transition-colors"
+          className="group p-6 border rounded-lg transition-colors hover:bg-accent hover:border-accent/60"
         >
-          <h2 className="text-2xl font-semibold mb-2">Chat Interface</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-semibold mb-2 transition-colors group-hover:text-accent-foreground">
+            Chat Interface
+          </h2>
+          <p className="text-muted-foreground transition-colors group-hover:text-accent-foreground/90">
             Have a conversation with our AI to get personalized recommendations
           </p>
         </Link>
 
         <Link
           to="/analysis"
-          className="p-6 border rounded-lg hover:bg-accent transition-colors"
+          className="group p-6 border rounded-lg transition-colors hover:bg-accent hover:border-accent/60"
         >
-          <h2 className="text-2xl font-semibold mb-2">Quick Analysis</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-semibold mb-2 transition-colors group-hover:text-accent-foreground">
+            Quick Analysis
+          </h2>
+          <p className="text-muted-foreground transition-colors group-hover:text-accent-foreground/90">
             Fill out a simple form for fast currency conversion analysis
           </p>
         </Link>
 
         <Link
           to="/models"
-          className="p-6 border rounded-lg hover:bg-accent transition-colors"
+          className="group p-6 border rounded-lg transition-colors hover:bg-accent hover:border-accent/60"
         >
-          <h2 className="text-2xl font-semibold mb-2">Model Training</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-semibold mb-2 transition-colors group-hover:text-accent-foreground">
+            Model Training
+          </h2>
+          <p className="text-muted-foreground transition-colors group-hover:text-accent-foreground/90">
             Train and manage prediction models for currency pairs
           </p>
         </Link>

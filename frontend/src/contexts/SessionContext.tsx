@@ -4,10 +4,19 @@ import { STORAGE_KEYS } from '../lib/storage';
 import type { AnalysisResult } from '../types/api';
 
 // Types for stored data
+export interface ChatMessageMetadata {
+  isAnalyzing?: boolean;
+  hasResults?: boolean;
+  correlationId?: string;
+  resultData?: AnalysisResult;
+  progress?: number;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  metadata?: ChatMessageMetadata;
 }
 
 export interface ChatSession {
@@ -109,11 +118,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           },
         };
       }
+
+      let nextMessages = session.messages;
+      if (message.metadata?.hasResults && message.metadata.correlationId) {
+        const correlationId = message.metadata.correlationId;
+        nextMessages = nextMessages.filter(
+          (msg) =>
+            !(
+              msg.metadata?.correlationId === correlationId &&
+              msg.metadata?.isAnalyzing
+            )
+        );
+      }
       return {
         ...prev,
         [sessionId]: {
           ...session,
-          messages: [...session.messages, message],
+          messages: [...nextMessages, message],
           updatedAt: Date.now(),
         },
       };

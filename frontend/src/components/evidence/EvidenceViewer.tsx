@@ -30,7 +30,7 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
     <div className="border rounded-lg overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 bg-accent hover:bg-accent/80 transition-colors flex items-center justify-between"
+        className="w-full px-4 py-3 bg-accent hover:bg-accent/80 transition-colors flex items-center justify-between text-accent-foreground"
       >
         <h3 className="text-lg font-semibold">Evidence & Supporting Data</h3>
         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
