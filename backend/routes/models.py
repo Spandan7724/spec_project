@@ -24,6 +24,7 @@ class TrainModelRequest(BaseModel):
     model_type: str = Field(..., description="Model type: lightgbm or lstm")
     horizons: Optional[List[int]] = Field(None, description="Prediction horizons in days (for lightgbm) or hours (for lstm)")
     version: str = Field(default="1.0", description="Model version string")
+    history_days: Optional[int] = Field(None, description="Historical window in days to use for training")
     # LightGBM specific
     gbm_rounds: Optional[int] = Field(None, description="Number of boosting rounds (default: 120)")
     gbm_patience: Optional[int] = Field(None, description="Early stopping patience (default: 10)")
@@ -34,6 +35,7 @@ class TrainModelRequest(BaseModel):
     lstm_hidden_dim: Optional[int] = Field(64, description="Hidden dimension (default: 64)")
     lstm_seq_len: Optional[int] = Field(64, description="Sequence length (default: 64)")
     lstm_lr: Optional[float] = Field(0.001, description="Learning rate (default: 0.001)")
+    lstm_interval: Optional[str] = Field(None, description="Intraday interval for LSTM data (default: 1h)")
 
 
 class TrainModelResponse(BaseModel):
@@ -99,6 +101,7 @@ def _train_model_task(job_id: str, request: TrainModelRequest):
                 return await train_and_register_lightgbm(
                     currency_pair=request.currency_pair,
                     horizons=request.horizons,
+                    days=request.history_days,
                     version=request.version,
                     gbm_rounds=request.gbm_rounds,
                     gbm_patience=request.gbm_patience,
@@ -116,6 +119,8 @@ def _train_model_task(job_id: str, request: TrainModelRequest):
             async def _train_lstm():
                 return await train_and_register_lstm(
                     currency_pair=request.currency_pair,
+                    days=request.history_days or 180,
+                    interval=request.lstm_interval or "1h",
                     horizons_hours=request.horizons or [1, 4, 24],
                     version=request.version,
                     lstm_epochs=request.lstm_epochs or 5,

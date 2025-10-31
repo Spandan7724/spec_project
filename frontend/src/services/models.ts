@@ -6,6 +6,7 @@ export interface TrainModelRequest {
   model_type: 'lightgbm' | 'lstm';
   horizons?: number[];
   version?: string;
+  history_days?: number;
   gbm_rounds?: number;
   gbm_patience?: number;
   gbm_learning_rate?: number;
@@ -14,6 +15,7 @@ export interface TrainModelRequest {
   lstm_hidden_dim?: number;
   lstm_seq_len?: number;
   lstm_lr?: number;
+  lstm_interval?: string;
 }
 
 export const modelsService = {
