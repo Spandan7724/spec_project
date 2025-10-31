@@ -165,7 +165,7 @@ export default function EventsTimelineChart({
         {events.map((event, idx) => (
           <div
             key={idx}
-            className="flex items-start gap-3 p-2 rounded border hover:bg-accent transition-colors"
+            className="flex items-start gap-3 p-2 rounded border hover:bg-muted/60 transition-colors group"
           >
             <div
               className="w-3 h-3 rounded-full mt-1 flex-shrink-0"
@@ -173,8 +173,8 @@ export default function EventsTimelineChart({
               title={`${event.impact} impact`}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{event.title}</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium truncate group-hover:text-foreground">{event.title}</p>
+              <p className="text-xs text-muted-foreground group-hover:text-foreground/80">
                 {new Date(event.date).toLocaleString('en-US', {
                   month: 'short',
                   day: 'numeric',

@@ -9,6 +9,7 @@ import {
   Legend,
   Area,
   ComposedChart,
+  ReferenceLine,
 } from 'recharts';
 
 interface PredictionPoint {
@@ -22,9 +23,10 @@ interface PredictionPoint {
 interface PredictionChartProps {
   data: PredictionPoint[];
   currency_pair?: string;
+  latest_close?: number | null;
 }
 
-export default function PredictionChart({ data, currency_pair }: PredictionChartProps) {
+export default function PredictionChart({ data, currency_pair, latest_close }: PredictionChartProps) {
   const hasConfidenceBounds = data.some(
     (point) => point.confidence_lower !== undefined && point.confidence_upper !== undefined
   );
@@ -51,7 +53,10 @@ export default function PredictionChart({ data, currency_pair }: PredictionChart
               height={80}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                if (!Number.isNaN(date.getTime())) {
+                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+                return String(value);
               }}
             />
             <YAxis
@@ -61,15 +66,27 @@ export default function PredictionChart({ data, currency_pair }: PredictionChart
             <Tooltip
               labelFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                });
+                if (!Number.isNaN(date.getTime())) {
+                  return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+                }
+                return String(value);
               }}
               formatter={(value: any) => Number(value).toFixed(4)}
             />
             <Legend />
+
+            {typeof latest_close === 'number' && Number.isFinite(latest_close) && (
+              <ReferenceLine
+                y={latest_close}
+                stroke="#94a3b8"
+                strokeDasharray="4 4"
+                label={{ value: 'Spot', position: 'insideRight', fill: '#64748b', fontSize: 12 }}
+              />
+            )}
 
             {/* Confidence bounds as area */}
             {hasConfidenceBounds && (

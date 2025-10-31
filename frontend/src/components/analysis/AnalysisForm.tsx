@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { analysisService } from '../../services/analysis';
 import { Loader2 } from 'lucide-react';
+import { useSession } from '../../contexts/SessionContext';
 
 export default function AnalysisForm() {
   const navigate = useNavigate();
+  const { analysisHistory } = useSession();
+
+  const recentAnalyses = useMemo(() => analysisHistory.slice(0, 5), [analysisHistory]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     baseCurrency: 'USD',
@@ -50,7 +54,7 @@ export default function AnalysisForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto space-y-10">
       <h1 className="text-3xl font-bold mb-6">Quick Analysis</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6">
@@ -175,6 +179,37 @@ export default function AnalysisForm() {
           )}
         </button>
       </form>
+
+      {recentAnalyses.length > 0 && (
+        <div className="border rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Recent Analyses</h2>
+            <Link to="/history" className="text-sm text-primary hover:underline">
+              View all
+            </Link>
+          </div>
+          <ul className="space-y-3">
+            {recentAnalyses.map((item) => (
+              <li key={item.correlationId} className="flex items-center justify-between gap-4 border rounded-md px-3 py-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {item.currencyPair || 'Unknown pair'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <Link
+                  to={`/results/${item.correlationId}`}
+                  className="text-sm font-medium text-primary hover:underline flex-shrink-0"
+                >
+                  Open
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

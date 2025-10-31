@@ -29,7 +29,7 @@ export default function MarketRegimeChart({
   onHoverChange,
 }: MarketRegimeChartProps) {
   const getRegimeColor = (regime: string) => {
-    switch (regime.toLowerCase()) {
+    switch ((regime || '').toString().toLowerCase()) {
       case 'trending_up':
       case 'trending':
         return '#00C49F'; // Green for uptrend
@@ -47,7 +47,10 @@ export default function MarketRegimeChart({
   };
 
   const getRegimeLabel = (regime: string) => {
-    switch (regime.toLowerCase()) {
+    const normalized = (regime ?? '').toString();
+    const lower = normalized.toLowerCase();
+
+    switch (lower) {
       case 'trending_up':
         return 'Trending Up';
       case 'trending_down':
@@ -61,7 +64,7 @@ export default function MarketRegimeChart({
       case 'high_volatility':
         return 'Volatile';
       default:
-        return regime;
+        return normalized;
     }
   };
 
@@ -236,8 +239,8 @@ export default function MarketRegimeChart({
       </div>
 
       {/* Regime Explanation */}
-      <div className="mt-4 p-4 bg-accent rounded">
-        <h4 className="text-sm font-semibold mb-2">Market Regime Classification</h4>
+      <div className="mt-4 p-4 bg-muted/40 border border-border rounded">
+        <h4 className="text-sm font-semibold mb-2 text-foreground">Market Regime Classification</h4>
         <div className="text-xs text-muted-foreground space-y-1">
           <p>
             <strong>Trending:</strong> Consistent directional movement with clear momentum

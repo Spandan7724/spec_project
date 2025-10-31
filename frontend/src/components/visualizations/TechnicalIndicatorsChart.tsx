@@ -13,17 +13,28 @@ import {
 } from 'recharts';
 import { useState } from 'react';
 
-interface TechnicalIndicatorsChartProps {
-  data: Array<{ date: string; close: number }>;
-  indicators?: {
+interface IndicatorSeries {
+  rsi?: Array<{ date: string; value: number }>;
+  macd?: Array<{ date: string; macd?: number; macd_signal?: number; macd_histogram?: number }>;
+  atr?: Array<{ date: string; atr?: number }>;
+  volatility?: Array<{ date: string; volatility_20d?: number; volatility_30d?: number }>;
+}
+
+interface IndicatorSnapshot {
+  latest?: {
     rsi?: number;
     macd?: number;
     macd_signal?: number;
     macd_histogram?: number;
     atr?: number;
-    volatility_20d?: number;
     volatility_30d?: number;
   };
+  series?: IndicatorSeries;
+}
+
+interface TechnicalIndicatorsChartProps {
+  data: Array<{ date: string; close: number; volume?: number | null }>;
+  indicators?: IndicatorSnapshot;
   currency_pair?: string;
   onHoverChange?: (date: string | null) => void;
 }
@@ -35,6 +46,8 @@ export default function TechnicalIndicatorsChart({
   onHoverChange,
 }: TechnicalIndicatorsChartProps) {
   const [activeIndicator, setActiveIndicator] = useState<'rsi' | 'macd' | 'volatility'>('rsi');
+  const indicatorSeries = indicators?.series ?? {};
+  const latest = indicators?.latest;
 
   if (!data || data.length === 0) {
     return (
@@ -50,17 +63,34 @@ export default function TechnicalIndicatorsChart({
   }
 
   // Prepare chart data with indicators
-  const chartData = data.map((point) => ({
-    date: point.date,
-    close: point.close,
-    rsi: indicators?.rsi,
-    macd: indicators?.macd,
-    macd_signal: indicators?.macd_signal,
-    macd_histogram: indicators?.macd_histogram,
-    atr: indicators?.atr,
-    volatility_20d: indicators?.volatility_20d,
-    volatility_30d: indicators?.volatility_30d,
+  const rsiData = indicatorSeries.rsi ?? [];
+  const macdData = indicatorSeries.macd ?? [];
+  const atrData = indicatorSeries.atr ?? [];
+  const volatilityData = indicatorSeries.volatility ?? [];
+
+  const atrMap = new Map<string, number | undefined>(
+    atrData.map((item) => [item.date, item.atr])
+  );
+
+  const volatilityMerged = volatilityData.map((entry) => ({
+    ...entry,
+    atr: atrMap.get(entry.date),
   }));
+
+  const formatTooltipDate = (value: any) => {
+    const date = new Date(value);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatNumber = (value: unknown, digits = 4) => {
+    const num = typeof value === 'number' ? value : Number(value);
+    if (!Number.isFinite(num)) return '—';
+    return num.toFixed(digits);
+  };
 
   return (
     <div className="w-full">
@@ -104,10 +134,31 @@ export default function TechnicalIndicatorsChart({
         </div>
       </div>
 
+      {latest && (
+        <div className="grid grid-cols-1 gap-3 mb-4 text-xs text-muted-foreground md:grid-cols-3">
+          <div className="p-3 bg-muted/40 border border-border rounded">
+            <p className="font-semibold text-foreground">RSI (14)</p>
+            <p className="text-sm text-foreground mt-1">{formatNumber(latest.rsi, 2)}</p>
+          </div>
+          <div className="p-3 bg-muted/40 border border-border rounded">
+            <p className="font-semibold text-foreground">MACD</p>
+            <p className="text-sm text-foreground mt-1">
+              {formatNumber(latest.macd, 4)}
+              <span className="ml-2 text-xs text-muted-foreground">Signal: {formatNumber(latest.macd_signal, 4)}</span>
+            </p>
+          </div>
+          <div className="p-3 bg-muted/40 border border-border rounded">
+            <p className="font-semibold text-foreground">Volatility (30d)</p>
+            <p className="text-sm text-foreground mt-1">{formatNumber(latest.volatility_30d, 4)}</p>
+          </div>
+        </div>
+      )}
+
       <ResponsiveContainer width="100%" height={300}>
         {activeIndicator === 'rsi' ? (
+          rsiData.length > 0 ? (
           <ComposedChart
-            data={chartData}
+            data={rsiData}
             onMouseMove={(e) => {
               if (e && e.activeLabel && onHoverChange) {
                 onHoverChange(e.activeLabel as string);
@@ -128,15 +179,11 @@ export default function TechnicalIndicatorsChart({
             />
             <YAxis domain={[0, 100]} label={{ value: 'RSI', angle: -90, position: 'insideLeft' }} />
             <Tooltip
-              labelFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                });
-              }}
-              formatter={(value: any) => Number(value).toFixed(2)}
+              labelFormatter={formatTooltipDate}
+              formatter={(value: any) => formatNumber(value, 2)}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+              labelStyle={{ color: '#000' }}
+              itemStyle={{ color: '#000' }}
             />
             <Legend />
 
@@ -158,7 +205,7 @@ export default function TechnicalIndicatorsChart({
             {/* RSI Line */}
             <Line
               type="monotone"
-              dataKey="rsi"
+              dataKey="value"
               stroke="#0088FE"
               strokeWidth={2}
               dot={false}
@@ -168,16 +215,20 @@ export default function TechnicalIndicatorsChart({
             {/* Color zones */}
             <Area
               type="monotone"
-              dataKey="rsi"
+              dataKey="value"
               stroke="none"
               fill="#FF6B6B"
               fillOpacity={0.1}
               name="Overbought Zone"
             />
           </ComposedChart>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">RSI data unavailable</div>
+          )
         ) : activeIndicator === 'macd' ? (
+          macdData.length > 0 ? (
           <ComposedChart
-            data={chartData}
+            data={macdData}
             onMouseMove={(e) => {
               if (e && e.activeLabel && onHoverChange) {
                 onHoverChange(e.activeLabel as string);
@@ -201,15 +252,11 @@ export default function TechnicalIndicatorsChart({
               domain={['auto', 'auto']}
             />
             <Tooltip
-              labelFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                });
-              }}
-              formatter={(value: any) => Number(value).toFixed(4)}
+              labelFormatter={formatTooltipDate}
+              formatter={(value: any) => formatNumber(value, 4)}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+              labelStyle={{ color: '#000' }}
+              itemStyle={{ color: '#000' }}
             />
             <Legend />
 
@@ -236,9 +283,13 @@ export default function TechnicalIndicatorsChart({
               name="Signal Line"
             />
           </ComposedChart>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">MACD data unavailable</div>
+          )
         ) : (
+          volatilityMerged.length > 0 ? (
           <ComposedChart
-            data={chartData}
+            data={volatilityMerged}
             onMouseMove={(e) => {
               if (e && e.activeLabel && onHoverChange) {
                 onHoverChange(e.activeLabel as string);
@@ -262,15 +313,11 @@ export default function TechnicalIndicatorsChart({
               domain={['auto', 'auto']}
             />
             <Tooltip
-              labelFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                });
-              }}
-              formatter={(value: any) => Number(value).toFixed(4)}
+              labelFormatter={formatTooltipDate}
+              formatter={(value: any, name: string) => `${formatNumber(value, 4)} (${name})`}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+              labelStyle={{ color: '#000' }}
+              itemStyle={{ color: '#000' }}
             />
             <Legend />
 
@@ -299,6 +346,9 @@ export default function TechnicalIndicatorsChart({
               name="ATR"
             />
           </ComposedChart>
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">Volatility data unavailable</div>
+          )
         )}
       </ResponsiveContainer>
 

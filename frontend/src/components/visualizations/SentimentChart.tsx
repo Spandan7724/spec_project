@@ -41,27 +41,75 @@ export default function SentimentChart({
   currency_pair,
   onHoverChange,
 }: SentimentChartProps) {
-  // Convert sentiment scores (-1 to +1) to 0-100 scale for radial chart
-  const sentimentToPercentage = (score: number) => ((score + 1) / 2) * 100;
+  const clampSentiment = (value: number) => Math.max(-1, Math.min(1, value));
+  const parseSentimentValue = (value: unknown, fallback = 0): number => {
+    if (typeof value === 'number' && Number.isFinite(value)) return clampSentiment(value);
+    if (typeof value === 'string') {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) return clampSentiment(parsed);
+    }
+    return fallback;
+  };
+
+  const baseSentiment = parseSentimentValue(current_sentiment?.sentiment_base, 0);
+  const quoteSentiment = parseSentimentValue(current_sentiment?.sentiment_quote, 0);
+
+  const sentimentToPercentage = (score: number) => ((clampSentiment(score) + 1) / 2) * 100;
 
   const getSentimentColor = (score: number) => {
-    if (score > 0.2) return '#00C49F'; // Positive (green)
-    if (score < -0.2) return '#FF6B6B'; // Negative (red)
-    return '#FFBB28'; // Neutral (yellow)
+    if (score > 0.2) return '#00C49F';
+    if (score < -0.2) return '#FF6B6B';
+    return '#FFBB28';
   };
+
+  const rawBias = current_sentiment?.pair_bias;
+  const biasValue = (() => {
+    if (typeof rawBias === 'number' && Number.isFinite(rawBias)) return clampSentiment(rawBias);
+    if (typeof rawBias === 'string') {
+      const parsed = Number(rawBias);
+      if (Number.isFinite(parsed)) return clampSentiment(parsed);
+    }
+    return null;
+  })();
+
+  const formatScore = (score: number) => `${score >= 0 ? '+' : ''}${score.toFixed(2)}`;
+
+  const biasLabel = (() => {
+    if (biasValue !== null) {
+      if (biasValue > 0.1) return 'BULLISH';
+      if (biasValue < -0.1) return 'BEARISH';
+      return 'NEUTRAL';
+    }
+    if (typeof rawBias === 'string' && rawBias.trim()) {
+      return rawBias.trim().toUpperCase();
+    }
+    return 'NEUTRAL';
+  })();
+
+  const biasColorClass = biasLabel === 'BULLISH'
+    ? 'text-green-600'
+    : biasLabel === 'BEARISH'
+    ? 'text-red-600'
+    : 'text-yellow-600';
 
   const gaugeData = [
     {
       name: current_sentiment.base_currency,
-      value: sentimentToPercentage(current_sentiment.sentiment_base),
-      fill: getSentimentColor(current_sentiment.sentiment_base),
+      value: sentimentToPercentage(baseSentiment),
+      fill: getSentimentColor(baseSentiment),
     },
     {
       name: current_sentiment.quote_currency,
-      value: sentimentToPercentage(current_sentiment.sentiment_quote),
-      fill: getSentimentColor(current_sentiment.sentiment_quote),
+      value: sentimentToPercentage(quoteSentiment),
+      fill: getSentimentColor(quoteSentiment),
     },
   ];
+
+  const timelineData = (timeline || []).map((point) => ({
+    ...point,
+    sentiment_base: parseSentimentValue(point.sentiment_base, 0),
+    sentiment_quote: parseSentimentValue(point.sentiment_quote, 0),
+  }));
 
   return (
     <div className="w-full">
@@ -91,7 +139,10 @@ export default function SentimentChart({
                 label={{
                   position: 'insideStart',
                   fill: '#fff',
-                  formatter: (value: number) => `${(value / 50 - 1).toFixed(2)}`,
+                  formatter: (value: number) => {
+                    const raw = value / 50 - 1;
+                    return formatScore(raw);
+                  },
                 }}
               />
               <Legend
@@ -100,14 +151,14 @@ export default function SentimentChart({
                 verticalAlign="bottom"
                 align="center"
                 formatter={(value, entry: any) => {
-                  const score = (entry.payload.value / 50 - 1).toFixed(2);
-                  return `${value}: ${score}`;
+                  const score = entry?.payload?.value ? entry.payload.value / 50 - 1 : 0;
+                  return `${value}: ${formatScore(score)}`;
                 }}
               />
               <Tooltip
                 formatter={(value: number) => {
-                  const score = (value / 50 - 1).toFixed(2);
-                  return [`Sentiment: ${score}`, ''];
+                  const score = value / 50 - 1;
+                  return [`Sentiment: ${formatScore(score)}`, ''];
                 }}
               />
             </RadialBarChart>
@@ -118,16 +169,15 @@ export default function SentimentChart({
             <p className="text-sm">
               <strong>Pair Bias:</strong>{' '}
               <span
-                className={`font-semibold ${
-                  current_sentiment.pair_bias === 'bullish'
-                    ? 'text-green-600'
-                    : current_sentiment.pair_bias === 'bearish'
-                    ? 'text-red-600'
-                    : 'text-yellow-600'
-                }`}
+                className={`font-semibold ${biasColorClass}`}
               >
-                {current_sentiment.pair_bias.toUpperCase()}
+                {biasLabel}
               </span>
+              {biasValue !== null && (
+                <span className="ml-2 text-xs text-muted-foreground">
+                  ({biasValue >= 0 ? '+' : ''}{biasValue.toFixed(2)})
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -140,8 +190,8 @@ export default function SentimentChart({
           </p>
 
           {/* Sentiment Scale Reference */}
-          <div className="mt-4 p-3 bg-accent rounded">
-            <p className="text-xs font-semibold mb-2">Sentiment Scale:</p>
+          <div className="mt-4 p-3 bg-muted/40 border border-border rounded">
+            <p className="text-xs font-semibold mb-2 text-foreground">Sentiment Scale:</p>
             <div className="flex items-center justify-between text-xs">
               <span className="text-red-600">-1.0 (Very Negative)</span>
               <span className="text-yellow-600">0.0 (Neutral)</span>
@@ -152,12 +202,12 @@ export default function SentimentChart({
       </div>
 
       {/* Sentiment Timeline */}
-      {timeline && timeline.length > 0 && (
+      {timelineData.length > 0 && (
         <div className="mt-6">
           <h4 className="text-sm font-medium mb-2">Sentiment Timeline</h4>
           <ResponsiveContainer width="100%" height={250}>
             <ComposedChart
-              data={timeline}
+              data={timelineData}
               onMouseMove={(e) => {
                 if (e && e.activeLabel && onHoverChange) {
                   onHoverChange(e.activeLabel as string);
@@ -199,34 +249,34 @@ export default function SentimentChart({
                       <div className="bg-background border rounded p-2 shadow-lg max-w-xs">
                         <p className="font-semibold text-xs mb-1">{data.title}</p>
                         <p className="text-xs text-muted-foreground mb-1">Source: {data.source}</p>
-                        <p className="text-xs">
-                          {current_sentiment.base_currency}:{' '}
-                          <span
-                            className={
-                              data.sentiment_base > 0
-                                ? 'text-green-600'
-                                : data.sentiment_base < 0
-                                ? 'text-red-600'
-                                : ''
-                            }
-                          >
-                            {data.sentiment_base.toFixed(2)}
-                          </span>
-                        </p>
-                        <p className="text-xs">
-                          {current_sentiment.quote_currency}:{' '}
-                          <span
-                            className={
-                              data.sentiment_quote > 0
-                                ? 'text-green-600'
-                                : data.sentiment_quote < 0
-                                ? 'text-red-600'
-                                : ''
-                            }
-                          >
-                            {data.sentiment_quote.toFixed(2)}
-                          </span>
-                        </p>
+                   <p className="text-xs">
+                     {current_sentiment.base_currency}:{' '}
+                     <span
+                       className={
+                         data.sentiment_base > 0
+                           ? 'text-green-600'
+                           : data.sentiment_base < 0
+                           ? 'text-red-600'
+                           : ''
+                       }
+                     >
+                        {formatScore(data.sentiment_base)}
+                      </span>
+                    </p>
+                    <p className="text-xs">
+                      {current_sentiment.quote_currency}:{' '}
+                      <span
+                        className={
+                          data.sentiment_quote > 0
+                            ? 'text-green-600'
+                            : data.sentiment_quote < 0
+                            ? 'text-red-600'
+                            : ''
+                        }
+                      >
+                        {formatScore(data.sentiment_quote)}
+                      </span>
+                    </p>
                       </div>
                     );
                   }

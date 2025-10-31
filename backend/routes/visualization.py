@@ -7,6 +7,13 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException, Depends
 
 from backend.dependencies import get_analysis_repository
+from src.data_collection.market_data.snapshot import _load_historical
+from src.data_collection.market_data.indicators import (
+    calculate_indicators,
+    _rsi,
+    _macd,
+    _atr,
+)
 
 
 router = APIRouter()
@@ -208,18 +215,26 @@ def evidence(correlation_id: str, analysis_repo=Depends(get_analysis_repository)
 
 
 @router.get("/historical-prices/{correlation_id}")
-async def historical_prices(correlation_id: str, analysis_repo=Depends(get_analysis_repository)) -> Dict[str, Any]:
-    """Get historical OHLC price data with technical indicators."""
+async def historical_prices(
+    correlation_id: str, 
+    days: int = 90,
+    analysis_repo=Depends(get_analysis_repository)
+) -> Dict[str, Any]:
+    """Get historical OHLC price data with technical indicators.
+    
+    Args:
+        correlation_id: Analysis correlation ID
+        days: Number of days of historical data (default: 90, min: 30, max: 365)
+    """
     record = _get_completed_record(correlation_id, analysis_repo)
 
     try:
         # Fetch historical data using yfinance
-        from src.data_collection.market_data.snapshot import _load_historical
-        from src.data_collection.market_data.indicators import calculate_indicators
-
         base = record.base_currency
         quote = record.quote_currency
-        days = 90  # 3 months of history
+        
+        # Validate and clamp days parameter
+        days = max(30, min(365, days))
 
         df = await _load_historical(base, quote, days)
 
@@ -299,17 +314,72 @@ async def technical_indicators(correlation_id: str, analysis_repo=Depends(get_an
                 "error": "No historical data available"
             }
 
+        df = df.sort_index()
         indicators = calculate_indicators(df)
 
-        # Calculate 20-day volatility manually
-        volatility_20d = df['Close'].pct_change().rolling(window=20).std().iloc[-1] * np.sqrt(252) if len(df) >= 20 else None
+        close = df['Close']
+        volume = df['Volume'] if 'Volume' in df.columns else None
 
-        # Format time series data for charts
+        # Prepare indicator series (limit to last 250 points for payload size)
+        limit = 250
+
+        rsi_series = _rsi(close, 14).dropna().iloc[-limit:]
+        macd_series, macd_signal_series, macd_hist_series = _macd(close)
+        macd_series = macd_series.dropna().iloc[-limit:]
+        macd_signal_series = macd_signal_series.dropna().iloc[-limit:]
+        macd_hist_series = macd_hist_series.dropna().iloc[-limit:]
+
+        atr_series = _atr(df, 14).dropna().iloc[-limit:]
+
+        vol_20 = close.pct_change().rolling(window=20).std().dropna().iloc[-limit:]
+        vol_30 = close.pct_change().rolling(window=30).std().dropna().iloc[-limit:]
+
         chart_data = []
-        for idx in df.index:
-            chart_data.append({
+        for idx in df.index[-limit:]:
+            item = {
                 "date": idx.isoformat(),
                 "close": float(df.loc[idx, "Close"]),
+            }
+            if volume is not None:
+                item["volume"] = float(volume.loc[idx]) if not pd.isna(volume.loc[idx]) else None
+            chart_data.append(item)
+
+        rsi_points = [
+            {"date": idx.isoformat(), "value": float(val)}
+            for idx, val in rsi_series.items()
+            if not pd.isna(val)
+        ]
+
+        macd_points = []
+        for idx in macd_series.index:
+            macd_val = macd_series.loc[idx]
+            signal_val = macd_signal_series.loc[idx] if idx in macd_signal_series.index else np.nan
+            hist_val = macd_hist_series.loc[idx] if idx in macd_hist_series.index else np.nan
+            if pd.isna(macd_val) and pd.isna(signal_val) and pd.isna(hist_val):
+                continue
+            macd_points.append({
+                "date": idx.isoformat(),
+                "macd": float(macd_val) if not pd.isna(macd_val) else None,
+                "macd_signal": float(signal_val) if not pd.isna(signal_val) else None,
+                "macd_histogram": float(hist_val) if not pd.isna(hist_val) else None,
+            })
+
+        atr_points = [
+            {"date": idx.isoformat(), "atr": float(val)}
+            for idx, val in atr_series.items()
+            if not pd.isna(val)
+        ]
+
+        vol_points = []
+        for idx in vol_20.index.union(vol_30.index):
+            val20 = vol_20.loc[idx] if idx in vol_20.index else np.nan
+            val30 = vol_30.loc[idx] if idx in vol_30.index else np.nan
+            if pd.isna(val20) and pd.isna(val30):
+                continue
+            vol_points.append({
+                "date": idx.isoformat(),
+                "volatility_20d": float(val20) if not pd.isna(val20) else None,
+                "volatility_30d": float(val30) if not pd.isna(val30) else None,
             })
 
         return {
@@ -317,13 +387,20 @@ async def technical_indicators(correlation_id: str, analysis_repo=Depends(get_an
             "currency_pair": record.currency_pair,
             "data": chart_data,
             "indicators": {
-                "rsi": indicators.rsi_14,
-                "macd": indicators.macd,
-                "macd_signal": indicators.macd_signal,
-                "macd_histogram": indicators.macd_histogram,
-                "atr": indicators.atr_14,
-                "volatility_20d": float(volatility_20d) if volatility_20d is not None and not pd.isna(volatility_20d) else None,
-                "volatility_30d": indicators.realized_vol_30d,
+                "latest": {
+                    "rsi": indicators.rsi_14,
+                    "macd": indicators.macd,
+                    "macd_signal": indicators.macd_signal,
+                    "macd_histogram": indicators.macd_histogram,
+                    "atr": indicators.atr_14,
+                    "volatility_30d": indicators.realized_vol_30d,
+                },
+                "series": {
+                    "rsi": rsi_points,
+                    "macd": macd_points,
+                    "atr": atr_points,
+                    "volatility": vol_points,
+                },
             },
         }
     except Exception as e:
@@ -343,9 +420,20 @@ def sentiment_timeline(correlation_id: str, analysis_repo=Depends(get_analysis_r
     news_data = intelligence.get("news", {})
 
     # Current sentiment scores
-    sent_base = news_data.get("sent_base", 0.0)
-    sent_quote = news_data.get("sent_quote", 0.0)
-    pair_bias = news_data.get("pair_bias", "neutral")
+    def _to_float(value: Any, default: float = 0.0) -> float:
+        try:
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                return float(value)
+            if isinstance(value, str) and value.strip():
+                return float(value.strip())
+        except (ValueError, TypeError):
+            pass
+        return default
+
+    sent_base = _to_float(news_data.get("sent_base"), 0.0)
+    sent_quote = _to_float(news_data.get("sent_quote"), 0.0)
+    pair_bias_raw = news_data.get("pair_bias")
+    pair_bias = _to_float(pair_bias_raw, None) if pair_bias_raw is not None else None
 
     # Get articles with sentiment
     articles = news_data.get("top_evidence", [])
@@ -356,12 +444,14 @@ def sentiment_timeline(correlation_id: str, analysis_repo=Depends(get_analysis_r
         if isinstance(article, dict):
             pub_date = article.get("published_utc") or article.get("date")
             sentiment = article.get("sentiment", {})
+            base_value = _to_float(sentiment.get(record.base_currency), 0.0) if isinstance(sentiment, dict) else 0.0
+            quote_value = _to_float(sentiment.get(record.quote_currency), 0.0) if isinstance(sentiment, dict) else 0.0
 
             if pub_date:
                 timeline_data.append({
                     "date": pub_date,
-                    "sentiment_base": sentiment.get(record.base_currency, 0.0) if isinstance(sentiment, dict) else 0.0,
-                    "sentiment_quote": sentiment.get(record.quote_currency, 0.0) if isinstance(sentiment, dict) else 0.0,
+                    "sentiment_base": base_value,
+                    "sentiment_quote": quote_value,
                     "title": article.get("title", ""),
                     "source": article.get("source", ""),
                 })
@@ -377,7 +467,7 @@ def sentiment_timeline(correlation_id: str, analysis_repo=Depends(get_analysis_r
             "quote_currency": record.quote_currency,
             "sentiment_base": sent_base,
             "sentiment_quote": sent_quote,
-            "pair_bias": pair_bias,
+            "pair_bias": pair_bias if pair_bias is not None else pair_bias_raw,
             "narrative": news_data.get("narrative", ""),
         },
         "timeline": timeline_data,

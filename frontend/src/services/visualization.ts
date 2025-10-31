@@ -32,8 +32,8 @@ export const visualizationService = {
   },
 
   // New visualization endpoints
-  getHistoricalPrices: async (correlationId: string) => {
-    const response = await api.get(`/api/viz/historical-prices/${correlationId}`);
+  getHistoricalPrices: async (correlationId: string, days: number = 90) => {
+    const response = await api.get(`/api/viz/historical-prices/${correlationId}?days=${days}`);
     return response.data;
   },
 

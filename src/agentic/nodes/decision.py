@@ -194,6 +194,8 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
         # Intelligence summary
         intel_summary = {
             "pair_bias": (mi.get("news") or {}).get("pair_bias"),
+            "sent_base": (mi.get("news") or {}).get("sent_base"),
+            "sent_quote": (mi.get("news") or {}).get("sent_quote"),
             "news_confidence": (mi.get("news") or {}).get("confidence"),
             "n_articles_used": (mi.get("news") or {}).get("n_articles_used"),
             "narrative": (mi.get("news") or {}).get("narrative"),

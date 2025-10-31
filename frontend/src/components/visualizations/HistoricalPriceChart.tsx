@@ -35,6 +35,8 @@ interface HistoricalPriceChartProps {
   };
   currency_pair?: string;
   onHoverChange?: (date: string | null) => void;
+  onTimeframeChange?: (days: number) => void;
+  currentTimeframe?: number;
 }
 
 export default function HistoricalPriceChart({
@@ -42,18 +44,52 @@ export default function HistoricalPriceChart({
   indicators,
   currency_pair,
   onHoverChange,
+  onTimeframeChange,
+  currentTimeframe = 90,
 }: HistoricalPriceChartProps) {
   const [showSMA, setShowSMA] = useState({ sma5: true, sma20: true, sma50: false });
   const [showEMA, setShowEMA] = useState({ ema12: false, ema26: false });
   const [showBB, setShowBB] = useState(false);
   const [showVolume, setShowVolume] = useState(true);
 
+  const timeframes = [
+    { label: '30D', days: 30 },
+    { label: '60D', days: 60 },
+    { label: '90D', days: 90 },
+    { label: '180D', days: 180 },
+    { label: '1Y', days: 365 },
+  ];
+
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
-          Historical Prices {currency_pair && `(${currency_pair})`}
-        </h3>
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">
+            Historical Prices {currency_pair && `(${currency_pair})`}
+          </h3>
+          <div className="flex gap-1">
+            {timeframes.map((tf) => (
+              <button
+                key={tf.days}
+                onClick={() => {
+                  console.log('Timeframe button clicked:', tf.days, tf.label);
+                  console.log('onTimeframeChange available?', !!onTimeframeChange);
+                  if (onTimeframeChange) {
+                    console.log('Calling onTimeframeChange with', tf.days);
+                    onTimeframeChange(tf.days);
+                  }
+                }}
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  currentTimeframe === tf.days
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                }`}
+              >
+                {tf.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="flex items-center justify-center h-80 text-muted-foreground">
           No historical price data available
         </div>
@@ -62,7 +98,7 @@ export default function HistoricalPriceChart({
   }
 
   // Merge indicators with price data
-  const chartData = data.map((point, idx) => ({
+  const chartData = data.map((point) => ({
     ...point,
     sma_5: indicators?.sma_5,
     sma_20: indicators?.sma_20,
@@ -81,7 +117,35 @@ export default function HistoricalPriceChart({
           Historical Prices {currency_pair && `(${currency_pair})`}
         </h3>
 
-        {/* Toggle Controls */}
+        <div className="flex items-center gap-4">
+          {/* Timeframe Selector */}
+          <div className="flex gap-1">
+            {timeframes.map((tf) => (
+              <button
+                key={tf.days}
+                onClick={() => {
+                  console.log('Timeframe button clicked (main view):', tf.days, tf.label);
+                  console.log('onTimeframeChange available?', !!onTimeframeChange);
+                  if (onTimeframeChange) {
+                    console.log('Calling onTimeframeChange with', tf.days);
+                    onTimeframeChange(tf.days);
+                  }
+                }}
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  currentTimeframe === tf.days
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                }`}
+              >
+                {tf.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Toggle Controls */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex gap-4 text-xs">
           <div className="flex gap-2">
             <label className="flex items-center gap-1 cursor-pointer">
@@ -176,8 +240,9 @@ export default function HistoricalPriceChart({
             }}
           />
           <YAxis
-            label={{ value: 'Price', angle: -90, position: 'insideLeft' }}
+            label={{ value: 'Price', angle: -90, position: 'insideLeft', offset: 10 }}
             domain={['auto', 'auto']}
+            width={80}
           />
           <Tooltip
             labelFormatter={(value) => {
@@ -189,6 +254,9 @@ export default function HistoricalPriceChart({
               });
             }}
             formatter={(value: any) => Number(value).toFixed(4)}
+            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+            labelStyle={{ color: '#000' }}
+            itemStyle={{ color: '#000' }}
           />
           <Legend />
 
@@ -289,7 +357,15 @@ export default function HistoricalPriceChart({
             name="Close Price"
           />
 
-          <Brush dataKey="date" height={30} stroke="#8884d8" />
+          <Brush 
+            dataKey="date" 
+            height={30} 
+            stroke="#8884d8"
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }}
+          />
         </ComposedChart>
       </ResponsiveContainer>
 
@@ -309,7 +385,12 @@ export default function HistoricalPriceChart({
               }}
             />
             <YAxis label={{ value: 'Volume', angle: -90, position: 'insideLeft' }} />
-            <Tooltip formatter={(value: any) => Number(value).toLocaleString()} />
+            <Tooltip 
+              formatter={(value: any) => Number(value).toLocaleString()}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+              labelStyle={{ color: '#000' }}
+              itemStyle={{ color: '#000' }}
+            />
             <Bar dataKey="volume" fill="#8884d8" name="Volume" />
           </ComposedChart>
         </ResponsiveContainer>

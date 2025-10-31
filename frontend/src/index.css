@@ -38,8 +38,8 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 152 76% 90%;
+    --accent-foreground: 150 100% 12%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -62,9 +62,9 @@
     --secondary-foreground: 0 0% 92%;
     --muted: 220 7% 18%;
     --muted-foreground: 215 15% 65%;
-    /* Rebrand: aqua accent */
-    --accent: 174 100% 50%;
-    --accent-foreground: 180 100% 12%;
+    /* Rebrand: emerald green accent */
+    --accent: 147 92% 79%;
+    --accent-foreground: 150 100% 12%;
     --destructive: 0 41% 40%;
     --destructive-foreground: 0 0% 96%;
     --border: 0 0% 20%;

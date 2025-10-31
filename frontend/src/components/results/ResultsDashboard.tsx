@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { ChartSyncProvider } from '../../contexts/ChartSyncContext';
 import ConfidenceChart from '../visualizations/ConfidenceChart';
 import RiskChart from '../visualizations/RiskChart';
-import CostChart from '../visualizations/CostChart';
 import TimelineChart from '../visualizations/TimelineChart';
 import PredictionChart from '../visualizations/PredictionChart';
 import HistoricalPriceChart from '../visualizations/HistoricalPriceChart';
@@ -30,11 +29,10 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [vizData, setVizData] = useState<any>({
-    confidence: [],
+    confidence: { components: [], overall: null },
     risk: [],
-    cost: [],
     timeline: [],
-    prediction: [],
+    prediction: { data: [], latest_close: null },
     evidence: {},
     historicalPrices: null,
     technicalIndicators: null,
@@ -45,7 +43,8 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
     marketRegime: null,
   });
   const [activeTab, setActiveTab] = useState<'overview' | 'technical' | 'sentiment' | 'predictions' | 'explainability'>('overview');
-  const { addAnalysisToHistory, updateAnalysisInHistory } = useSession();
+  const [historicalTimeframe, setHistoricalTimeframe] = useState(90);
+  const { addAnalysisToHistory } = useSession();
 
   const renderChartFallback = (message: string) => (
     <div className="flex h-72 w-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
@@ -94,18 +93,17 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
       Promise.allSettled([
         visualizationService.getConfidenceBreakdown(correlationId),
         visualizationService.getRiskBreakdown(correlationId),
-        visualizationService.getCostBreakdown(correlationId),
         visualizationService.getTimelineData(correlationId),
         visualizationService.getPredictionChart(correlationId),
         visualizationService.getEvidence(correlationId),
-        visualizationService.getHistoricalPrices(correlationId),
+        visualizationService.getHistoricalPrices(correlationId, historicalTimeframe),
         visualizationService.getTechnicalIndicators(correlationId),
         visualizationService.getSentimentTimeline(correlationId),
         visualizationService.getEventsTimeline(correlationId),
         visualizationService.getSHAPExplanations(correlationId),
         visualizationService.getPredictionQuantiles(correlationId),
         visualizationService.getMarketRegime(correlationId),
-      ]).then(([confidence, risk, cost, timeline, prediction, evidence, historicalPrices, technicalIndicators, sentimentTimeline, eventsTimeline, shapExplanations, predictionQuantiles, marketRegime]) => {
+      ]).then(([confidence, risk, timeline, prediction, evidence, historicalPrices, technicalIndicators, sentimentTimeline, eventsTimeline, shapExplanations, predictionQuantiles, marketRegime]) => {
         const ev = evidence.status === 'fulfilled' ? evidence.value : {};
         // Normalize events into UI shape expected by EventsTab
         const rawEvents = Array.isArray(ev?.calendar?.upcoming_events)
@@ -125,12 +123,217 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
           market_data: ev?.market || {},
         };
 
+        const confidenceValue = confidence.status === 'fulfilled' ? confidence.value : null;
+        const confidenceComponents = confidenceValue?.components
+          ? Object.entries(confidenceValue.components).map(([component, value]) => ({
+              component_name: component.replace(/_/g, ' '),
+              confidence: typeof value === 'number' ? value : 0,
+            }))
+          : [];
+
+        const riskValue = risk.status === 'fulfilled' ? risk.value : null;
+        const riskData = (() => {
+          if (!riskValue || typeof riskValue !== 'object') return [];
+
+          const normalizeLevel = (value: unknown) => {
+            if (value === null || value === undefined) return 'unknown';
+            const text = String(value).toLowerCase();
+            if (['low', 'minimal', 'none'].includes(text)) return 'low';
+            if (['medium', 'moderate'].includes(text)) return 'medium';
+            if (['high', 'severe', 'elevated', 'extreme'].includes(text)) return 'high';
+            return text || 'unknown';
+          };
+
+          const levelToLabel = (slug: string) => {
+            if (!slug) return 'Unknown';
+            return slug.charAt(0).toUpperCase() + slug.slice(1);
+          };
+
+          const levelToScore = (slug: string) => {
+            switch (slug) {
+              case 'low':
+                return 30;
+              case 'medium':
+                return 60;
+              case 'high':
+                return 90;
+              case 'unknown':
+                return 45;
+              default:
+                return 50;
+            }
+          };
+
+          const formatPct = (value: number) => `${value.toFixed(2)}%`;
+
+          const items: Array<{ category: string; level: string; score: number; description?: string }> = [];
+          const pushItem = (category: string, slug: string, description?: string) => {
+            const normalized = slug || 'unknown';
+            items.push({
+              category,
+              level: levelToLabel(normalized),
+              score: levelToScore(normalized),
+              description,
+            });
+          };
+
+          if (riskValue.risk_level) {
+            const slug = normalizeLevel(riskValue.risk_level);
+            pushItem('Overall Risk', slug);
+          }
+
+          if (riskValue.event_risk) {
+            const slug = normalizeLevel(riskValue.event_risk);
+            const detail =
+              typeof riskValue.event_details === 'string'
+                ? riskValue.event_details
+                : Array.isArray(riskValue.event_details)
+                ? riskValue.event_details.filter(Boolean).join(', ')
+                : undefined;
+            pushItem('Event Risk', slug, detail);
+          }
+
+          if (riskValue.volatility_risk) {
+            const slug = normalizeLevel(riskValue.volatility_risk);
+            pushItem('Volatility Risk', slug);
+          }
+
+          if (typeof riskValue.realized_vol_30d === 'number') {
+            const vol = Math.abs(riskValue.realized_vol_30d);
+            const slug = vol >= 12 ? 'high' : vol >= 7 ? 'medium' : 'low';
+            pushItem('30d Volatility', slug, `Rolling 30d stdev ~${formatPct(vol)}`);
+          }
+
+          if (typeof riskValue.var_95 === 'number') {
+            const var95 = Math.abs(riskValue.var_95);
+            const slug = var95 >= 1.5 ? 'high' : var95 >= 0.75 ? 'medium' : 'low';
+            pushItem('Value at Risk (95%)', slug, `Estimated drawdown ${formatPct(var95)}`);
+          }
+
+          if (riskValue.liquidity_risk) {
+            const slug = normalizeLevel(riskValue.liquidity_risk);
+            pushItem('Liquidity Risk', slug);
+          }
+
+          return items;
+        })();
+
+        const timelineValue = timeline.status === 'fulfilled' ? timeline.value : null;
+        const timelineData = (() => {
+          const ensureNumber = (value: unknown, fallback: number) => {
+            const numeric = typeof value === 'number' ? value : Number(value);
+            return Number.isFinite(numeric) ? numeric : fallback;
+          };
+
+          const plan = (data?.staged_plan ?? timelineValue?.staged_plan) as any;
+          if (plan && Array.isArray(plan.tranches) && plan.tranches.length > 0) {
+            const spacing = ensureNumber(plan.spacing_days, 1);
+            return plan.tranches.map((tranche: any, index: number) => {
+              const start = ensureNumber(tranche.execute_day, index * spacing);
+              const nextTranche = plan.tranches[index + 1];
+              const nextStart = nextTranche ? ensureNumber(nextTranche.execute_day, start + spacing) : start + spacing;
+              const rawDuration = Math.max(0.5, nextStart - start);
+              const duration = Math.max(1, Math.round(rawDuration));
+              const tasks = [
+                tranche.percentage !== undefined ? `Convert ${Number(tranche.percentage).toFixed(1)}% of notional` : null,
+                tranche.amount !== undefined
+                  ? `~${Number(tranche.amount).toLocaleString(undefined, { maximumFractionDigits: 0 })} ${data?.metadata?.base_currency || ''}`.trim()
+                  : null,
+                tranche.rationale || undefined,
+              ].filter(Boolean) as string[];
+
+              return {
+                phase: tranche.rationale || `Tranche ${tranche.tranche_number ?? index + 1}`,
+                duration_days: duration,
+                start_day: Math.max(0, Math.round(start)),
+                tasks,
+              };
+            });
+          }
+
+          const points = Array.isArray(timelineValue?.timeline_points) ? timelineValue.timeline_points : [];
+          if (points.length > 0) {
+            return points.map((point: any, idx: number) => {
+              const start = ensureNumber(point.day, idx);
+              const next = points[idx + 1];
+              const nextStart = next ? ensureNumber(next.day, start + 1) : start + 1;
+              const duration = Math.max(1, Math.round(Math.max(0.5, nextStart - start)));
+              const tasks = [] as string[];
+              if (point.percentage !== undefined) tasks.push(`Allocation: ${Number(point.percentage).toFixed(1)}%`);
+              if (point.amount !== undefined) {
+                tasks.push(`Amount: ${Number(point.amount).toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
+              }
+              if (point.note) tasks.push(point.note);
+              return {
+                phase: point.note || `Tranche ${point.index ?? idx + 1}`,
+                duration_days: duration,
+                start_day: Math.max(0, Math.round(start)),
+                tasks,
+              };
+            });
+          }
+
+          const action = timelineValue?.action ?? data?.action;
+          const timelineNote = timelineValue?.timeline ?? data?.timeline;
+          const timeframeDays = ensureNumber(data?.timeframe_days, ensureNumber(data?.metadata?.timeframe_days, 1));
+
+          if (action === 'convert_now') {
+            return [
+              {
+                phase: 'Immediate Conversion',
+                duration_days: 1,
+                start_day: 0,
+                tasks: [timelineNote || 'Execute conversion right away.'],
+              },
+            ];
+          }
+
+          if (action === 'wait' || action === 'monitor_market') {
+            return [
+              {
+                phase: 'Monitor Market',
+                duration_days: Math.max(1, timeframeDays),
+                start_day: 0,
+                tasks: [timelineNote || 'Track rates until target conditions are met.'],
+              },
+            ];
+          }
+
+          if (action === 'staged_conversion') {
+            return [
+              {
+                phase: 'Stage Conversion Plan',
+                duration_days: Math.max(1, timeframeDays),
+                start_day: 0,
+                tasks: [timelineNote || 'Follow the staged execution plan to reduce timing risk.'],
+              },
+            ];
+          }
+
+          return [];
+        })();
+
+        const predictionValue = prediction.status === 'fulfilled' ? prediction.value : null;
+        const predictionChart = Array.isArray(predictionValue?.chart_data)
+          ? predictionValue.chart_data.map((item: any) => ({
+              date: item.horizon_label || String(item.horizon),
+              predicted_price: item.mean_rate,
+              confidence_lower: item.p10,
+              confidence_upper: item.p90,
+            }))
+          : [];
+
         setVizData({
-          confidence: confidence.status === 'fulfilled' ? confidence.value : [],
-          risk: risk.status === 'fulfilled' ? risk.value : [],
-          cost: cost.status === 'fulfilled' ? cost.value : [],
-          timeline: timeline.status === 'fulfilled' ? timeline.value : [],
-          prediction: prediction.status === 'fulfilled' ? prediction.value : [],
+          confidence: {
+            components: confidenceComponents,
+            overall: typeof confidenceValue?.overall === 'number' ? confidenceValue.overall : null,
+          },
+          risk: riskData,
+          timeline: timelineData,
+          prediction: {
+            data: predictionChart,
+            latest_close: predictionValue?.latest_close ?? null,
+          },
           evidence: mappedEvidence,
           historicalPrices: historicalPrices.status === 'fulfilled' ? historicalPrices.value : null,
           technicalIndicators: technicalIndicators.status === 'fulfilled' ? technicalIndicators.value : null,
@@ -144,6 +347,24 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
     } catch (err) {
       console.error('Error fetching result:', err);
       setError('Failed to load results');
+    }
+  };
+
+  const handleTimeframeChange = async (days: number) => {
+    console.log('Timeframe change requested:', days);
+    setHistoricalTimeframe(days);
+    try {
+      console.log('Fetching historical prices for', days, 'days, correlationId:', correlationId);
+      const historicalPrices = await visualizationService.getHistoricalPrices(correlationId, days);
+      console.log('Received historical prices:', historicalPrices);
+      setVizData((prev: any) => ({
+        ...prev,
+        historicalPrices: historicalPrices,
+      }));
+      console.log('Updated vizData with new historical prices');
+    } catch (error) {
+      console.error('Error fetching historical prices:', error);
+      toast.error('Failed to load historical prices for selected timeframe');
     }
   };
 
@@ -672,10 +893,21 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
+                {vizData.confidence?.overall !== null && (
+                  <div className="grid grid-cols-1 gap-3 mb-6 md:grid-cols-3">
+                    <div className="p-4 border rounded-lg bg-muted/40">
+                      <p className="text-xs text-muted-foreground">Overall Confidence</p>
+                      <p className="text-2xl font-semibold mt-1">
+                        {(vizData.confidence.overall * 100).toFixed(0)}%
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="border rounded-lg p-4">
-                    {vizData.confidence.length > 0 ? (
-                      <ConfidenceChart data={vizData.confidence} />
+                    {vizData.confidence?.components?.length > 0 ? (
+                      <ConfidenceChart data={vizData.confidence.components} />
                     ) : (
                       renderChartFallback('Confidence metrics are not available for this analysis yet.')
                     )}
@@ -688,17 +920,11 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
                     )}
                   </div>
                   <div className="border rounded-lg p-4">
-                    {vizData.cost.length > 0 ? (
-                      <CostChart data={vizData.cost} />
-                    ) : (
-                      renderChartFallback('Cost breakdown is unavailable. Ensure transaction cost analysis is enabled for this workspace.')
-                    )}
-                  </div>
-                  <div className="border rounded-lg p-4">
-                    {vizData.prediction.length > 0 ? (
+                    {vizData.prediction?.data?.length > 0 ? (
                       <PredictionChart
-                        data={vizData.prediction}
+                        data={vizData.prediction.data}
                         currency_pair={result.metadata?.currency_pair}
+                        latest_close={vizData.prediction.latest_close}
                       />
                     ) : (
                       renderChartFallback('Prediction data was not returned. Train forecasting models or re-run the analysis to populate this chart.')
@@ -724,6 +950,8 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
                       data={vizData.historicalPrices.data || []}
                       indicators={vizData.historicalPrices.indicators}
                       currency_pair={result.metadata?.currency_pair}
+                      onTimeframeChange={handleTimeframeChange}
+                      currentTimeframe={historicalTimeframe}
                     />
                   ) : (
                     renderChartFallback('Historical price data is unavailable. YFinance access may be disabled or the pair lacks history.')

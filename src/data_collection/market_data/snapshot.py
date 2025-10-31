@@ -66,7 +66,10 @@ async def _load_historical(base: str, quote: str, days: int) -> Optional[pd.Data
         required = {"Open", "High", "Low", "Close"}
         if not required.issubset(set(df.columns)):
             return None
-        return df[["Open", "High", "Low", "Close"]]
+        columns = ["Open", "High", "Low", "Close"]
+        if "Volume" in df.columns:
+            columns.append("Volume")
+        return df[columns]
     except Exception as e:
         logger.error(f"Historical load failed for {symbol}: {e}")
         return None
