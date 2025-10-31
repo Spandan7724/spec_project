@@ -476,6 +476,7 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
   // Loading state
   if (status?.status === 'pending' || status?.status === 'processing') {
     const p = Math.max(0, Math.min(100, animatedProgress));
+    const displayProgress = Number.isFinite(p) ? Math.round(p) : 0;
     const stageIdx = p < 25 ? 0 : p < 50 ? 1 : p < 75 ? 2 : 3;
     const stages = [
       { label: 'Market Data', icon: LineChart },
@@ -496,7 +497,7 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
             />
             <div className="absolute inset-2 rounded-full bg-card" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-3xl font-bold">{p}%</div>
+              <div className="text-3xl font-bold">{displayProgress}%</div>
             </div>
           </div>
 
