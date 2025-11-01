@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Brush,
 } from 'recharts';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface PricePoint {
   date: string;
@@ -51,6 +51,23 @@ export default function HistoricalPriceChart({
   const [showEMA, setShowEMA] = useState({ ema12: false, ema26: false });
   const [showBB, setShowBB] = useState(false);
   const [showVolume, setShowVolume] = useState(true);
+
+  // Detect if the provided dataset actually has any non-zero volume.
+  const hasNonZeroVolume = useMemo(() => {
+    if (!data || data.length === 0) return false;
+    try {
+      return data.some((p: any) => typeof p?.volume === 'number' && p.volume > 0);
+    } catch {
+      return false;
+    }
+  }, [data]);
+
+  // Auto-hide the volume pane when the entire series is zero/empty.
+  useEffect(() => {
+    if (!hasNonZeroVolume && showVolume) {
+      setShowVolume(false);
+    }
+  }, [hasNonZeroVolume]);
 
   const timeframes = [
     { label: '30D', days: 30 },
@@ -205,15 +222,17 @@ export default function HistoricalPriceChart({
             />
             <span>Bollinger Bands</span>
           </label>
-          <label className="flex items-center gap-1 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showVolume}
-              onChange={(e) => setShowVolume(e.target.checked)}
-              className="rounded"
-            />
-            <span>Volume</span>
-          </label>
+          {hasNonZeroVolume && (
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showVolume}
+                onChange={(e) => setShowVolume(e.target.checked)}
+                className="rounded"
+              />
+              <span>Volume</span>
+            </label>
+          )}
         </div>
       </div>
 
@@ -376,7 +395,7 @@ export default function HistoricalPriceChart({
       </div>
 
       {/* Volume Chart */}
-      {showVolume && (
+      {showVolume && hasNonZeroVolume && (
         <div className="scroll-container h-48 md:h-64 -mx-2 px-2 mt-4">
           <div className="min-w-[700px] h-full">
             <ResponsiveContainer width="100%" height="100%">

@@ -13,6 +13,11 @@ cache:
   default_ttl: 300  # 5 minutes
   max_size: 1000
 
+chat:
+  history:
+    messages: 16  # Number of prior turns to include when prompting LLM
+    max: false   # Set true to include all prior messages (no limit)
+
 api:
   exchange_rate_host:
     base_url: "https://api.exchangerate.host"

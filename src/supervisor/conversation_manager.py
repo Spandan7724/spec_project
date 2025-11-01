@@ -23,6 +23,8 @@ from .message_templates import (
     GREETING_MESSAGE,
 )
 from .response_formatter import ResponseFormatter
+from src.config import get_config, load_config
+from src.utils.errors import ConfigurationError
 
 
 logger = logging.getLogger(__name__)
@@ -34,6 +36,45 @@ class ConversationManager:
     def __init__(self, extractor: Optional[NLUExtractor] = None):
         self.extractor = extractor or NLUExtractor()
         self.sessions: Dict[str, ConversationSession] = {}
+        self.history_limit = self._load_history_limit()
+
+    def _load_history_limit(self) -> Optional[int]:
+        """
+        Load conversation history limit from configuration.
+
+        Returns:
+            Optional[int]: Number of messages to include, or None for unlimited.
+        """
+        cfg = None
+        try:
+            cfg = get_config()
+        except ConfigurationError:
+            try:
+                cfg = load_config()
+            except Exception:
+                cfg = None
+        except Exception:
+            cfg = None
+
+        default_limit = 8
+        if not cfg:
+            return default_limit
+
+        history_cfg = cfg.get("chat.history", {})
+        if not isinstance(history_cfg, dict):
+            return default_limit
+
+        use_max = history_cfg.get("max")
+        if isinstance(use_max, str):
+            use_max = use_max.lower() in {"true", "1", "yes", "on", "max"}
+        if use_max:
+            return None
+
+        messages_val = history_cfg.get("messages")
+        if isinstance(messages_val, int) and messages_val > 0:
+            return messages_val
+
+        return default_limit
 
     def process_input(self, request: SupervisorRequest) -> SupervisorResponse:
         """Process user input and return appropriate response."""
@@ -803,7 +844,7 @@ Analysis Results Summary:
     def _build_conversation_history(
         self,
         history: List[Dict[str, str]],
-        max_messages: int = 8,
+        max_messages: Optional[int] = None,
         exclude_last: bool = True,
     ) -> str:
         """Format recent conversation history for LLM context."""
@@ -815,7 +856,8 @@ Analysis Results Summary:
         if not trimmed_history:
             return "No prior conversation."
 
-        recent_messages = trimmed_history[-max_messages:]
+        limit = max_messages if max_messages is not None else self.history_limit
+        recent_messages = trimmed_history if limit is None else trimmed_history[-limit:]
         lines: List[str] = []
         for message in recent_messages:
             role = message.get("role", "assistant")

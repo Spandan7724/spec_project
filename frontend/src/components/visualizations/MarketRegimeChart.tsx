@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceArea,
 } from 'recharts';
 
 interface RegimePoint {
@@ -68,12 +69,51 @@ export default function MarketRegimeChart({
     }
   };
 
-  // Create background areas for different regimes
-  const chartData = regime_history.map((point, idx) => ({
-    ...point,
-    regimeColor: getRegimeColor(point.regime),
-    regimeLabel: getRegimeLabel(point.regime),
-  }));
+  // Normalize regime key
+  const normalizeRegime = (r: string) => {
+    const s = (r || '').toString().toLowerCase();
+    if (s === 'trending' || s === 'trend_up') return 'trending_up';
+    if (s === 'sideways') return 'ranging';
+    if (s === 'high_volatility') return 'volatile';
+    return s;
+  };
+
+  // Create background areas for different regimes by splitting the series
+  const chartData = regime_history.map((point) => {
+    const key = normalizeRegime(point.regime);
+    return {
+      ...point,
+      regimeKey: key,
+      regimeColor: getRegimeColor(key),
+      regimeLabel: getRegimeLabel(key),
+      // These area series were an attempt to shade under the price; we will prefer full-height bands via ReferenceArea below.
+      area_trending_up: null,
+      area_trending_down: null,
+      area_ranging: null,
+      area_volatile: null,
+    };
+  });
+
+  // Build contiguous regime bands for background shading (full height)
+  const segments = (() => {
+    if (!regime_history || regime_history.length === 0) return [] as Array<{start: string; end: string; key: string}>;
+    const items = regime_history.map((p) => ({ date: p.date, key: normalizeRegime(p.regime) }));
+    const segs: Array<{start: string; end: string; key: string}> = [];
+    let start = items[0].date;
+    let key = items[0].key;
+    for (let i = 1; i < items.length; i++) {
+      const it = items[i];
+      if (it.key !== key) {
+        const prev = items[i - 1];
+        segs.push({ start, end: prev.date, key });
+        start = it.date;
+        key = it.key;
+      }
+    }
+    // Close last segment
+    segs.push({ start, end: items[items.length - 1].date, key });
+    return segs;
+  })();
 
   if (!regime_history || regime_history.length === 0) {
     return (
@@ -197,6 +237,21 @@ export default function MarketRegimeChart({
                   return null;
                 }}
               />
+
+              {/* Regime background bands across full height */}
+              {segments.map((seg, idx) => (
+                <ReferenceArea
+                  key={`regime-band-${idx}`}
+                  x1={seg.start}
+                  x2={seg.end}
+                  y1="auto"
+                  y2="auto"
+                  fill={getRegimeColor(seg.key)}
+                  fillOpacity={0.18}
+                  strokeOpacity={0}
+                  ifOverflow="hidden"
+                />
+              ))}
 
               {/* Price line */}
               <Line

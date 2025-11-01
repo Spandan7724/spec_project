@@ -659,7 +659,7 @@ export default function ChatInterface() {
               <span>Analysis in progress. I'll notify you when the dashboard is ready.</span>
             </div>
           )}
-          <div className="relative flex items-center gap-2 rounded-xl border border-border/40 bg-background shadow-sm transition-all focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
+          <div className="relative flex items-center gap-0 rounded-xl border border-border/40 bg-background overflow-hidden shadow-sm transition-all focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
             <textarea
               ref={textareaRef}
               value={input}
@@ -678,7 +678,7 @@ export default function ChatInterface() {
             <button
               onClick={handleSend}
               disabled={!input.trim() || isInputDisabled}
-              className="mobile-tap mr-2 inline-flex size-9 md:size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+              className="mobile-tap inline-flex self-stretch min-h-[46px] md:min-h-[40px] px-3 md:px-2 items-center justify-center rounded-none rounded-r-xl bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={16} className="md:size-[14px]" />
             </button>
