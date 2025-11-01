@@ -7,7 +7,7 @@ import os
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-from backend.dependencies import get_orchestrator, get_analysis_repository
+from ..dependencies import get_orchestrator, get_analysis_repository
 from ..models.requests import AnalysisRequest
 from ..models.responses import AnalysisStartResponse, AnalysisStatus
 from src.supervisor.models import ExtractedParameters

@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from backend.routes import conversation, analysis, visualization, health, models
 from src.database.connection import create_tables
@@ -54,4 +59,3 @@ def index():
     """Serve the main web interface."""
     html_path = Path(__file__).parent.parent / "ui" / "web" / "index.html"
     return FileResponse(html_path)
-

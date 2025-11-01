@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from ..models.requests import ConversationInput
 from ..models.responses import ConversationOutput
-from backend.dependencies import get_conversation_manager
+from ..dependencies import get_conversation_manager
 from src.supervisor.models import SupervisorRequest
 
 

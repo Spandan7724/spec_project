@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Depends
 
-from backend.dependencies import get_analysis_repository
+from ..dependencies import get_analysis_repository
 from src.data_collection.market_data.snapshot import _load_historical
 from src.data_collection.market_data.indicators import (
     calculate_indicators,
