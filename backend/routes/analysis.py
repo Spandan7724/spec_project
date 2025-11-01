@@ -157,12 +157,29 @@ def _run_analysis_task(analysis_repo, orchestrator, params: ExtractedParameters,
         market_data = None
         if md_src:
             indicators = md_src.get("indicators") or {}
+            # Compute spread_bps when possible from mid_rate and spread (or bid/ask)
+            spread_bps_val = None
+            try:
+                mid = md_src.get("mid_rate")
+                bid = md_src.get("bid")
+                ask = md_src.get("ask")
+                spread_abs = md_src.get("spread")
+                # Derive spread if absent but bid/ask present
+                if (spread_abs is None) and (bid is not None) and (ask is not None):
+                    spread_abs = float(ask) - float(bid)
+                # Derive mid if absent but bid/ask present
+                if (mid is None) and (bid is not None) and (ask is not None):
+                    mid = (float(ask) + float(bid)) / 2.0
+                if spread_abs is not None and mid is not None and float(mid) > 0:
+                    spread_bps_val = float(spread_abs) / float(mid) * 10000.0
+            except Exception:
+                spread_bps_val = None
+
             market_data = {
                 "current_rate": md_src.get("mid_rate"),
                 "bid": md_src.get("bid"),
                 "ask": md_src.get("ask"),
-                # spread_bps unknown here; keep None to avoid misleading values
-                "spread_bps": None,
+                "spread_bps": spread_bps_val,
                 "regime": md_src.get("regime"),
                 "volatility": indicators.get("realized_vol_30d"),
             }
