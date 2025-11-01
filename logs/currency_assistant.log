@@ -1,0 +1,1200 @@
+{"timestamp": "2025-10-25T18:22:53.879268", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:23:38.502549", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:24:43.161145", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:39:24.009074", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:39:24.015433", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:39:24.150060", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:40:21.957587", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:40:21.966948", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:40:21.970191", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:40:21.988041", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:40:34.322709", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:47:51.151692", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:47:51.169233", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:47:51.174219", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:47:51.193594", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:47:51.211065", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T18:47:51.212470", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T18:47:51.212841", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T18:47:51.213301", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T18:47:51.213589", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T18:47:51.213823", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T18:55:40.584810", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:55:40.602309", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:55:40.608214", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:55:40.608427", "level": "ERROR", "logger": "src.health", "message": "Database health check failed: Not an executable object: 'SELECT 1'"}
+{"timestamp": "2025-10-25T18:55:57.348642", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:55:57.356003", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:55:57.360293", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:02.909211", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:56:02.917388", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:56:02.918829", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:02.939864", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:02.951743", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:02.963915", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T18:56:02.965163", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T18:56:02.965968", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T18:56:02.966733", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T18:56:02.967063", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T18:56:02.967315", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T18:56:25.172159", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:56:25.188833", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:56:25.190235", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:25.209751", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:25.224071", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T18:56:25.234527", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T18:56:25.235990", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T18:56:25.236425", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T18:56:25.237056", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T18:56:25.237541", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T18:56:25.237921", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T18:56:39.964134", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:56:45.075357", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T18:56:45.081211", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T18:56:45.082463", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:36:20.119460", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:36:20.146061", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T19:36:20.147496", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:36:20.170820", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:36:20.183835", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:36:20.197966", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T19:36:20.199358", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T19:36:20.200070", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T19:36:20.201447", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:36:20.201889", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:36:20.202309", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:37:07.440956", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:37:07.441112", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:37:07.441178", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T19:37:07.443478", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:37:07.443657", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:37:07.446374", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:37:07.446577", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "ExchangeRate.host request failed: network error"}
+{"timestamp": "2025-10-25T19:37:07.446642", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:39:20.633287", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:39:20.641187", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T19:39:20.644867", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:39:20.661810", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:39:20.672047", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:39:20.681517", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T19:39:20.682400", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T19:39:20.682815", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T19:39:20.683252", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:39:20.683518", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:39:20.683733", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:42:39.662066", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:43:58.128052", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:43:58.135990", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T19:43:58.139840", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:43:58.156479", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:43:58.165577", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:43:58.175691", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T19:43:58.176378", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Data node called"}
+{"timestamp": "2025-10-25T19:43:58.176794", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T19:43:58.177249", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:43:58.177623", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:43:58.177981", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:46:32.686886", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:46:32.687713", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:46:32.857494", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:46:33.645902", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T19:46:34.493955", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T19:46:34.494558", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T19:46:34.494648", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:46:34.494702", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T19:46:34.637605", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:46:34.637724", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:50:20.494526", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:50:20.495183", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:50:20.558081", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:50:21.362134", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T19:50:21.706314", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T19:50:21.706914", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T19:50:21.707001", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:50:21.707064", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T19:50:21.836778", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:50:21.836883", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:50:21.838231", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:50:21.838592", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:50:21.838813", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:51:21.609238", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:51:21.622465", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T19:51:21.629346", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:51:21.650317", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:51:21.666485", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:51:21.679557", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T19:51:21.682255", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T19:51:21.682493", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T19:51:21.682749", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:51:21.743732", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:51:22.491743", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T19:51:23.353526", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T19:51:23.354514", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T19:51:23.354645", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:51:23.354704", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T19:51:23.496006", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:51:23.496154", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:51:23.497409", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:51:23.497711", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:51:23.497960", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:51:23.502173", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T19:51:23.502321", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:51:23.502388", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:52:48.103768", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:52:48.103917", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T19:52:48.103972", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T19:52:48.104046", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T19:52:48.105469", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T19:52:48.105582", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T19:52:48.105641", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T19:52:48.106362", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T19:52:48.106447", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T19:52:48.106502", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T19:57:12.812787", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:57:12.823676", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T19:57:12.828268", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:57:12.849478", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:57:12.861813", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T19:57:12.875231", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T19:57:12.876896", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T19:57:12.877406", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T19:57:12.877674", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:57:12.942151", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T19:57:13.684877", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T19:57:14.511873", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T19:57:14.512493", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T19:57:14.512594", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T19:57:14.512651", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T19:57:14.651299", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:57:14.651410", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:57:14.652742", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T19:57:14.653086", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T19:57:14.653325", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T19:57:14.656581", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T19:57:14.656773", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T19:57:14.656842", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T19:57:57.454732", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T19:57:57.454879", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T19:57:57.454928", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T19:57:57.455004", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T19:57:57.456656", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T19:57:57.456949", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T19:57:57.457406", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T19:57:57.459792", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T19:57:57.459988", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T19:57:57.460182", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T19:57:57.461886", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T19:57:57.462122", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T19:57:57.462265", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:00:18.472775", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:00:37.172759", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:03:18.194720", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:03:18.203475", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:03:18.207373", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:18.231325", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:18.242123", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:18.256129", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:03:18.257240", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:03:18.257384", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:18.258552", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T20:03:18.295792", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:19.043843", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:03:19.917594", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:03:19.918445", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:03:19.918592", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:03:19.918631", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:03:20.041450", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:03:20.041557", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:03:20.042963", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:03:20.043233", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:03:20.043450", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:03:20.046662", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:03:20.046828", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:20.060331", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:20.436706", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:03:21.306504", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:03:21.307070", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:03:21.307160", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:03:21.307209", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:03:21.402307", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:03:21.402429", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:03:39.226414", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:03:45.187759", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:03:45.192748", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:03:45.194149", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:45.218074", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:45.227439", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:03:45.234836", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:03:45.235971", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:03:45.236120", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:45.236616", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T20:03:45.263355", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:45.990697", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:03:46.838989", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:03:46.839814", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:03:46.839952", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:03:46.840004", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:03:46.952887", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:03:46.953038", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:03:46.954402", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:03:46.954699", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:03:46.954935", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:03:46.957259", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:03:46.957382", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:46.970186", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:03:47.300483", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:03:48.128180", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:03:48.129633", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:03:48.129726", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:03:48.129760", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:03:48.229668", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:03:48.229791", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:06:04.609453", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:06:04.610190", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:06:04.610273", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:06:04.610347", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:06:04.612111", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:06:04.612247", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:06:04.612344", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:06:04.614191", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:06:04.614334", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:06:04.614394", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:06:04.615738", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:06:04.615857", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:06:04.615915", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:12:59.583938", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:12:59.584094", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:12:59.584162", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:12:59.586347", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:12:59.586539", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:12:59.588499", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:12:59.588618", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:12:59.588676", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:12:59.589763", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:12:59.589868", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:12:59.589939", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:12:59.591100", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:12:59.591253", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:12:59.591338", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:12:59.592669", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:12:59.592948", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:12:59.593401", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:13:47.451335", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:13:47.465606", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:13:47.471918", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:13:47.496401", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:13:47.509352", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:13:47.520567", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:13:47.522354", "level": "INFO", "logger": "src.agentic.graph", "message": "Market Intelligence node called"}
+{"timestamp": "2025-10-25T20:13:47.522659", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:13:47.523020", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:13:47.570797", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:13:48.302466", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:13:49.153408", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:13:49.154149", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:13:49.154244", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:13:49.154281", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:13:49.282726", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:13:49.283186", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:13:49.285418", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:13:49.285749", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:13:49.285975", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:13:49.289112", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:13:49.289256", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:13:49.303565", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:13:49.656937", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:13:50.469612", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:13:50.470525", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:13:50.470888", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:13:50.470965", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:13:50.583796", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:13:50.584006", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:15:34.258886", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:15:34.259300", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:15:34.259402", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:15:34.260778", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:15:34.260975", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:15:34.263238", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:15:34.263405", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:15:34.263505", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:15:34.264948", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:15:34.265062", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:15:34.265139", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:15:34.266141", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:15:34.266228", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:15:34.266270", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:15:34.267188", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:15:34.267298", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:15:34.267340", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:15:34.269976", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:15:34.270127", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: boom"}
+{"timestamp": "2025-10-25T20:15:34.270197", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:15:34.286360", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:15:34.288945", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:15:34.289287", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:15:34.289444", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:15:34.294078", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:15:34.294546", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot_mini: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:15:34.294623", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot_claude: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:15:34.294654", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: openai"}
+{"timestamp": "2025-10-25T20:15:34.294676", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: claude"}
+{"timestamp": "2025-10-25T20:15:34.294704", "level": "INFO", "logger": "src.llm.manager", "message": "LLMManager initialized with 0 providers"}
+{"timestamp": "2025-10-25T20:15:34.295128", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:15:34.295278", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:15:34.295352", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:15:34.295405", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:15:34.363684", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:15:35.105565", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:15:35.968091", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:15:35.968750", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:15:35.968851", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:15:35.968903", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:15:36.102288", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:15:36.105708", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:15:36.105903", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:15:36.125452", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:15:36.125585", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:15:36.125649", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:15:36.125706", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:15:37.767815", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:15:37.802051", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:15:37.802253", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:15:37.807029", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:15:37.807152", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:15:38.808926", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:15:38.812238", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:15:38.812341", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:15:38.812401", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: No available providers configured"}
+{"timestamp": "2025-10-25T20:15:38.812450", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:15:38.814084", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:15:38.814537", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:15:38.814766", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:20:57.550651", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:20:57.580259", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:20:57.582405", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:20:57.602997", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:20:57.616137", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:20:57.628608", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:20:57.629910", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:20:57.630306", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:20:57.631294", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:20:57.635083", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:20:57.635218", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot_mini: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:20:57.635333", "level": "ERROR", "logger": "src.llm.manager", "message": "Failed to initialize provider copilot_claude: COPILOT_ACCESS_TOKEN environment variable is required"}
+{"timestamp": "2025-10-25T20:20:57.635402", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: openai"}
+{"timestamp": "2025-10-25T20:20:57.635464", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: claude"}
+{"timestamp": "2025-10-25T20:20:57.635648", "level": "INFO", "logger": "src.llm.manager", "message": "LLMManager initialized with 0 providers"}
+{"timestamp": "2025-10-25T20:20:57.635774", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:20:57.635826", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:20:57.635882", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:20:57.635931", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:20:57.699876", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:20:58.106372", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:20:58.960809", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:20:58.961594", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:20:58.961688", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:20:58.961746", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:20:59.073330", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:20:59.073476", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:20:59.234012", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:20:59.265676", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:20:59.265923", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:20:59.265980", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:20:59.266051", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:21:00.987502", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:21:01.017905", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:21:01.018122", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:21:01.022703", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:21:01.022872", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:21:02.024496", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:21:02.028139", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:21:02.028276", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:21:02.028316", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: No available providers configured"}
+{"timestamp": "2025-10-25T20:21:02.028376", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:21:02.030036", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:21:02.030509", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:21:02.030780", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:21:02.094297", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:21:02.094463", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:21:02.113371", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:21:02.359433", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:21:02.728647", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:21:02.739542", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:21:02.739866", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:21:02.739970", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:21:02.844479", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:21:02.844658", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:21:02.847579", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:21:02.848020", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: boom"}
+{"timestamp": "2025-10-25T20:21:02.848383", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:28:45.783887", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:28:45.793970", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:28:45.799490", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:28:45.818151", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:28:45.831032", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:28:45.840017", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:28:45.841487", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:28:45.841876", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:28:45.842471", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:28:45.846773", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot (gpt-4o-2024-11-20)"}
+{"timestamp": "2025-10-25T20:28:45.846887", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot_mini (gpt-5-mini)"}
+{"timestamp": "2025-10-25T20:28:45.846944", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot_claude (claude-3.5-sonnet)"}
+{"timestamp": "2025-10-25T20:28:45.847012", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: openai"}
+{"timestamp": "2025-10-25T20:28:45.847143", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: claude"}
+{"timestamp": "2025-10-25T20:28:45.847206", "level": "INFO", "logger": "src.llm.manager", "message": "LLMManager initialized with 3 providers"}
+{"timestamp": "2025-10-25T20:28:45.847291", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:28:45.847342", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:28:45.847404", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:28:45.847457", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:28:45.899425", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:28:46.653622", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:28:47.309896", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:47.341536", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:28:47.341650", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:28:47.341706", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:28:47.341748", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:28:47.526537", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:47.527392", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:28:47.527510", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:28:47.527548", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:28:47.658731", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:28:47.658895", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:28:49.000634", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:49.034157", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:28:49.034272", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:28:50.074777", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:51.234360", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:52.509538", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:28:52.792059", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:29:00.849598", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function market_intelligence_node timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:29:01.122244", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:29:01.122410", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:29:01.136475", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:29:01.484718", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:29:02.298768", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:29:02.299259", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:29:02.299350", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:29:02.299400", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:29:02.414190", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:29:02.414323", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:29:02.416437", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:29:02.416536", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: boom"}
+{"timestamp": "2025-10-25T20:29:02.416612", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:30:20.087303", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:30:20.088175", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:30:20.089402", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:30:20.089579", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:30:20.089657", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:30:21.878847", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:21.910465", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:30:21.910600", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:30:21.910671", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:30:21.910713", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:30:24.446256", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:24.477719", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:30:24.477884", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:30:25.471927", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:26.819726", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:28.111429", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:28.394869", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:30:37.020655", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:30:37.021077", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 617)"}
+{"timestamp": "2025-10-25T20:30:37.021189", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:30:37.021247", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:30:37.026240", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:01.228127", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:01.228946", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 817)"}
+{"timestamp": "2025-10-25T20:31:01.229227", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:31:01.229362", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:31:01.233860", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:13.622096", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:13.622545", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 670)"}
+{"timestamp": "2025-10-25T20:31:13.622664", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:31:13.622952", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:31:13.623032", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:31:13.623085", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:31:14.833170", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:14.834189", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:31:14.834369", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:31:14.834433", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:31:14.834456", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:31:18.373663", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:18.374160", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:31:18.374237", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:18.379388", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:24.581204", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:24.581570", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 433)"}
+{"timestamp": "2025-10-25T20:31:24.581677", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:24.581720", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:24.585381", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:30.095113", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:30.095488", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 343)"}
+{"timestamp": "2025-10-25T20:31:30.095570", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:30.095612", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:30.099368", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:35.482445", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:35.482889", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 341)"}
+{"timestamp": "2025-10-25T20:31:35.482973", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:35.483026", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:35.486847", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:31:49.792052", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:31:49.792558", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 935)"}
+{"timestamp": "2025-10-25T20:31:49.792683", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:49.792749", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:31:49.796460", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:32:02.115966", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:02.116755", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 811)"}
+{"timestamp": "2025-10-25T20:32:02.116938", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:02.117069", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:02.121570", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:32:13.027074", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:13.027493", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 707)"}
+{"timestamp": "2025-10-25T20:32:13.027577", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:13.027620", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:13.031168", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:32:29.650577", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:32:29.663509", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:32:29.668428", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:32:29.695405", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:32:29.708717", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:32:29.717853", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:32:29.719102", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:32:29.719227", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:32:29.720409", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:32:29.723530", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot (gpt-4o-2024-11-20)"}
+{"timestamp": "2025-10-25T20:32:29.723617", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot_mini (gpt-5-mini)"}
+{"timestamp": "2025-10-25T20:32:29.723663", "level": "INFO", "logger": "src.llm.manager", "message": "Initialized provider: copilot_claude (claude-3.5-sonnet)"}
+{"timestamp": "2025-10-25T20:32:29.723686", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: openai"}
+{"timestamp": "2025-10-25T20:32:29.723706", "level": "INFO", "logger": "src.llm.manager", "message": "Skipping disabled provider: claude"}
+{"timestamp": "2025-10-25T20:32:29.723726", "level": "INFO", "logger": "src.llm.manager", "message": "LLMManager initialized with 3 providers"}
+{"timestamp": "2025-10-25T20:32:29.723790", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:32:29.723854", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:32:29.723907", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:32:29.723957", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:32:29.774176", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:32:30.500886", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:32:31.229716", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:31.262091", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:32:31.262212", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:32:31.262251", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:32:31.262276", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:32:31.331883", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:31.342552", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:32:31.342666", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:32:31.342724", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:32:31.461400", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:32:31.461518", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:32:32.709220", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:32.745741", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:32:32.745873", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:32:33.750963", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:35.026292", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:36.029777", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:36.030150", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 1122)"}
+{"timestamp": "2025-10-25T20:32:36.030261", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:36.030312", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:36.033849", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:32:36.292446", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:36.580059", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:32:44.728278", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function market_intelligence_node timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:32:45.027641", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:32:45.027893", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:32:45.041083", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:32:45.392305", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:32:46.222156", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:46.223313", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:32:46.223538", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:32:46.223690", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:32:46.330343", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:32:46.330463", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:32:46.332603", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:32:46.332726", "level": "ERROR", "logger": "src.agentic.nodes.market_intelligence", "message": "Market intelligence node failed: boom"}
+{"timestamp": "2025-10-25T20:32:46.332791", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:32:49.464106", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:32:49.464552", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 820)"}
+{"timestamp": "2025-10-25T20:32:49.464646", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:49.464706", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:32:49.468357", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:02.399486", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:02.399893", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 880)"}
+{"timestamp": "2025-10-25T20:33:02.399999", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:02.400044", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:02.403610", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:24.490289", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:24.501047", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 1278)"}
+{"timestamp": "2025-10-25T20:33:24.501166", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:24.501284", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:24.506068", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:38.194514", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:38.195032", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 844)"}
+{"timestamp": "2025-10-25T20:33:38.195131", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:38.195188", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:38.199211", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:47.295380", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:47.296386", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 512)"}
+{"timestamp": "2025-10-25T20:33:47.296541", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:47.296623", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:47.300958", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:52.686903", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:52.687304", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 269)"}
+{"timestamp": "2025-10-25T20:33:52.687406", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:52.687457", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:52.691012", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:33:59.796259", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:33:59.796903", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 371)"}
+{"timestamp": "2025-10-25T20:33:59.797221", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:59.797335", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:33:59.801572", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:34:31.673249", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:34:31.673617", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:34:31.673806", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:34:31.674135", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:34:31.674333", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:34:31.674419", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:34:31.674669", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:34:31.742804", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:34:32.452887", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:34:33.060792", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:33.089020", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:34:33.089209", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:34:33.089283", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:34:33.089337", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:34:33.306069", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:33.306585", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:34:33.306715", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:34:33.306778", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:34:33.424399", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:34:33.424996", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:34:34.518973", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:34.557551", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:34:34.557671", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:34:35.566844", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:36.866488", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:38.108269", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:34:38.382204", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:34:46.671569", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function market_intelligence_node timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:35:01.994275", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:35:01.994409", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:02.023421", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:02.705377", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:35:03.549107", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:35:03.549673", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:35:03.549757", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:35:03.549800", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:35:03.661825", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:35:03.661923", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:35:03.662946", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:35:03.663254", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:35:03.663470", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:35:46.766803", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:35:46.766933", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:46.811673", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:47.605376", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:35:48.429419", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:35:48.441188", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:35:48.441301", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:35:48.441331", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:35:48.563449", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:35:48.563532", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:35:48.564818", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:35:48.565173", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:35:48.565386", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:35:48.571521", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:35:48.572536", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:35:48.573165", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:48.573552", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:35:48.573727", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:35:48.586182", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:48.919911", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:35:49.738758", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:35:49.739317", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:35:49.739440", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:35:49.739500", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:35:49.785415", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:35:49.785510", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:35:49.787139", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:35:49.787836", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:35:49.788069", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:35:58.309627", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:35:58.319463", "level": "INFO", "logger": "src.database.connection", "message": "Database engine created: data/currency_assistant.db"}
+{"timestamp": "2025-10-25T20:35:58.320864", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:35:58.338206", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:35:58.348548", "level": "INFO", "logger": "src.database.connection", "message": "Database tables created"}
+{"timestamp": "2025-10-25T20:35:58.355829", "level": "INFO", "logger": "src.agentic.graph", "message": "NLU node called"}
+{"timestamp": "2025-10-25T20:35:58.356955", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:35:58.357266", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:58.357928", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:35:58.358281", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:35:58.387793", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:35:59.112023", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:35:59.964976", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:35:59.966315", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:35:59.966518", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:35:59.966640", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:36:00.078475", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:36:00.078588", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:36:00.080029", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:36:00.080332", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:36:00.080549", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:36:00.092679", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_data_node"}
+{"timestamp": "2025-10-25T20:36:00.092818", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:36:00.105327", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:36:00.502614", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:36:01.342950", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:36:01.343679", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:36:01.343798", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:36:01.343873", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:36:01.446766", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:36:01.446887", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:36:01.449855", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting market_intelligence_node"}
+{"timestamp": "2025-10-25T20:36:01.449967", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:36:20.348480", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:36:20.348847", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:36:20.348926", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:36:20.349526", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:36:20.349819", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:36:22.135273", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:36:22.166356", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:36:22.166553", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:36:22.166633", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:36:22.166698", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:36:23.601934", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:36:23.635922", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:36:23.636102", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:36:23.640839", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:36:23.640968", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:36:23.641081", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:36:23.644290", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:36:23.644402", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:36:24.642932", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:36:24.646358", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:36:24.646470", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:36:24.646558", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:36:24.649863", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed classify_article"}
+{"timestamp": "2025-10-25T20:36:24.649993", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:36:24.650134", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:36:24.650193", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:36:24.650218", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:36:25.857747", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:36:25.858467", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:36:25.858594", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:36:25.858645", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:36:25.858687", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:36:27.918327", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:36:27.919005", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:36:27.919089", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:36:27.924308", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:36:27.924430", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:36:28.926269", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:36:28.929903", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:36:28.929999", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:40:56.615311", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:40:56.615775", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:40:56.616059", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:40:56.616389", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:40:56.616563", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:40:56.616939", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:40:56.680682", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:40:57.389586", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:40:58.234827", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:40:58.246340", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:40:58.246446", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:40:58.246475", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:40:58.370912", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:40:58.371635", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:40:58.371846", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:40:58.401538", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:40:58.401702", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:40:58.401761", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:40:58.401814", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:41:00.103897", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:00.138730", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:41:00.138912", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:41:00.155567", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:41:01.204704", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:01.239256", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:02.410976", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:02.427430", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:03.678158", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:03.693682", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:03.956725", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:41:03.983423", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:41:08.143535", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:41:08.143672", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:41:08.156342", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:41:08.156441", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:41:09.145873", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:41:09.150194", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:41:09.163488", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:41:09.166601", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:41:17.154473", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:41:17.155157", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:41:17.163977", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:41:17.164816", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:41:17.164988", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:41:17.165093", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:41:17.165155", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:41:18.279016", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:18.279800", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:41:18.279997", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:41:18.280106", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:41:18.280198", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:41:19.956802", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:41:19.958097", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:41:19.958317", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:41:19.963600", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:41:26.608724", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function market_intelligence_node timed out after 30.0s"}
+{"timestamp": "2025-10-25T20:47:48.190769", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:47:48.194236", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:47:48.194428", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:47:48.194537", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:47:48.194610", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:47:48.194871", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:47:48.257898", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:47:49.074202", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:47:49.605890", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:49.637348", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:47:49.637450", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:47:49.637522", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:47:49.637567", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:47:49.994530", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:50.006165", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "Failed to parse ExchangeRate.host response: float() argument must be a string or a real number, not 'NoneType'"}
+{"timestamp": "2025-10-25T20:47:50.006246", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:47:50.006272", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Invalid response from ExchangeRate.host"}
+{"timestamp": "2025-10-25T20:47:50.121675", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:47:50.121791", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:47:51.237367", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:51.267994", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:47:51.268158", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:47:51.283471", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:47:52.343751", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:52.347304", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:53.506868", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:53.554192", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:54.763762", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:55.043146", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:47:57.004935", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:47:57.625535", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:47:59.270174", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:47:59.270409", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:47:59.285253", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:47:59.285357", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:48:00.272802", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:48:00.277069", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:00.289874", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:48:00.293956", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:08.280621", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:48:08.281708", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:48:08.290262", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:48:08.290892", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:48:08.291058", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:48:08.291135", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:48:08.291200", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:48:09.409997", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:09.410746", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:48:09.410928", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:48:09.411028", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:48:09.411106", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:48:10.773204", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:10.774444", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:48:10.774744", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:10.780343", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:10.792451", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:10.796934", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:18.783314", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:48:18.783638", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:48:18.794289", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:48:18.794383", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:48:19.785740", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:19.788984", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:19.801176", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:19.804914", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:25.490421", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:25.491136", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 343)"}
+{"timestamp": "2025-10-25T20:48:25.491332", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:27.789979", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet timed out after 8.0s"}
+{"timestamp": "2025-10-25T20:48:27.790745", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function extract_events_from_snippet failed after 2 attempts"}
+{"timestamp": "2025-10-25T20:48:27.790917", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:27.795128", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:27.807447", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:27.810780", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:48:33.192899", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:33.193392", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 269)"}
+{"timestamp": "2025-10-25T20:48:33.193477", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:33.577828", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:33.578259", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 400)"}
+{"timestamp": "2025-10-25T20:48:33.578375", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:48:33.582868", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot"}
+{"timestamp": "2025-10-25T20:48:35.162071", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:48:35.162627", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot (model: gpt-4o-2024-11-20, tokens: 122)"}
+{"timestamp": "2025-10-25T20:48:35.162774", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:48:35.164414", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:48:35.164745", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:48:35.165042", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:50:15.160245", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:50:15.160424", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:50:15.160476", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:50:15.160536", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:50:15.164418", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:50:15.164914", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:50:15.165255", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:50:15.258322", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:50:16.029032", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:50:16.604189", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:16.635104", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:50:16.635219", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:50:16.635256", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:50:16.635284", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:50:16.840044", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/latest?base=USD&symbols=EUR&access_key=06accd52d2c83b3727985c59b2f4640b \"HTTP/1.1 404 Not Found\""}
+{"timestamp": "2025-10-25T20:50:16.840605", "level": "ERROR", "logger": "src.data_collection.providers.exchange_rate_host", "message": "ExchangeRate.host request failed: Client error '404 Not Found' for url 'https://api.exchangerate.host/latest?base=USD&symbols=EUR&access_key=06accd52d2c83b3727985c59b2f4640b'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"}
+{"timestamp": "2025-10-25T20:50:16.840683", "level": "ERROR", "logger": "src.utils.decorators", "message": "Failed get_rate"}
+{"timestamp": "2025-10-25T20:50:16.840726", "level": "ERROR", "logger": "src.data_collection.market_data.snapshot", "message": "Provider exchange_rate_host failed: Client error '404 Not Found' for url 'https://api.exchangerate.host/latest?base=USD&symbols=EUR&access_key=06accd52d2c83b3727985c59b2f4640b'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"}
+{"timestamp": "2025-10-25T20:50:16.986306", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:50:16.986413", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:50:18.813610", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:18.846177", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:50:18.846341", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:50:18.866864", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:50:19.881159", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:19.954860", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:21.078749", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:21.151998", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:22.353346", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:22.459163", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:22.631666", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:22.747447", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:33.857837", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:50:33.857949", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:50:33.868346", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:50:33.868435", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:50:34.860139", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:50:34.865711", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:34.878087", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:50:34.881710", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:44.400742", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:44.401276", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 701)"}
+{"timestamp": "2025-10-25T20:50:44.401756", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:50:45.470460", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:45.470953", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 722)"}
+{"timestamp": "2025-10-25T20:50:45.471038", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:50:45.471453", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:50:45.471533", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:50:45.471572", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:50:46.561530", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:46.562045", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:50:46.562154", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:50:46.562205", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:50:46.562251", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:50:48.346363", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:48.347776", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:50:48.347948", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:48.355226", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:48.369130", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:48.375459", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:55.168847", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:55.169340", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 343)"}
+{"timestamp": "2025-10-25T20:50:55.169433", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:57.108117", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:50:57.108779", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 638)"}
+{"timestamp": "2025-10-25T20:50:57.108917", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:57.109133", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:57.114114", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:50:57.128015", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:50:57.131570", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:51:02.250854", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:51:02.251265", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 269)"}
+{"timestamp": "2025-10-25T20:51:02.251366", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:51:08.701717", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:51:08.702530", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 926)"}
+{"timestamp": "2025-10-25T20:51:08.702642", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:51:08.708111", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot"}
+{"timestamp": "2025-10-25T20:51:10.220773", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:51:10.221266", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot (model: gpt-4o-2024-11-20, tokens: 156)"}
+{"timestamp": "2025-10-25T20:51:10.221377", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_intelligence_node"}
+{"timestamp": "2025-10-25T20:51:10.223880", "level": "INFO", "logger": "src.agentic.graph", "message": "Price Prediction node called"}
+{"timestamp": "2025-10-25T20:51:10.224240", "level": "INFO", "logger": "src.agentic.graph", "message": "Decision Engine node called"}
+{"timestamp": "2025-10-25T20:51:10.224470", "level": "INFO", "logger": "src.agentic.graph", "message": "Response node called"}
+{"timestamp": "2025-10-25T20:51:54.843469", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:51:54.843802", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:51:54.843985", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:51:54.844177", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:51:54.844603", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:51:54.845039", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:51:54.940432", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:51:55.700525", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:51:56.521860", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/live?currencies=EUR&access_key=06accd52d2c83b3727985c59b2f4640b \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:51:56.533507", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:51:56.660919", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:51:56.661065", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:51:58.559605", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:51:58.658665", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:51:58.658903", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:51:58.658956", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:51:58.659007", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:52:00.259167", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:00.293138", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:52:00.293357", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:52:00.315891", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:52:00.334558", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:52:01.372086", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:01.374847", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:01.375446", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:02.631350", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:02.659250", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:02.748690", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:03.883571", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:03.904438", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:04.006739", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:04.162473", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:04.199173", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:04.274315", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:15.017528", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:15.018335", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 755)"}
+{"timestamp": "2025-10-25T20:52:15.018464", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:52:15.317909", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:52:15.318043", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:52:15.336061", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:52:15.336192", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:52:16.319581", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:52:16.328004", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:16.343690", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:52:16.347167", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:29.861861", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:29.862319", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 734)"}
+{"timestamp": "2025-10-25T20:52:29.862431", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:52:30.117185", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:30.117584", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 594)"}
+{"timestamp": "2025-10-25T20:52:30.117685", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T20:52:30.118116", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:52:30.118214", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:52:30.118261", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:52:31.220460", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:31.220936", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:52:31.221071", "level": "INFO", "logger": "src.data_collection.market_intelligence.calendar_collector", "message": "Collecting calendar URLs"}
+{"timestamp": "2025-10-25T20:52:31.221139", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search"}
+{"timestamp": "2025-10-25T20:52:31.221174", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper general search"}
+{"timestamp": "2025-10-25T20:52:32.423133", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/search \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:32.423909", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search"}
+{"timestamp": "2025-10-25T20:52:32.424080", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:32.430253", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:32.443243", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:32.451207", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:36.478256", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:36.478833", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 343)"}
+{"timestamp": "2025-10-25T20:52:36.478917", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:40.055050", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:40.055466", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 497)"}
+{"timestamp": "2025-10-25T20:52:40.055565", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:40.055713", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:40.061296", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:40.075188", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:40.079283", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:52:48.285343", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:48.296018", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 515)"}
+{"timestamp": "2025-10-25T20:52:48.296147", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:53.704193", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:52:53.704716", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 860)"}
+{"timestamp": "2025-10-25T20:52:53.704819", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed extract_events_from_snippet"}
+{"timestamp": "2025-10-25T20:52:53.721057", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot"}
+{"timestamp": "2025-10-25T20:52:54.832388", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function market_intelligence_node timed out after 60.0s"}
+{"timestamp": "2025-10-25T20:56:50.444280", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:56:50.448344", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:56:50.449529", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T20:56:50.449734", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T20:56:50.449818", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:56:50.449920", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:56:50.449996", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:56:50.534399", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T20:56:51.301698", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:56:52.081417", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:52.113519", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:56:52.113634", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T20:56:52.113670", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T20:56:52.113694", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T20:56:52.268244", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/live?currencies=EUR&access_key=06accd52d2c83b3727985c59b2f4640b \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:52.268791", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T20:56:52.398621", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T20:56:52.398723", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T20:56:53.588123", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:53.622397", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T20:56:53.622580", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:56:53.642817", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:56:54.685730", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:54.704974", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:55.898026", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:55.917665", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:57.157262", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:57.183810", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:56:57.437884", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:56:57.469375", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:57:08.634334", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:57:08.634589", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:57:08.645161", "level": "ERROR", "logger": "src.utils.decorators", "message": "Function classify_article timed out after 15.0s"}
+{"timestamp": "2025-10-25T20:57:08.645255", "level": "WARNING", "logger": "src.utils.decorators", "message": "Function classify_article failed (attempt 1/2), retrying in 1.0s"}
+{"timestamp": "2025-10-25T20:57:09.636724", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:57:09.640084", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:57:09.655377", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T20:57:09.658886", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T20:57:18.756901", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://api.githubcopilot.com/chat/completions \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T20:57:18.757344", "level": "INFO", "logger": "src.llm.manager", "message": "Successful response from copilot_mini (model: gpt-5-mini, tokens: 594)"}
+{"timestamp": "2025-10-25T20:57:18.757483", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed classify_article"}
+{"timestamp": "2025-10-25T21:00:32.979632", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T21:00:32.990254", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T21:00:32.990949", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T21:00:32.991175", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T21:00:32.991301", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T21:00:32.991425", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T21:00:32.991656", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T21:00:33.045360", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T21:00:33.734564", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T21:00:34.559710", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:34.589499", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/live?currencies=EUR&access_key=06accd52d2c83b3727985c59b2f4640b \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:34.591298", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T21:00:34.591511", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T21:00:34.591673", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T21:00:34.591913", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T21:00:34.591969", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T21:00:34.715130", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T21:00:34.715265", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T21:00:36.644496", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:36.676787", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T21:00:36.677382", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T21:00:36.694295", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T21:00:37.709774", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:37.747883", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:38.939100", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:39.011620", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:40.213537", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:40.245368", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:00:40.501977", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T21:00:40.518932", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T21:09:36.877936", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T21:09:36.879254", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T21:09:36.879733", "level": "INFO", "logger": "src.config", "message": "Configuration loaded successfully"}
+{"timestamp": "2025-10-25T21:09:36.880075", "level": "INFO", "logger": "src.data_collection.market_intelligence.aggregator", "message": "Aggregating news for pair"}
+{"timestamp": "2025-10-25T21:09:36.880267", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T21:09:36.880435", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T21:09:36.880506", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T21:09:36.975622", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting get_rate"}
+{"timestamp": "2025-10-25T21:09:37.679926", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T21:09:38.724443", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.exchangerate.host/live?currencies=EUR&access_key=06accd52d2c83b3727985c59b2f4640b \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:38.735557", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed get_rate"}
+{"timestamp": "2025-10-25T21:09:38.850441", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:38.875763", "level": "INFO", "logger": "src.agentic.nodes.market_data", "message": "Market data snapshot built"}
+{"timestamp": "2025-10-25T21:09:38.876299", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed market_data_node"}
+{"timestamp": "2025-10-25T21:09:38.887228", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T21:09:38.887377", "level": "INFO", "logger": "src.data_collection.market_intelligence.news_collector", "message": "Collecting currency news"}
+{"timestamp": "2025-10-25T21:09:38.887419", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting search_news"}
+{"timestamp": "2025-10-25T21:09:38.887446", "level": "INFO", "logger": "src.data_collection.market_intelligence.serper_client", "message": "Serper news search"}
+{"timestamp": "2025-10-25T21:09:40.474699", "level": "INFO", "logger": "httpx", "message": "HTTP Request: POST https://google.serper.dev/news \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:40.509530", "level": "INFO", "logger": "src.utils.decorators", "message": "Completed search_news"}
+{"timestamp": "2025-10-25T21:09:40.509763", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T21:09:40.528385", "level": "INFO", "logger": "src.utils.decorators", "message": "Starting classify_article"}
+{"timestamp": "2025-10-25T21:09:41.583720", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:41.619622", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:42.767569", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:42.801354", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:43.946054", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:44.044788", "level": "INFO", "logger": "httpx", "message": "HTTP Request: GET https://api.githubcopilot.com/models \"HTTP/1.1 200 OK\""}
+{"timestamp": "2025-10-25T21:09:44.215812", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
+{"timestamp": "2025-10-25T21:09:44.328466", "level": "INFO", "logger": "src.llm.manager", "message": "Attempting chat request with provider: copilot_mini"}
