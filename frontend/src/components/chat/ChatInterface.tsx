@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Loader2, RefreshCw, Send, Sparkles, Home, MessageSquare, BarChart3, Cpu, History, Moon, Sun, Menu } from 'lucide-react';
 import { conversationService } from '../../services/conversation';
 import { analysisService, type AnalysisRequest } from '../../services/analysis';
@@ -45,6 +45,7 @@ function formatRelativeTime(date?: Date) {
 }
 
 export default function ChatInterface() {
+  const [searchParams] = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -66,7 +67,15 @@ export default function ChatInterface() {
     clearChatSession,
   } = useSession();
 
+  // Check for session in URL query params first
+  const urlSessionId = searchParams.get('session');
+
   const defaultSessionId = useMemo(() => {
+    // Prioritize URL session parameter
+    if (urlSessionId && chatSessions[urlSessionId]) {
+      return urlSessionId;
+    }
+
     if (persistedActiveSessionId) {
       return persistedActiveSessionId;
     }
@@ -81,7 +90,7 @@ export default function ChatInterface() {
     );
 
     return latest.sessionId;
-  }, [chatSessions, persistedActiveSessionId]);
+  }, [chatSessions, persistedActiveSessionId, urlSessionId]);
 
   const lastMessage = messages.length > 0 ? messages[messages.length - 1] : undefined;
   const isInputDisabled = isLoading || !requiresInput;
