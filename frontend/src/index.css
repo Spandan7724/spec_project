@@ -78,8 +78,14 @@
     /* Tailwind v4 no longer recognizes `@apply border-border` by default.
        Set the border color directly using the design token. */
     border-color: hsl(var(--border));
+    /* Hide scrollbars across scrollable containers (Firefox + legacy IE) */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  body {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  html, body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
@@ -109,5 +115,38 @@
   /* Safari and Chrome */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .scroll-container {
+    overflow-x: auto;
+    /* IE and Edge */
+    -ms-overflow-style: none;
+    /* Firefox */
+    scrollbar-width: none;
+  }
+  /* Safari and Chrome */
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile tap targets */
+  .mobile-tap {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
   }
 }

@@ -51,11 +51,11 @@ export default function TechnicalIndicatorsChart({
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="w-full">
+        <h3 className="text-base md:text-lg font-semibold mb-4">
           Technical Indicators {currency_pair && `(${currency_pair})`}
         </h3>
-        <div className="flex items-center justify-center h-80 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No technical indicator data available
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function TechnicalIndicatorsChart({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-base md:text-lg font-semibold">
           Technical Indicators {currency_pair && `(${currency_pair})`}
         </h3>
 
@@ -154,203 +154,212 @@ export default function TechnicalIndicatorsChart({
         </div>
       )}
 
-      <ResponsiveContainer width="100%" height={300}>
-        {activeIndicator === 'rsi' ? (
-          rsiData.length > 0 ? (
-          <ComposedChart
-            data={rsiData}
-            onMouseMove={(e) => {
-              if (e && e.activeLabel && onHoverChange) {
-                onHoverChange(e.activeLabel as string);
-              }
-            }}
-            onMouseLeave={() => onHoverChange && onHoverChange(null)}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              }}
-            />
-            <YAxis domain={[0, 100]} label={{ value: 'RSI', angle: -90, position: 'insideLeft' }} />
-            <Tooltip
-              labelFormatter={formatTooltipDate}
-              formatter={(value: any) => formatNumber(value, 2)}
-              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
-              labelStyle={{ color: '#000' }}
-              itemStyle={{ color: '#000' }}
-            />
-            <Legend />
+      <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+        <div className="min-w-[700px] h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            {activeIndicator === 'rsi' ? (
+              rsiData.length > 0 ? (
+              <ComposedChart
+                data={rsiData}
+                onMouseMove={(e) => {
+                  if (e && e.activeLabel && onHoverChange) {
+                    onHoverChange(e.activeLabel as string);
+                  }
+                }}
+                onMouseLeave={() => onHoverChange && onHoverChange(null)}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  }}
+                />
+                <YAxis domain={[0, 100]} label={{ value: 'RSI', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }} tick={{ fontSize: 12 }} />
+                <Tooltip
+                  labelFormatter={formatTooltipDate}
+                  formatter={(value: any) => formatNumber(value, 2)}
+                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+                  labelStyle={{ color: '#000' }}
+                  itemStyle={{ color: '#000' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
 
-            {/* RSI Zones */}
-            <ReferenceLine
-              y={70}
-              stroke="#FF6B6B"
-              strokeDasharray="3 3"
-              label={{ value: 'Overbought (70)', fill: '#FF6B6B', fontSize: 12 }}
-            />
-            <ReferenceLine
-              y={30}
-              stroke="#4ECDC4"
-              strokeDasharray="3 3"
-              label={{ value: 'Oversold (30)', fill: '#4ECDC4', fontSize: 12 }}
-            />
-            <ReferenceLine y={50} stroke="#888" strokeDasharray="2 2" />
+                {/* RSI Zones */}
+                <ReferenceLine
+                  y={70}
+                  stroke="#FF6B6B"
+                  strokeDasharray="3 3"
+                  label={{ value: 'Overbought (70)', fill: '#FF6B6B', fontSize: 12 }}
+                />
+                <ReferenceLine
+                  y={30}
+                  stroke="#4ECDC4"
+                  strokeDasharray="3 3"
+                  label={{ value: 'Oversold (30)', fill: '#4ECDC4', fontSize: 12 }}
+                />
+                <ReferenceLine y={50} stroke="#888" strokeDasharray="2 2" />
 
-            {/* RSI Line */}
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#0088FE"
-              strokeWidth={2}
-              dot={false}
-              name="RSI"
-            />
+                {/* RSI Line */}
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#0088FE"
+                  strokeWidth={2}
+                  dot={false}
+                  name="RSI"
+                />
 
-            {/* Color zones */}
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="none"
-              fill="#FF6B6B"
-              fillOpacity={0.1}
-              name="Overbought Zone"
-            />
-          </ComposedChart>
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">RSI data unavailable</div>
-          )
-        ) : activeIndicator === 'macd' ? (
-          macdData.length > 0 ? (
-          <ComposedChart
-            data={macdData}
-            onMouseMove={(e) => {
-              if (e && e.activeLabel && onHoverChange) {
-                onHoverChange(e.activeLabel as string);
-              }
-            }}
-            onMouseLeave={() => onHoverChange && onHoverChange(null)}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              }}
-            />
-            <YAxis
-              label={{ value: 'MACD', angle: -90, position: 'insideLeft' }}
-              domain={['auto', 'auto']}
-            />
-            <Tooltip
-              labelFormatter={formatTooltipDate}
-              formatter={(value: any) => formatNumber(value, 4)}
-              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
-              labelStyle={{ color: '#000' }}
-              itemStyle={{ color: '#000' }}
-            />
-            <Legend />
+                {/* Color zones */}
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="none"
+                  fill="#FF6B6B"
+                  fillOpacity={0.1}
+                  name="Overbought Zone"
+                />
+              </ComposedChart>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">RSI data unavailable</div>
+              )
+            ) : activeIndicator === 'macd' ? (
+              macdData.length > 0 ? (
+              <ComposedChart
+                data={macdData}
+                onMouseMove={(e) => {
+                  if (e && e.activeLabel && onHoverChange) {
+                    onHoverChange(e.activeLabel as string);
+                  }
+                }}
+                onMouseLeave={() => onHoverChange && onHoverChange(null)}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  }}
+                />
+                <YAxis
+                  label={{ value: 'MACD', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                  domain={['auto', 'auto']}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  labelFormatter={formatTooltipDate}
+                  formatter={(value: any) => formatNumber(value, 4)}
+                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+                  labelStyle={{ color: '#000' }}
+                  itemStyle={{ color: '#000' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
 
-            <ReferenceLine y={0} stroke="#888" strokeDasharray="2 2" />
+                <ReferenceLine y={0} stroke="#888" strokeDasharray="2 2" />
 
-            {/* MACD Histogram */}
-            <Bar dataKey="macd_histogram" fill="#8884d8" name="MACD Histogram" />
+                {/* MACD Histogram */}
+                <Bar dataKey="macd_histogram" fill="#8884d8" name="MACD Histogram" />
 
-            {/* MACD Lines */}
-            <Line
-              type="monotone"
-              dataKey="macd"
-              stroke="#0088FE"
-              strokeWidth={2}
-              dot={false}
-              name="MACD"
-            />
-            <Line
-              type="monotone"
-              dataKey="macd_signal"
-              stroke="#FF8042"
-              strokeWidth={2}
-              dot={false}
-              name="Signal Line"
-            />
-          </ComposedChart>
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">MACD data unavailable</div>
-          )
-        ) : (
-          volatilityMerged.length > 0 ? (
-          <ComposedChart
-            data={volatilityMerged}
-            onMouseMove={(e) => {
-              if (e && e.activeLabel && onHoverChange) {
-                onHoverChange(e.activeLabel as string);
-              }
-            }}
-            onMouseLeave={() => onHoverChange && onHoverChange(null)}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              }}
-            />
-            <YAxis
-              label={{ value: 'Volatility / ATR', angle: -90, position: 'insideLeft' }}
-              domain={['auto', 'auto']}
-            />
-            <Tooltip
-              labelFormatter={formatTooltipDate}
-              formatter={(value: any, name: string) => `${formatNumber(value, 4)} (${name})`}
-              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
-              labelStyle={{ color: '#000' }}
-              itemStyle={{ color: '#000' }}
-            />
-            <Legend />
+                {/* MACD Lines */}
+                <Line
+                  type="monotone"
+                  dataKey="macd"
+                  stroke="#0088FE"
+                  strokeWidth={2}
+                  dot={false}
+                  name="MACD"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="macd_signal"
+                  stroke="#FF8042"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Signal Line"
+                />
+              </ComposedChart>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">MACD data unavailable</div>
+              )
+            ) : (
+              volatilityMerged.length > 0 ? (
+              <ComposedChart
+                data={volatilityMerged}
+                onMouseMove={(e) => {
+                  if (e && e.activeLabel && onHoverChange) {
+                    onHoverChange(e.activeLabel as string);
+                  }
+                }}
+                onMouseLeave={() => onHoverChange && onHoverChange(null)}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  }}
+                />
+                <YAxis
+                  label={{ value: 'Volatility / ATR', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                  domain={['auto', 'auto']}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  labelFormatter={formatTooltipDate}
+                  formatter={(value: any, name: string) => `${formatNumber(value, 4)} (${name})`}
+                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+                  labelStyle={{ color: '#000' }}
+                  itemStyle={{ color: '#000' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
 
-            <Line
-              type="monotone"
-              dataKey="volatility_20d"
-              stroke="#4ECDC4"
-              strokeWidth={2}
-              dot={false}
-              name="Volatility (20d)"
-            />
-            <Line
-              type="monotone"
-              dataKey="volatility_30d"
-              stroke="#FFE66D"
-              strokeWidth={2}
-              dot={false}
-              name="Volatility (30d)"
-            />
-            <Line
-              type="monotone"
-              dataKey="atr"
-              stroke="#FF6B6B"
-              strokeWidth={2}
-              dot={false}
-              name="ATR"
-            />
-          </ComposedChart>
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">Volatility data unavailable</div>
-          )
-        )}
-      </ResponsiveContainer>
+                <Line
+                  type="monotone"
+                  dataKey="volatility_20d"
+                  stroke="#4ECDC4"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Volatility (20d)"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="volatility_30d"
+                  stroke="#FFE66D"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Volatility (30d)"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="atr"
+                  stroke="#FF6B6B"
+                  strokeWidth={2}
+                  dot={false}
+                  name="ATR"
+                />
+              </ComposedChart>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Volatility data unavailable</div>
+              )
+            )}
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Indicator Explanation */}
       <div className="mt-4 text-xs text-muted-foreground">

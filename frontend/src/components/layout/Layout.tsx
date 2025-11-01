@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Home, MessageSquare, BarChart3, Cpu, Moon, Sun, History } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import BottomNav from './BottomNav';
 
 export default function Layout() {
   const location = useLocation();
@@ -21,7 +22,8 @@ export default function Layout() {
               </Link>
 
               <div className="flex items-center gap-6">
-                <div className="flex gap-6">
+                {/* Desktop navigation - hidden on mobile */}
+                <div className="hidden md:flex gap-6">
                   <Link
                     to="/"
                     className={`flex items-center gap-2 transition-colors ${
@@ -75,7 +77,7 @@ export default function Layout() {
 
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-lg hover:bg-accent transition-colors"
+                  className="mobile-tap p-2 rounded-lg hover:bg-accent transition-colors"
                   aria-label="Toggle theme"
                 >
                   {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
@@ -86,14 +88,19 @@ export default function Layout() {
         </nav>
       )}
 
-      {/* Conditional main wrapper - no padding for chat */}
+      {/* Conditional main wrapper - no padding for chat, add bottom padding for mobile nav */}
       {isChatPage ? (
-        <Outlet />
+        <div className="pb-0 md:pb-0">
+          <Outlet />
+        </div>
       ) : (
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-8 pb-20 md:pb-8">
           <Outlet />
         </main>
       )}
+
+      {/* Bottom navigation for mobile */}
+      <BottomNav />
     </div>
   );
 }

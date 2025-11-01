@@ -29,57 +29,65 @@ export default function TimelineChart({ data }: TimelineChartProps) {
   });
 
   return (
-    <div className="w-full h-80">
-      <h3 className="text-lg font-semibold mb-4">Implementation Timeline</h3>
+    <div className="w-full">
+      <h3 className="text-base md:text-lg font-semibold mb-4">Implementation Timeline</h3>
       {chartData.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No timeline data available
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" label={{ value: 'Days', position: 'insideBottom', offset: -5 }} />
-            <YAxis dataKey="phase" type="category" />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0].payload;
-                  return (
-                    <div className="bg-background border rounded p-3 shadow-lg max-w-xs">
-                      <p className="font-semibold mb-1">{data.phase}</p>
-                      <p className="text-sm">Duration: <span className="font-medium">{data.duration} days</span></p>
-                      <p className="text-sm">Days {data.start} - {data.end}</p>
-                      {data.tasks && data.tasks.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-xs font-semibold">Tasks:</p>
-                          <ul className="text-xs list-disc list-inside">
-                            {data.tasks.slice(0, 3).map((task: string, i: number) => (
-                              <li key={i}>{task}</li>
-                            ))}
-                            {data.tasks.length > 3 && (
-                              <li className="text-muted-foreground">+{data.tasks.length - 3} more...</li>
-                            )}
-                          </ul>
+        <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+          <div className="min-w-[500px] h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  type="number"
+                  label={{ value: 'Days', position: 'insideBottom', offset: -5, style: { fontSize: 12 } }}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis dataKey="phase" type="category" tick={{ fontSize: 12 }} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-background border rounded p-2 shadow-lg max-w-xs">
+                          <p className="font-semibold text-sm mb-1">{data.phase}</p>
+                          <p className="text-xs">Duration: <span className="font-medium">{data.duration} days</span></p>
+                          <p className="text-xs">Days {data.start} - {data.end}</p>
+                          {data.tasks && data.tasks.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs font-semibold">Tasks:</p>
+                              <ul className="text-xs list-disc list-inside">
+                                {data.tasks.slice(0, 3).map((task: string, i: number) => (
+                                  <li key={i}>{task}</li>
+                                ))}
+                                {data.tasks.length > 3 && (
+                                  <li className="text-muted-foreground">+{data.tasks.length - 3} more...</li>
+                                )}
+                              </ul>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Bar dataKey="duration" name="Duration (days)">
-              {chartData.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="duration" name="Duration (days)">
+                  {chartData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -113,7 +113,7 @@ export default function SentimentChart({
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-base md:text-lg font-semibold mb-4">
         Market Sentiment {currency_pair && `(${currency_pair})`}
       </h3>
 
@@ -121,7 +121,8 @@ export default function SentimentChart({
         {/* Current Sentiment Gauge */}
         <div>
           <h4 className="text-sm font-medium mb-2">Current Sentiment</h4>
-          <ResponsiveContainer width="100%" height={250}>
+          <div className="h-48 md:h-64">
+            <ResponsiveContainer width="100%" height="100%">
             <RadialBarChart
               cx="50%"
               cy="50%"
@@ -150,6 +151,7 @@ export default function SentimentChart({
                 layout="horizontal"
                 verticalAlign="bottom"
                 align="center"
+                wrapperStyle={{ fontSize: '12px' }}
                 formatter={(value, entry: any) => {
                   const score = entry?.payload?.value ? entry.payload.value / 50 - 1 : 0;
                   return `${value}: ${formatScore(score)}`;
@@ -162,7 +164,8 @@ export default function SentimentChart({
                 }}
               />
             </RadialBarChart>
-          </ResponsiveContainer>
+            </ResponsiveContainer>
+          </div>
 
           {/* Bias Indicator */}
           <div className="text-center mt-2">
@@ -205,104 +208,110 @@ export default function SentimentChart({
       {timelineData.length > 0 && (
         <div className="mt-6">
           <h4 className="text-sm font-medium mb-2">Sentiment Timeline</h4>
-          <ResponsiveContainer width="100%" height={250}>
-            <ComposedChart
-              data={timelineData}
-              onMouseMove={(e) => {
-                if (e && e.activeLabel && onHoverChange) {
-                  onHoverChange(e.activeLabel as string);
-                }
-              }}
-              onMouseLeave={() => onHoverChange && onHoverChange(null)}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                }}
-              />
-              <YAxis
-                domain={[-1, 1]}
-                label={{ value: 'Sentiment', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip
-                labelFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  });
-                }}
-                formatter={(value: any, name: any, props: any) => {
-                  return [Number(value).toFixed(2), name];
-                }}
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-background border rounded p-2 shadow-lg max-w-xs">
-                        <p className="font-semibold text-xs mb-1">{data.title}</p>
-                        <p className="text-xs text-muted-foreground mb-1">Source: {data.source}</p>
-                   <p className="text-xs">
-                     {current_sentiment.base_currency}:{' '}
-                     <span
-                       className={
-                         data.sentiment_base > 0
-                           ? 'text-green-600'
-                           : data.sentiment_base < 0
-                           ? 'text-red-600'
-                           : ''
-                       }
-                     >
-                        {formatScore(data.sentiment_base)}
-                      </span>
-                    </p>
-                    <p className="text-xs">
-                      {current_sentiment.quote_currency}:{' '}
-                      <span
-                        className={
-                          data.sentiment_quote > 0
-                            ? 'text-green-600'
-                            : data.sentiment_quote < 0
-                            ? 'text-red-600'
-                            : ''
-                        }
-                      >
-                        {formatScore(data.sentiment_quote)}
-                      </span>
-                    </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Legend />
-              <ReferenceLine y={0} stroke="#888" strokeDasharray="2 2" />
-              <Line
-                type="monotone"
-                dataKey="sentiment_base"
-                stroke="#0088FE"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                name={current_sentiment.base_currency}
-              />
-              <Line
-                type="monotone"
-                dataKey="sentiment_quote"
-                stroke="#FF8042"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                name={current_sentiment.quote_currency}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+            <div className="min-w-[700px] h-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart
+                  data={timelineData}
+                  onMouseMove={(e) => {
+                    if (e && e.activeLabel && onHoverChange) {
+                      onHoverChange(e.activeLabel as string);
+                    }
+                  }}
+                  onMouseLeave={() => onHoverChange && onHoverChange(null)}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => {
+                      const date = new Date(value);
+                      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }}
+                  />
+                  <YAxis
+                    domain={[-1, 1]}
+                    label={{ value: 'Sentiment', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip
+                    labelFormatter={(value) => {
+                      const date = new Date(value);
+                      return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      });
+                    }}
+                    formatter={(value: any, name: any, props: any) => {
+                      return [Number(value).toFixed(2), name];
+                    }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-background border rounded p-2 shadow-lg max-w-xs">
+                            <p className="font-semibold text-sm mb-1">{data.title}</p>
+                            <p className="text-xs text-muted-foreground mb-1">Source: {data.source}</p>
+                            <p className="text-xs">
+                              {current_sentiment.base_currency}:{' '}
+                              <span
+                                className={
+                                  data.sentiment_base > 0
+                                    ? 'text-green-600'
+                                    : data.sentiment_base < 0
+                                    ? 'text-red-600'
+                                    : ''
+                                }
+                              >
+                                {formatScore(data.sentiment_base)}
+                              </span>
+                            </p>
+                            <p className="text-xs">
+                              {current_sentiment.quote_currency}:{' '}
+                              <span
+                                className={
+                                  data.sentiment_quote > 0
+                                    ? 'text-green-600'
+                                    : data.sentiment_quote < 0
+                                    ? 'text-red-600'
+                                    : ''
+                                }
+                              >
+                                {formatScore(data.sentiment_quote)}
+                              </span>
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} />
+                  <ReferenceLine y={0} stroke="#888" strokeDasharray="2 2" />
+                  <Line
+                    type="monotone"
+                    dataKey="sentiment_base"
+                    stroke="#0088FE"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    name={current_sentiment.base_currency}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="sentiment_quote"
+                    stroke="#FF8042"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    name={current_sentiment.quote_currency}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       )}
     </div>

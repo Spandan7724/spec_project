@@ -36,43 +36,43 @@ export default function HistoryCard({ item }: HistoryCardProps) {
   return (
     <Link
       to={`/results/${item.correlationId}`}
-      className="block border rounded-lg p-4 hover:bg-accent/50 transition-colors group"
+      className="block border rounded-lg p-4 md:p-5 hover:bg-accent/50 transition-colors group min-h-[44px]"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className="font-semibold text-lg">{item.currencyPair}</h3>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3 flex-wrap">
+            <h3 className="font-semibold text-base md:text-lg">{item.currencyPair}</h3>
             <StatusBadge status={item.status} />
-            <span className="px-2 py-1 text-xs rounded bg-primary/10 text-primary">
+            <span className="px-2 py-1 text-xs rounded bg-primary/10 text-primary w-fit">
               {item.action}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 text-xs md:text-sm mb-3">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock size={14} />
-              <span>{formattedDate}</span>
+              <span className="truncate">{formattedDate}</span>
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp size={14} />
-              <span>
+              <span className="whitespace-nowrap">
                 Confidence: <span className="font-medium">{(item.confidence * 100).toFixed(1)}%</span>
               </span>
             </div>
-            <div className="text-xs text-muted-foreground font-mono">
+            <div className="text-xs text-muted-foreground font-mono truncate">
               {item.correlationId.slice(0, 20)}...
             </div>
           </div>
 
           {item.result && item.result.rationale && item.result.rationale.length > 0 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
               {item.result.rationale[0].substring(0, 150)}
               {item.result.rationale[0].length > 150 && '...'}
             </p>
           )}
         </div>
 
-        <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform">
+        <div className="flex items-center text-primary group-hover:translate-x-1 transition-transform flex-shrink-0">
           <ArrowRight size={20} />
         </div>
       </div>

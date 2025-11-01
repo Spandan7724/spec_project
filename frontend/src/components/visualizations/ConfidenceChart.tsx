@@ -19,10 +19,10 @@ export default function ConfidenceChart({ data }: ConfidenceChartProps) {
   }));
 
   return (
-    <div className="w-full h-80">
-      <h3 className="text-lg font-semibold mb-4">Component Confidence Breakdown</h3>
+    <div className="w-full h-64 md:h-80">
+      <h3 className="text-base md:text-lg font-semibold mb-4">Component Confidence Breakdown</h3>
       {chartData.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No confidence data available
         </div>
       ) : (
@@ -43,7 +43,7 @@ export default function ConfidenceChart({ data }: ConfidenceChartProps) {
               ))}
             </Pie>
             <Tooltip formatter={(value) => `${value}%`} />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: '12px' }} />
           </PieChart>
         </ResponsiveContainer>
       )}

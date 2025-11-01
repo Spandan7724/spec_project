@@ -46,11 +46,11 @@ export default function SHAPChart({
 }: SHAPChartProps) {
   if (!feature_importance || feature_importance.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="w-full">
+        <h3 className="text-base md:text-lg font-semibold mb-4">
           Feature Importance (SHAP) {currency_pair && `(${currency_pair})`}
         </h3>
-        <div className="flex items-center justify-center h-80 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           SHAP explanations not available for this analysis
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function SHAPChart({
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-base md:text-lg font-semibold mb-4">
         Feature Importance (SHAP) {currency_pair && `(${currency_pair})`}
       </h3>
 
@@ -118,33 +118,35 @@ export default function SHAPChart({
         {/* Feature Importance Bar Chart */}
         <div>
           <h4 className="text-sm font-medium mb-2">Top 5 Features</h4>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" label={{ value: 'SHAP Value', position: 'bottom' }} />
-              <YAxis
-                dataKey="feature"
-                type="category"
-                width={110}
-                tick={{ fontSize: 11 }}
-              />
-              <Tooltip
-                formatter={(value: any) => Number(value).toFixed(4)}
-                labelStyle={{ fontWeight: 'bold', color: '#000' }}
-                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
-                itemStyle={{ color: '#000' }}
-              />
-              <Bar dataKey="importance" name="SHAP Value">
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.importance > 0 ? '#00C49F' : '#FF6B6B'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="h-64 md:h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" label={{ value: 'SHAP Value', position: 'bottom', style: { fontSize: 12 } }} tick={{ fontSize: 12 }} />
+                <YAxis
+                  dataKey="feature"
+                  type="category"
+                  width={110}
+                  tick={{ fontSize: 11 }}
+                />
+                <Tooltip
+                  formatter={(value: any) => Number(value).toFixed(4)}
+                  labelStyle={{ fontWeight: 'bold', color: '#000' }}
+                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000' }}
+                  itemStyle={{ color: '#000' }}
+                />
+                <Bar dataKey="importance" name="SHAP Value">
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.importance > 0 ? '#00C49F' : '#FF6B6B'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
           <div className="mt-4 p-3 bg-muted/40 border border-border rounded text-xs">
             <p className="font-semibold mb-1 text-foreground">Interpretation:</p>
@@ -162,49 +164,51 @@ export default function SHAPChart({
         <div>
           <h4 className="text-sm font-medium mb-2">SHAP Waterfall</h4>
           {waterfallSeries && waterfallSeries.steps.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <ComposedChart data={waterfallSeries.steps} margin={{ top: 10, right: 20, bottom: 40, left: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11 }}
-                  angle={-20}
-                  textAnchor="end"
-                  height={70}
-                  interval={0}
-                />
-                <YAxis domain={['auto', 'auto']} tickFormatter={(v) => Number(v).toFixed(4)} width={70} />
-                <Tooltip
-                  formatter={(value: any, name: any, payload) => {
-                    if (name === 'range') {
-                      return [Number(value).toFixed(4), 'Contribution'];
-                    }
-                    if (name === 'cumulative') {
-                      return [Number(value).toFixed(4), 'Cumulative'];
-                    }
-                    return [value, name];
-                  }}
-                  labelFormatter={(_, items) => {
-                    if (!items || items.length === 0) return '';
-                    const { payload } = items[1] ?? items[0];
-                    const contribution = payload?.contribution ?? 0;
-                    const featureValue = payload?.value;
-                    return `${payload?.name ?? ''} • Feature value: ${featureValue !== undefined ? Number(featureValue).toFixed(4) : '—'} • Contribution: ${contribution >= 0 ? '+' : ''}${contribution.toFixed(4)}`;
-                  }}
-                  contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', color: '#000' }}
-                />
-                <Legend verticalAlign="top" height={36} />
-                <Bar dataKey="start" stackId="stack" fill="transparent" />
-                <Bar dataKey="range" stackId="stack" name="Contribution">
-                  {waterfallSeries.steps.map((entry, idx) => (
-                    <Cell key={`waterfall-cell-${idx}`} fill={entry.direction === 'positive' ? '#22c55e' : '#ef4444'} />
-                  ))}
-                </Bar>
-                <Line type="monotone" dataKey="cumulative" stroke="#0ea5e9" strokeWidth={2} dot={{ r: 3 }} name="Cumulative" />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <div className="h-64 md:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={waterfallSeries.steps} margin={{ top: 10, right: 20, bottom: 40, left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 11 }}
+                    angle={-20}
+                    textAnchor="end"
+                    height={70}
+                    interval={0}
+                  />
+                  <YAxis domain={['auto', 'auto']} tickFormatter={(v) => Number(v).toFixed(4)} width={70} tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    formatter={(value: any, name: any, payload) => {
+                      if (name === 'range') {
+                        return [Number(value).toFixed(4), 'Contribution'];
+                      }
+                      if (name === 'cumulative') {
+                        return [Number(value).toFixed(4), 'Cumulative'];
+                      }
+                      return [value, name];
+                    }}
+                    labelFormatter={(_, items) => {
+                      if (!items || items.length === 0) return '';
+                      const { payload } = items[1] ?? items[0];
+                      const contribution = payload?.contribution ?? 0;
+                      const featureValue = payload?.value;
+                      return `${payload?.name ?? ''} • Feature value: ${featureValue !== undefined ? Number(featureValue).toFixed(4) : '—'} • Contribution: ${contribution >= 0 ? '+' : ''}${contribution.toFixed(4)}`;
+                    }}
+                    contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', color: '#000' }}
+                  />
+                  <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '12px' }} />
+                  <Bar dataKey="start" stackId="stack" fill="transparent" />
+                  <Bar dataKey="range" stackId="stack" name="Contribution">
+                    {waterfallSeries.steps.map((entry, idx) => (
+                      <Cell key={`waterfall-cell-${idx}`} fill={entry.direction === 'positive' ? '#22c55e' : '#ef4444'} />
+                    ))}
+                  </Bar>
+                  <Line type="monotone" dataKey="cumulative" stroke="#0ea5e9" strokeWidth={2} dot={{ r: 3 }} name="Cumulative" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
           ) : has_waterfall && waterfall_plot ? (
-            <div className="border rounded p-2 bg-white">
+            <div className="border rounded p-2 bg-white h-64 md:h-80 overflow-y-auto">
               <img
                 src={`data:image/png;base64,${waterfall_plot}`}
                 alt="SHAP Waterfall Plot"
@@ -212,7 +216,7 @@ export default function SHAPChart({
               />
             </div>
           ) : (
-            <div className="flex items-center justify-center h-96 border rounded bg-muted text-muted-foreground">
+            <div className="flex items-center justify-center h-64 md:h-80 border rounded bg-muted text-muted-foreground">
               <div className="text-center">
                 <p className="text-sm">Waterfall plot not available</p>
                 <p className="text-xs mt-1">Enable explanations in config to generate SHAP plots</p>

@@ -23,11 +23,11 @@ export default function EventsTimelineChart({
 }: EventsTimelineChartProps) {
   if (!events || events.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="w-full">
+        <h3 className="text-base md:text-lg font-semibold mb-4">
           Economic Events Timeline {currency_pair && `(${currency_pair})`}
         </h3>
-        <div className="flex items-center justify-center h-80 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No upcoming economic events
         </div>
       </div>
@@ -70,94 +70,100 @@ export default function EventsTimelineChart({
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-base md:text-lg font-semibold mb-4">
         Economic Events Timeline {currency_pair && `(${currency_pair})`}
       </h3>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <ScatterChart
-          margin={{ top: 20, right: 20, bottom: 60, left: 20 }}
-          onMouseMove={(e: any) => {
-            if (e && e.activePayload && e.activePayload[0] && onHoverChange) {
-              onHoverChange(new Date(e.activePayload[0].payload.date).toISOString());
-            }
-          }}
-          onMouseLeave={() => onHoverChange && onHoverChange(null)}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            type="number"
-            dataKey="date"
-            name="Date"
-            domain={['auto', 'auto']}
-            tickFormatter={(value) => {
-              const date = new Date(value);
-              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            }}
-            angle={-45}
-            textAnchor="end"
-            height={80}
-          />
-          <YAxis
-            type="number"
-            dataKey="impact_score"
-            name="Impact"
-            domain={[0, 4]}
-            ticks={[1, 2, 3]}
-            tickFormatter={(value) => {
-              if (value === 1) return 'Low';
-              if (value === 2) return 'Medium';
-              if (value === 3) return 'High';
-              return '';
-            }}
-          />
-          <ZAxis type="number" dataKey="impact_score" range={[100, 400]} />
-          <Tooltip
-            cursor={{ strokeDasharray: '3 3' }}
-            content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                const event = payload[0].payload;
-                return (
-                  <div className="bg-background border rounded p-3 shadow-lg max-w-sm">
-                    <p className="font-semibold mb-1">{event.title}</p>
-                    <p className="text-xs text-muted-foreground mb-1">
-                      {new Date(event.date).toLocaleString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                    <p className="text-xs mb-1">
-                      <strong>Country:</strong> {event.country || 'N/A'} | <strong>Currency:</strong>{' '}
-                      {event.currency || 'N/A'}
-                    </p>
-                    <p className="text-xs mb-1">
-                      <strong>Impact:</strong>{' '}
-                      <span
-                        className="font-medium"
-                        style={{ color: getImpactColor(event.impact) }}
-                      >
-                        {event.impact.toUpperCase()}
-                      </span>
-                    </p>
-                    {event.description && (
-                      <p className="text-xs mt-2 text-muted-foreground">{event.description}</p>
-                    )}
-                  </div>
-                );
-              }
-              return null;
-            }}
-          />
-          <Scatter name="Events" data={chartData} shape="circle">
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
-            ))}
-          </Scatter>
-        </ScatterChart>
-      </ResponsiveContainer>
+      <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+        <div className="min-w-[600px] h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart
+              margin={{ top: 20, right: 20, bottom: 60, left: 20 }}
+              onMouseMove={(e: any) => {
+                if (e && e.activePayload && e.activePayload[0] && onHoverChange) {
+                  onHoverChange(new Date(e.activePayload[0].payload.date).toISOString());
+                }
+              }}
+              onMouseLeave={() => onHoverChange && onHoverChange(null)}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                type="number"
+                dataKey="date"
+                name="Date"
+                domain={['auto', 'auto']}
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis
+                type="number"
+                dataKey="impact_score"
+                name="Impact"
+                domain={[0, 4]}
+                ticks={[1, 2, 3]}
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => {
+                  if (value === 1) return 'Low';
+                  if (value === 2) return 'Medium';
+                  if (value === 3) return 'High';
+                  return '';
+                }}
+              />
+              <ZAxis type="number" dataKey="impact_score" range={[100, 400]} />
+              <Tooltip
+                cursor={{ strokeDasharray: '3 3' }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const event = payload[0].payload;
+                    return (
+                      <div className="bg-background border rounded p-3 shadow-lg max-w-sm">
+                        <p className="font-semibold text-sm mb-1">{event.title}</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          {new Date(event.date).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                        <p className="text-xs mb-1">
+                          <strong>Country:</strong> {event.country || 'N/A'} | <strong>Currency:</strong>{' '}
+                          {event.currency || 'N/A'}
+                        </p>
+                        <p className="text-xs mb-1">
+                          <strong>Impact:</strong>{' '}
+                          <span
+                            className="font-medium"
+                            style={{ color: getImpactColor(event.impact) }}
+                          >
+                            {event.impact.toUpperCase()}
+                          </span>
+                        </p>
+                        {event.description && (
+                          <p className="text-xs mt-2 text-muted-foreground">{event.description}</p>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Scatter name="Events" data={chartData} shape="circle">
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Event List Below Chart */}
       <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">

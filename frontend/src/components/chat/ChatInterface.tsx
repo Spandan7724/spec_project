@@ -651,7 +651,7 @@ export default function ChatInterface() {
         </div>
       </main>
 
-      <footer className="relative z-10 border-t border-border/40 bg-background/95 px-4 py-2 backdrop-blur">
+      <footer className="sticky bottom-0 z-10 border-t border-border/40 bg-background/95 px-4 py-2 pb-20 md:pb-2 backdrop-blur safe-bottom">
         <div className="mx-auto w-full max-w-3xl">
           {!requiresInput && (
             <div className="mb-2 flex items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
@@ -673,14 +673,14 @@ export default function ChatInterface() {
               placeholder={requiresInput ? 'Ask about currency conversions...' : 'Analysis in progress...'}
               disabled={isInputDisabled}
               rows={1}
-              className="flex-1 resize-none bg-transparent px-3.5 py-2.5 text-sm outline-none placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex-1 resize-none bg-transparent px-3.5 py-3 md:py-2.5 text-sm md:text-sm text-base outline-none placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-60"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isInputDisabled}
-              className="mr-2 inline-flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+              className="mobile-tap mr-2 inline-flex size-9 md:size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
             >
-              <Send size={14} />
+              <Send size={16} className="md:size-[14px]" />
             </button>
           </div>
           {requiresInput && (
@@ -689,7 +689,7 @@ export default function ChatInterface() {
                 <button
                   key={prompt}
                   onClick={() => handlePromptSelect(prompt)}
-                  className="rounded-lg border border-border/30 bg-muted/20 px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                  className="mobile-tap rounded-lg border border-border/30 bg-muted/20 px-3 md:px-2 py-1.5 md:py-0.5 text-xs md:text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
                 >
                   {prompt}
                 </button>

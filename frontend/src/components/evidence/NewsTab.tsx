@@ -36,21 +36,21 @@ export default function NewsTab({ data }: NewsTabProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {data.map((article, index) => (
-        <div key={index} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
-          <div className="flex items-start justify-between gap-3">
+        <div key={index} className="border rounded-lg p-4 md:p-5 hover:bg-accent/50 transition-colors">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <SentimentIcon sentiment={article.sentiment} />
-                <h4 className="font-semibold">{article.title}</h4>
+                <h4 className="font-semibold text-sm md:text-base line-clamp-2">{article.title}</h4>
               </div>
 
               {article.summary && (
-                <p className="text-sm text-muted-foreground mb-3">{article.summary}</p>
+                <p className="text-xs md:text-sm text-muted-foreground mb-3 line-clamp-2">{article.summary}</p>
               )}
 
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-muted-foreground flex-wrap">
                 {article.source && (
                   <span className="flex items-center gap-1">
                     <Newspaper size={12} />
@@ -67,7 +67,7 @@ export default function NewsTab({ data }: NewsTabProps) {
                   </span>
                 )}
                 {article.relevance_score !== undefined && (
-                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary">
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs">
                     Relevance: {(article.relevance_score * 100).toFixed(0)}%
                   </span>
                 )}
@@ -79,7 +79,7 @@ export default function NewsTab({ data }: NewsTabProps) {
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 hover:bg-accent rounded transition-colors"
+                className="p-2 hover:bg-accent rounded transition-colors mobile-tap min-h-[44px] flex items-center justify-center flex-shrink-0"
                 title="Read full article"
               >
                 <ExternalLink size={16} />

@@ -31,22 +31,22 @@ export default function EvidenceViewer({ data }: EvidenceViewerProps) {
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 bg-accent hover:bg-accent/90 transition-colors flex items-center justify-between text-accent-foreground"
+        className="w-full px-4 py-3 bg-accent hover:bg-accent/90 transition-colors flex items-center justify-between text-accent-foreground min-h-[44px]"
       >
-        <h3 className="text-lg font-semibold">Evidence & Supporting Data</h3>
+        <h3 className="text-base md:text-lg font-semibold">Evidence & Supporting Data</h3>
         {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
 
       {isExpanded && (
-        <div className="p-4">
-          {/* Tabs */}
-          <div className="flex gap-2 border-b mb-4">
+        <div className="p-4 md:p-6">
+          {/* Tabs - scrollable on mobile */}
+          <div className="flex gap-2 border-b mb-4 overflow-x-auto pb-2">
             {tabs.map((tab) => (
               <button
                 type="button"
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 transition-colors relative ${
+                className={`px-3 md:px-4 py-2 transition-colors relative whitespace-nowrap min-h-[44px] flex items-center mobile-tap ${
                   activeTab === tab.id
                     ? 'text-primary'
                     : 'text-muted-foreground hover:text-foreground'

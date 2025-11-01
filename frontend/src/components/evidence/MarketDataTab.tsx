@@ -60,9 +60,9 @@ export default function MarketDataTab({ data }: MarketDataTabProps) {
 
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         return (
-          <div key={key} className={`${depth > 0 ? 'ml-4' : ''} mb-3`}>
-            <h4 className="font-semibold text-sm mb-2">{formattedKey}</h4>
-            <div className="border-l-2 border-accent pl-3">
+          <div key={key} className={`${depth > 0 ? 'ml-2 md:ml-4' : ''} mb-3`}>
+            <h4 className="font-semibold text-xs md:text-sm mb-2">{formattedKey}</h4>
+            <div className="border-l-2 border-accent pl-2 md:pl-3">
               {renderData(value, depth + 1)}
             </div>
           </div>
@@ -71,9 +71,9 @@ export default function MarketDataTab({ data }: MarketDataTabProps) {
 
       if (Array.isArray(value)) {
         return (
-          <div key={key} className={`${depth > 0 ? 'ml-4' : ''} mb-2`}>
-            <span className="text-sm font-medium">{formattedKey}:</span>
-            <span className="ml-2 text-sm text-muted-foreground">
+          <div key={key} className={`${depth > 0 ? 'ml-2 md:ml-4' : ''} mb-2`}>
+            <span className="text-xs md:text-sm font-medium">{formattedKey}:</span>
+            <span className="ml-2 text-xs md:text-sm text-muted-foreground">
               {value.length} items
             </span>
           </div>
@@ -81,14 +81,14 @@ export default function MarketDataTab({ data }: MarketDataTabProps) {
       }
 
       return (
-        <div key={key} className={`${depth > 0 ? 'ml-4' : ''} grid grid-cols-2 gap-2 py-2 border-b last:border-0`}>
-          <span className="text-sm font-medium flex items-center gap-2">
+        <div key={key} className={`${depth > 0 ? 'ml-2 md:ml-4' : ''} grid grid-cols-1 sm:grid-cols-2 gap-2 py-2 border-b last:border-0`}>
+          <span className="text-xs md:text-sm font-medium flex items-center gap-2">
             {key.toLowerCase().includes('price') && <DollarSign size={14} />}
             {key.toLowerCase().includes('trend') && value > 0 && <TrendingUp size={14} className="text-green-600" />}
             {key.toLowerCase().includes('trend') && value < 0 && <TrendingDown size={14} className="text-red-600" />}
             {formattedKey}
           </span>
-          <span className={`text-sm font-mono ${getValueStyle(key, value)}`}>
+          <span className={`text-xs md:text-sm font-mono ${getValueStyle(key, value)}`}>
             {renderValue(value)}
           </span>
         </div>
@@ -97,8 +97,8 @@ export default function MarketDataTab({ data }: MarketDataTabProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="border rounded-lg p-4 bg-accent/20">
+    <div className="space-y-3 md:space-y-4">
+      <div className="border rounded-lg p-4 md:p-5 bg-accent/20 overflow-x-auto">
         {renderData(data)}
       </div>
     </div>

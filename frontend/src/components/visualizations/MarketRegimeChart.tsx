@@ -77,15 +77,15 @@ export default function MarketRegimeChart({
 
   if (!regime_history || regime_history.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="w-full">
+        <h3 className="text-base md:text-lg font-semibold mb-4">
           Market Regime {currency_pair && `(${currency_pair})`}
         </h3>
-        <div className="flex flex-col items-center justify-center h-80">
+        <div className="flex flex-col items-center justify-center h-48 md:h-64">
           <div className="text-center">
-            <p className="text-lg font-medium mb-2">Current Regime</p>
+            <p className="text-base font-medium mb-2">Current Regime</p>
             <p
-              className="text-2xl font-bold"
+              className="text-xl font-bold"
               style={{ color: getRegimeColor(current_regime) }}
             >
               {getRegimeLabel(current_regime).toUpperCase()}
@@ -100,7 +100,7 @@ export default function MarketRegimeChart({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-base md:text-lg font-semibold">
           Market Regime {currency_pair && `(${currency_pair})`}
         </h3>
 
@@ -119,92 +119,98 @@ export default function MarketRegimeChart({
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart
-          data={chartData}
-          onMouseMove={(e) => {
-            if (e && e.activeLabel && onHoverChange) {
-              onHoverChange(e.activeLabel as string);
-            }
-          }}
-          onMouseLeave={() => onHoverChange && onHoverChange(null)}
-        >
-          <defs>
-            <linearGradient id="trendingUp" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#00C49F" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#00C49F" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="trendingDown" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FF6B6B" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#FF6B6B" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="ranging" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#FFBB28" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="volatile" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FF8042" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#FF8042" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="date"
-            angle={-45}
-            textAnchor="end"
-            height={80}
-            tickFormatter={(value) => {
-              const date = new Date(value);
-              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            }}
-          />
-          <YAxis
-            label={{ value: 'Price', angle: -90, position: 'insideLeft' }}
-            domain={['auto', 'auto']}
-          />
-          <Tooltip
-            labelFormatter={(value) => {
-              const date = new Date(value);
-              return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              });
-            }}
-            content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                const data = payload[0].payload;
-                return (
-                  <div className="bg-background border rounded p-3 shadow-lg">
-                    <p className="font-semibold text-sm mb-1">{data.regimeLabel}</p>
-                    <p className="text-xs text-muted-foreground mb-1">
-                      {new Date(data.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </p>
-                    <p className="text-sm">
-                      Price: <span className="font-medium">{data.close.toFixed(4)}</span>
-                    </p>
-                  </div>
-                );
-              }
-              return null;
-            }}
-          />
+      <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+        <div className="min-w-[600px] h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={chartData}
+              onMouseMove={(e) => {
+                if (e && e.activeLabel && onHoverChange) {
+                  onHoverChange(e.activeLabel as string);
+                }
+              }}
+              onMouseLeave={() => onHoverChange && onHoverChange(null)}
+            >
+              <defs>
+                <linearGradient id="trendingUp" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#00C49F" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#00C49F" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="trendingDown" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#FF6B6B" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#FF6B6B" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="ranging" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#FFBB28" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#FFBB28" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="volatile" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#FF8042" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#FF8042" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }}
+              />
+              <YAxis
+                label={{ value: 'Price', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                domain={['auto', 'auto']}
+                tick={{ fontSize: 12 }}
+              />
+              <Tooltip
+                labelFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+                }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-background border rounded p-3 shadow-lg">
+                        <p className="font-semibold text-sm mb-1">{data.regimeLabel}</p>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          {new Date(data.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </p>
+                        <p className="text-sm">
+                          Price: <span className="font-medium">{data.close.toFixed(4)}</span>
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
 
-          {/* Price line */}
-          <Line
-            type="monotone"
-            dataKey="close"
-            stroke="#0088FE"
-            strokeWidth={2}
-            dot={false}
-            name="Close Price"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+              {/* Price line */}
+              <Line
+                type="monotone"
+                dataKey="close"
+                stroke="#0088FE"
+                strokeWidth={2}
+                dot={false}
+                name="Close Price"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Regime Legend */}
       <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">

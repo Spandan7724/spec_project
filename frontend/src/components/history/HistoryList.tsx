@@ -35,20 +35,20 @@ export default function HistoryList({ history }: HistoryListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-6">
       {/* Filters */}
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 flex-wrap">
         <input
           type="text"
           placeholder="Search by currency pair or action..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mobile-tap min-h-[44px] text-sm"
         />
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary mobile-tap min-h-[44px] text-sm"
         >
           <option value="all">All Status</option>
           <option value="completed">Completed</option>
@@ -58,17 +58,17 @@ export default function HistoryList({ history }: HistoryListProps) {
       </div>
 
       {/* Results count */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-xs md:text-sm text-muted-foreground">
         Showing {filteredHistory.length} of {history.length} analyses
       </p>
 
       {/* History cards */}
       {filteredHistory.length === 0 ? (
         <div className="text-center py-12 border rounded-lg">
-          <p className="text-muted-foreground">No analyses match your filters</p>
+          <p className="text-xs md:text-sm text-muted-foreground">No analyses match your filters</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3 md:gap-4">
           {filteredHistory.map((item) => (
             <HistoryCard key={item.correlationId} item={item} />
           ))}

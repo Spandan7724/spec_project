@@ -40,45 +40,53 @@ export default function CostChart({ data }: CostChartProps) {
   );
 
   return (
-    <div className="w-full h-80">
-      <h3 className="text-lg font-semibold mb-4">Cost Breakdown</h3>
+    <div className="w-full">
+      <h3 className="text-base md:text-lg font-semibold mb-4">Cost Breakdown</h3>
       {chartData.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No cost data available
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="category"
-              angle={-45}
-              textAnchor="end"
-              height={100}
-            />
-            <YAxis label={{ value: 'Amount', angle: -90, position: 'insideLeft' }} />
-            <Tooltip
-              formatter={(value) => {
-                const currency = data[0]?.currency || 'USD';
-                return `${currency} ${Number(value).toFixed(2)}`;
-              }}
-            />
-            <Legend />
-            {breakdownKeys.length > 0 ? (
-              breakdownKeys.map((key, index) => (
-                <Bar
-                  key={key}
-                  dataKey={key}
-                  stackId="a"
-                  fill={COLORS[key as keyof typeof COLORS] || `hsl(${index * 60}, 70%, 50%)`}
-                  name={key.charAt(0).toUpperCase() + key.slice(1)}
+        <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+          <div className="min-w-[500px] h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="category"
+                  angle={-45}
+                  textAnchor="end"
+                  height={100}
+                  tick={{ fontSize: 12 }}
                 />
-              ))
-            ) : (
-              <Bar dataKey="total" fill="#0088FE" name="Total Cost" />
-            )}
-          </BarChart>
-        </ResponsiveContainer>
+                <YAxis
+                  label={{ value: 'Amount', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value) => {
+                    const currency = data[0]?.currency || 'USD';
+                    return `${currency} ${Number(value).toFixed(2)}`;
+                  }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                {breakdownKeys.length > 0 ? (
+                  breakdownKeys.map((key, index) => (
+                    <Bar
+                      key={key}
+                      dataKey={key}
+                      stackId="a"
+                      fill={COLORS[key as keyof typeof COLORS] || `hsl(${index * 60}, 70%, 50%)`}
+                      name={key.charAt(0).toUpperCase() + key.slice(1)}
+                    />
+                  ))
+                ) : (
+                  <Bar dataKey="total" fill="#0088FE" name="Total Cost" />
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -38,11 +38,11 @@ export default function QuantileFanChart({
 }: QuantileFanChartProps) {
   if (!predictions || predictions.length === 0) {
     return (
-      <div className="w-full h-96">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="w-full">
+        <h3 className="text-base md:text-lg font-semibold mb-4">
           Prediction Uncertainty (Fan Chart) {currency_pair && `(${currency_pair})`}
         </h3>
-        <div className="flex items-center justify-center h-80 text-muted-foreground">
+        <div className="flex items-center justify-center h-48 md:h-64 text-muted-foreground text-sm">
           No prediction data available
         </div>
       </div>
@@ -66,99 +66,105 @@ export default function QuantileFanChart({
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-base md:text-lg font-semibold mb-4">
         Prediction Uncertainty (Fan Chart) {currency_pair && `(${currency_pair})`}
       </h3>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <ComposedChart
-          data={chartData}
-          onMouseMove={(e) => {
-            if (e && e.activeLabel && onHoverChange) {
-              onHoverChange(e.activeLabel as string);
-            }
-          }}
-          onMouseLeave={() => onHoverChange && onHoverChange(null)}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="horizon_label"
-            label={{ value: 'Forecast Horizon', position: 'insideBottom', offset: -5 }}
-          />
-          <YAxis
-            label={{ value: 'Exchange Rate', angle: -90, position: 'insideLeft' }}
-            domain={['auto', 'auto']}
-          />
-          <Tooltip
-            formatter={(value: any, name: any) => {
-              const formattedValue = Number(value).toFixed(4);
-              const prettyName = name
-                .replace('_rate', '')
-                .replace('p', 'P')
-                .replace('mean', 'Expected');
-              return [formattedValue, prettyName];
-            }}
-            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
-          />
-          <Legend verticalAlign="bottom" height={50} wrapperStyle={{ paddingTop: '20px' }} />
+      <div className="scroll-container h-64 md:h-80 -mx-2 px-2">
+        <div className="min-w-[600px] h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={chartData}
+              onMouseMove={(e) => {
+                if (e && e.activeLabel && onHoverChange) {
+                  onHoverChange(e.activeLabel as string);
+                }
+              }}
+              onMouseLeave={() => onHoverChange && onHoverChange(null)}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="horizon_label"
+                tick={{ fontSize: 12 }}
+                label={{ value: 'Forecast Horizon', position: 'insideBottom', offset: -5, style: { fontSize: 12 } }}
+              />
+              <YAxis
+                label={{ value: 'Exchange Rate', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                domain={['auto', 'auto']}
+                tick={{ fontSize: 12 }}
+              />
+              <Tooltip
+                formatter={(value: any, name: any) => {
+                  const formattedValue = Number(value).toFixed(4);
+                  const prettyName = name
+                    .replace('_rate', '')
+                    .replace('p', 'P')
+                    .replace('mean', 'Expected');
+                  return [formattedValue, prettyName];
+                }}
+                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+              />
+              <Legend verticalAlign="bottom" height={50} wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
 
-          {/* 80% confidence interval (P10-P90) */}
-          <Area
-            type="monotone"
-            dataKey="p90_rate"
-            stroke="none"
-            fill="#0088FE"
-            fillOpacity={0.1}
-            name="80% CI (Upper)"
-          />
-          <Area
-            type="monotone"
-            dataKey="p10_rate"
-            stroke="none"
-            fill="#0088FE"
-            fillOpacity={0.1}
-            name="80% CI (Lower)"
-          />
+              {/* 80% confidence interval (P10-P90) */}
+              <Area
+                type="monotone"
+                dataKey="p90_rate"
+                stroke="none"
+                fill="#0088FE"
+                fillOpacity={0.1}
+                name="80% CI (Upper)"
+              />
+              <Area
+                type="monotone"
+                dataKey="p10_rate"
+                stroke="none"
+                fill="#0088FE"
+                fillOpacity={0.1}
+                name="80% CI (Lower)"
+              />
 
-          {/* 50% confidence interval (P25-P75) */}
-          <Area
-            type="monotone"
-            dataKey="p75_rate"
-            stroke="none"
-            fill="#0088FE"
-            fillOpacity={0.2}
-            name="50% CI (Upper)"
-          />
-          <Area
-            type="monotone"
-            dataKey="p25_rate"
-            stroke="none"
-            fill="#0088FE"
-            fillOpacity={0.2}
-            name="50% CI (Lower)"
-          />
+              {/* 50% confidence interval (P25-P75) */}
+              <Area
+                type="monotone"
+                dataKey="p75_rate"
+                stroke="none"
+                fill="#0088FE"
+                fillOpacity={0.2}
+                name="50% CI (Upper)"
+              />
+              <Area
+                type="monotone"
+                dataKey="p25_rate"
+                stroke="none"
+                fill="#0088FE"
+                fillOpacity={0.2}
+                name="50% CI (Lower)"
+              />
 
-          {/* Median (P50) */}
-          <Line
-            type="monotone"
-            dataKey="p50_rate"
-            stroke="#FF8042"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            name="Median (P50)"
-          />
+              {/* Median (P50) */}
+              <Line
+                type="monotone"
+                dataKey="p50_rate"
+                stroke="#FF8042"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                name="Median (P50)"
+              />
 
-          {/* Mean prediction */}
-          <Line
-            type="monotone"
-            dataKey="mean_rate"
-            stroke="#0088FE"
-            strokeWidth={3}
-            dot={{ r: 5 }}
-            name="Expected Rate"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+              {/* Mean prediction */}
+              <Line
+                type="monotone"
+                dataKey="mean_rate"
+                stroke="#0088FE"
+                strokeWidth={3}
+                dot={{ r: 5 }}
+                name="Expected Rate"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Confidence Intervals Legend */}
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">

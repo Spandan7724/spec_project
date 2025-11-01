@@ -600,21 +600,21 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Analysis Results</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold">Analysis Results</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
             Correlation ID: {correlationId}
           </p>
         </div>
 
         {/* Export buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={handleExportPDF}
-            className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
+            className="mobile-tap flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
             title="Export as PDF"
           >
             <FileText size={16} />
@@ -622,7 +622,7 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
           </button>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
+            className="mobile-tap flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
             title="Export as CSV"
           >
             <FileSpreadsheet size={16} />
@@ -630,7 +630,7 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
           </button>
           <button
             onClick={handleExportJSON}
-            className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
+            className="mobile-tap flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-accent transition-colors"
             title="Export as JSON"
           >
             <Download size={16} />
@@ -640,13 +640,13 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
       </div>
 
       {/* Main Recommendation Card */}
-      <div className="border rounded-lg p-6 bg-card">
-        <div className="flex items-start justify-between mb-4">
+      <div className="border rounded-lg p-4 md:p-6 bg-card">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="text-green-500" size={32} />
+            <CheckCircle2 className="text-green-500" size={28} />
             <div>
-              <h2 className="text-2xl font-bold capitalize">{result.action?.replace(/_/g, ' ')}</h2>
-              <p className="text-muted-foreground">Recommended Action</p>
+              <h2 className="text-xl md:text-2xl font-bold capitalize">{result.action?.replace(/_/g, ' ')}</h2>
+              <p className="text-sm text-muted-foreground">Recommended Action</p>
             </div>
           </div>
           <div className="text-right">
@@ -810,16 +810,16 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
 
       {/* Tabbed Visualization Section */}
       <ChartSyncProvider>
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold">Detailed Analytics</h2>
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-xl md:text-2xl font-bold">Detailed Analytics</h2>
 
           {/* Tab Navigation */}
           <div className="border-b">
-            <div className="flex gap-1 overflow-x-auto">
+            <div className="flex gap-1 overflow-x-auto scrollbar-hide -mx-4 px-4">
               <button
                 type="button"
                 onClick={() => setActiveTab('overview')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`mobile-tap px-4 py-3 md:py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'overview'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
@@ -827,13 +827,13 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               >
                 <div className="flex items-center gap-2">
                   <BarChart3 size={16} />
-                  Overview
+                  <span className="hidden sm:inline">Overview</span>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('technical')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`mobile-tap px-4 py-3 md:py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'technical'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
@@ -841,13 +841,14 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               >
                 <div className="flex items-center gap-2">
                   <TrendingDown size={16} />
-                  Technical Analysis
+                  <span className="hidden sm:inline">Technical Analysis</span>
+                  <span className="sm:hidden">Technical</span>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('sentiment')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`mobile-tap px-4 py-3 md:py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'sentiment'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
@@ -855,13 +856,14 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               >
                 <div className="flex items-center gap-2">
                   <Newspaper size={16} />
-                  Sentiment & Events
+                  <span className="hidden sm:inline">Sentiment & Events</span>
+                  <span className="sm:hidden">Sentiment</span>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('predictions')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`mobile-tap px-4 py-3 md:py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'predictions'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
@@ -869,13 +871,13 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               >
                 <div className="flex items-center gap-2">
                   <Activity size={16} />
-                  Predictions
+                  <span className="hidden sm:inline">Predictions</span>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('explainability')}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`mobile-tap px-4 py-3 md:py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === 'explainability'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
@@ -883,7 +885,8 @@ export default function ResultsDashboard({ correlationId }: ResultsDashboardProp
               >
                 <div className="flex items-center gap-2">
                   <Brain size={16} />
-                  ML Explainability
+                  <span className="hidden sm:inline">ML Explainability</span>
+                  <span className="sm:hidden">ML</span>
                 </div>
               </button>
             </div>
