@@ -8,8 +8,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from backend.dependencies import get_orchestrator, get_analysis_repository
-from backend.models.requests import AnalysisRequest
-from backend.models.responses import AnalysisStartResponse, AnalysisStatus
+from ..models.requests import AnalysisRequest
+from ..models.responses import AnalysisStartResponse, AnalysisStatus
 from src.supervisor.models import ExtractedParameters
 from src.supervisor.nlu_extractor import NLUExtractor
 from src.supervisor.validation import timeframe_to_days

@@ -4,8 +4,8 @@ import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
-from backend.models.requests import ConversationInput
-from backend.models.responses import ConversationOutput
+from ..models.requests import ConversationInput
+from ..models.responses import ConversationOutput
 from backend.dependencies import get_conversation_manager
 from src.supervisor.models import SupervisorRequest
 
@@ -160,4 +160,3 @@ async def process_message_stream(input: ConversationInput, cm=Depends(get_conver
             "X-Accel-Buffering": "no",  # Disable nginx buffering
         }
     )
-
