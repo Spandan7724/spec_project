@@ -137,23 +137,40 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
 
         <div>
           <label className="block text-xs md:text-sm font-medium mb-2">History Window (days)</label>
-          <input
-            type="number"
-            min={60}
-            max={1460}
-            step={10}
-            value={formData.historyDays}
-            onChange={(e) => handleChange('historyDays', e.target.value)}
-            placeholder={formData.modelType === 'lightgbm' ? '365' : '180'}
-            required
-            disabled={isTraining}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            {formData.modelType === 'lightgbm'
-              ? 'Use a longer window (e.g., 365–1095 days) to give the daily model more samples.'
-              : 'Controls how much intraday history to load; 180–365 days helps the sequence model generalize.'}
-          </p>
+          {(() => {
+            // Mirror backend caps: unlimited for daily; interval-specific caps for intraday
+            const intradayCaps: Record<string, number> = {
+              '4h': 730,
+              '1h': 730,
+              '30m': 60,
+              '15m': 60,
+            };
+            const isLstm = formData.modelType === 'lstm';
+            const maxDays = isLstm ? intradayCaps[formData.lstmInterval] ?? 730 : undefined;
+
+            return (
+              <>
+                <input
+                  type="number"
+                  min={60}
+                  // Daily (LightGBM): no max. LSTM: cap based on interval like backend.
+                  max={maxDays}
+                  step={10}
+                  value={formData.historyDays}
+                  onChange={(e) => handleChange('historyDays', e.target.value)}
+                  placeholder={formData.modelType === 'lightgbm' ? '365' : '180'}
+                  required
+                  disabled={isTraining}
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formData.modelType === 'lightgbm'
+                    ? 'No hard max; backend fetches as many daily years as available.'
+                    : `Intraday capped by interval (like backend): ${formData.lstmInterval} up to ${maxDays} days.`}
+                </p>
+              </>
+            );
+          })()}
         </div>
 
         <div>
