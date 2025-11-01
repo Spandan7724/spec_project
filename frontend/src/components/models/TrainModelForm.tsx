@@ -166,7 +166,7 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
                 <p className="text-xs text-muted-foreground mt-1">
                   {formData.modelType === 'lightgbm'
                     ? 'No hard max; backend fetches as many daily years as available.'
-                    : `Intraday capped by interval (like backend): ${formData.lstmInterval} up to ${maxDays} days.`}
+                    : `${formData.lstmInterval} up to ${maxDays} days.`}
                 </p>
               </>
             );
