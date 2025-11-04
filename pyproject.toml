@@ -48,7 +48,7 @@ currency-assistant-train = "src.cli.train:app"
 currency-assistant-tui = "src.ui.tui.app:main"
 
 [tool.setuptools]
-package-dir = {"": "."}
+package-dir = { "" = "." }
 
 [tool.setuptools.packages.find]
 include = ["src*", "backend*"]
