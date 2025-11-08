@@ -130,3 +130,6 @@ repomix-output.xml
 scraped_data/
 logs/
 data/currency_assistant.db
+
+# ml_models/
+research_paper/

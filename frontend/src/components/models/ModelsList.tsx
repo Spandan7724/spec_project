@@ -82,6 +82,7 @@ export default function ModelsList() {
           <option value="">All Types</option>
           <option value="lightgbm">LightGBM</option>
           <option value="lstm">LSTM</option>
+          <option value="catboost">CatBoost</option>
         </select>
         <button
           onClick={handleExport}

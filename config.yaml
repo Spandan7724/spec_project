@@ -152,8 +152,14 @@ decision:
 prediction:
   prediction_horizons: [1, 7, 30]
   cache_ttl_hours: 1
-  predictor_backend: "hybrid"  # lightgbm | lstm | hybrid
+  predictor_backend: "advanced_ensemble"  # lightgbm | lstm | hybrid | advanced_ensemble
   features_mode: "price_only"  # price_only | price_plus_intel
+
+  # Advanced ensemble settings (uses ml_models trained models)
+  advanced_ensemble:
+    enabled: true
+    ml_models_dir: "ml_models/models"
+    fallback_to_hybrid: true  # If advanced ensemble fails, use hybrid backend
 
   technical_indicators:
     - sma_5
