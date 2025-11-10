@@ -153,10 +153,35 @@ class LSTMBackend(BasePredictorBackend):
         return results
 
     def get_model_confidence(self) -> float:
-        # Minimal mapping—without classification acc, return 0.0 if no metrics
+        """
+        Get model confidence based on R² or loss metrics.
+        """
         if not self.validation_metrics:
-            return 0.0
-        return 0.3
+            return 0.3  # Default low-moderate confidence for LSTM
+
+        # Try to extract R² if available
+        r2_scores = []
+        mae_values = []
+
+        for metrics in self.validation_metrics.values():
+            if isinstance(metrics, dict):
+                if 'r2' in metrics:
+                    r2_scores.append(metrics['r2'])
+                if 'mae' in metrics:
+                    mae_values.append(metrics['mae'])
+
+        # Use R² if available
+        if r2_scores and any(r2 > 0 for r2 in r2_scores):
+            avg_r2 = float(np.mean([r2 for r2 in r2_scores if r2 > 0]))
+            return float(max(0.0, min(1.0, avg_r2)))
+
+        # Fallback to MAE-based confidence
+        if mae_values:
+            avg_mae = float(np.mean(mae_values))
+            confidence = float(np.exp(-avg_mae * 5))
+            return max(0.0, min(1.0, confidence))
+
+        return 0.3  # Default low-moderate confidence
 
     def save(self, path: str) -> None:
         """Save LSTM backend state to disk (per-horizon state_dicts + scaler)."""

@@ -185,12 +185,32 @@ class LightGBMBackend(BasePredictorBackend):
         return results
 
     def get_model_confidence(self) -> float:
+        """
+        Get model confidence based on R² score, not directional accuracy.
+        Directional accuracy ~50% is normal for forex but doesn't reflect model quality.
+        R² measures how well we predict the magnitude of changes.
+        """
         if not self.validation_metrics:
-            return 0.0
-        acc = [m.get("directional_accuracy", 0.5) for m in self.validation_metrics.values()]
-        if not acc:
-            return 0.0
-        return float(max(0.0, (np.mean(acc) - 0.5) * 2))
+            return 0.5  # Default moderate confidence
+
+        # Use R² score if available (best metric for regression quality)
+        r2_scores = [m.get("r2", 0.0) for m in self.validation_metrics.values()]
+        if r2_scores and any(r2 > 0 for r2 in r2_scores):
+            avg_r2 = float(np.mean([r2 for r2 in r2_scores if r2 > 0]))
+            # R² can be negative for bad models, clip to 0-1 range
+            return float(max(0.0, min(1.0, avg_r2)))
+
+        # Fallback: use MAE-based confidence (lower MAE = higher confidence)
+        mae_values = [m.get("mae", 1.0) for m in self.validation_metrics.values()]
+        if mae_values:
+            avg_mae = float(np.mean(mae_values))
+            # Convert MAE to confidence: smaller MAE = higher confidence
+            # Typical forex MAE ranges from 0.001 (excellent) to 1.0 (poor)
+            # Use exponential decay: confidence = e^(-MAE * 5)
+            confidence = float(np.exp(-avg_mae * 5))
+            return max(0.0, min(1.0, confidence))
+
+        return 0.5  # Default moderate confidence
 
     def get_feature_importance(self, horizon: int, top_n: int = 10) -> Dict[str, float]:
         if horizon not in self.models:

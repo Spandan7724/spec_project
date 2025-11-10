@@ -386,5 +386,127 @@
     ],
     "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/inrusd_lightgbm_20251031221433.pkl",
     "scaler_path": null
+  },
+  "usdeur_lightgbm_20251110095458": {
+    "model_id": "usdeur_lightgbm_20251110095458",
+    "model_type": "lightgbm",
+    "currency_pair": "USD/EUR",
+    "trained_at": "2025-11-10T09:54:58.665698",
+    "version": "1.0",
+    "validation_metrics": {
+      "1d": {
+        "rmse": 0.471792912747643,
+        "mae": 0.3490906448417098,
+        "directional_accuracy": 0.5757307351638619,
+        "quantile_coverage": 0.7936226749335695,
+        "n_samples": 1129
+      },
+      "7d": {
+        "rmse": 1.2360775273535483,
+        "mae": 0.9390856565902833,
+        "directional_accuracy": 0.4521276595744681,
+        "quantile_coverage": 0.625,
+        "n_samples": 1128
+      },
+      "30d": {
+        "rmse": 2.5366152704684324,
+        "mae": 2.034180890562915,
+        "directional_accuracy": 0.4906500445235975,
+        "quantile_coverage": 0.3579697239536955,
+        "n_samples": 1123
+      }
+    },
+    "min_samples": 1123,
+    "calibration_ok": false,
+    "features_used": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "sma_5",
+      "sma_20",
+      "sma_50",
+      "ema_12",
+      "ema_26",
+      "rsi_14",
+      "macd",
+      "macd_signal",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "atr_14",
+      "volatility_20"
+    ],
+    "horizons": [
+      1,
+      7,
+      30
+    ],
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251110095458.pkl",
+    "scaler_path": null
+  },
+  "usdeur_catboost_20251110100422": {
+    "model_id": "usdeur_catboost_20251110100422",
+    "model_type": "catboost",
+    "currency_pair": "USD/EUR",
+    "trained_at": "2025-11-10T10:04:22.203229",
+    "version": "1.0",
+    "validation_metrics": {
+      "1d": {
+        "rmse": 0.487883998276969,
+        "mae": 0.36274418279252396,
+        "r2": 4.1919434587311954e-05,
+        "directional_accuracy": 0.5509300265721878,
+        "quantile_coverage": 0.7865367581930912,
+        "n_samples": 1129,
+        "best_iteration": 8
+      },
+      "7d": {
+        "rmse": 1.236315030446694,
+        "mae": 0.9346953624425319,
+        "r2": 0.002570324827175452,
+        "directional_accuracy": 0.5328014184397163,
+        "quantile_coverage": 0.851063829787234,
+        "n_samples": 1128,
+        "best_iteration": 42
+      },
+      "30d": {
+        "rmse": 2.526535989586057,
+        "mae": 2.0294237042548193,
+        "r2": 0.008780776899065756,
+        "directional_accuracy": 0.4906500445235975,
+        "quantile_coverage": 0.7818343722172751,
+        "n_samples": 1123,
+        "best_iteration": 79
+      }
+    },
+    "min_samples": 1123,
+    "calibration_ok": false,
+    "features_used": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "sma_5",
+      "sma_20",
+      "sma_50",
+      "ema_12",
+      "ema_26",
+      "rsi_14",
+      "macd",
+      "macd_signal",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "atr_14",
+      "volatility_20"
+    ],
+    "horizons": [
+      1,
+      7,
+      30
+    ],
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_catboost_20251110100422.pkl",
+    "scaler_path": null
   }
 }

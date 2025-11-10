@@ -130,6 +130,14 @@ class MLPredictor:
             meta_catboost = self.registry.get_model(request.currency_pair, model_type="catboost")
             if meta_catboost:
                 self.backend_catboost.load(meta_catboost["model_path"])
+
+                # Load scaler if available
+                scaler_path = meta_catboost.get("scaler_path")
+                if scaler_path:
+                    import joblib
+                    self.backend_catboost.scaler = joblib.load(scaler_path)
+                    logger.info(f"Loaded scaler from {scaler_path}")
+
                 vm = meta_catboost.get("validation_metrics") or {}
                 if isinstance(vm, dict):
                     self.backend_catboost.validation_metrics = vm
