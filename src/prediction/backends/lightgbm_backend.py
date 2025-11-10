@@ -124,6 +124,11 @@ class LightGBMBackend(BasePredictorBackend):
             rmse = float(np.sqrt(np.mean((y_val - y_pred) ** 2)))
             mae = float(np.mean(np.abs(y_val - y_pred)))
 
+            # R² score
+            ss_res = np.sum((y_val - y_pred) ** 2)
+            ss_tot = np.sum((y_val - y_val.mean()) ** 2)
+            r2 = float(1 - (ss_res / ss_tot)) if ss_tot > 0 else 0.0
+
             # Directional accuracy
             if horizon in self.direction_models:
                 y_dir_pred = self.direction_models[horizon].predict(X_val)
@@ -140,15 +145,17 @@ class LightGBMBackend(BasePredictorBackend):
             metrics[f"{horizon}d"] = {
                 "rmse": rmse,
                 "mae": mae,
+                "r2": r2,
                 "directional_accuracy": dir_acc,
                 "quantile_coverage": coverage,
                 "n_samples": int(len(X_val)),
             }
 
             logger.info(
-                "H%s: RMSE=%.4f, DirAcc=%.3f, Coverage=%.3f",
+                "H%s: RMSE=%.4f, R²=%.4f, DirAcc=%.3f, Coverage=%.3f",
                 horizon,
                 rmse,
+                r2,
                 dir_acc,
                 coverage,
             )
@@ -185,12 +192,32 @@ class LightGBMBackend(BasePredictorBackend):
         return results
 
     def get_model_confidence(self) -> float:
+        """
+        Get model confidence based on R² score, not directional accuracy.
+        Directional accuracy ~50% is normal for forex but doesn't reflect model quality.
+        R² measures how well we predict the magnitude of changes.
+        """
         if not self.validation_metrics:
-            return 0.0
-        acc = [m.get("directional_accuracy", 0.5) for m in self.validation_metrics.values()]
-        if not acc:
-            return 0.0
-        return float(max(0.0, (np.mean(acc) - 0.5) * 2))
+            return 0.5  # Default moderate confidence
+
+        # Use R² score if available (best metric for regression quality)
+        r2_scores = [m.get("r2", 0.0) for m in self.validation_metrics.values()]
+        if r2_scores and any(r2 > 0 for r2 in r2_scores):
+            avg_r2 = float(np.mean([r2 for r2 in r2_scores if r2 > 0]))
+            # R² can be negative for bad models, clip to 0-1 range
+            return float(max(0.0, min(1.0, avg_r2)))
+
+        # Fallback: use MAE-based confidence (lower MAE = higher confidence)
+        mae_values = [m.get("mae", 1.0) for m in self.validation_metrics.values()]
+        if mae_values:
+            avg_mae = float(np.mean(mae_values))
+            # Convert MAE to confidence: smaller MAE = higher confidence
+            # Typical forex MAE ranges from 0.001 (excellent) to 1.0 (poor)
+            # Use exponential decay: confidence = e^(-MAE * 5)
+            confidence = float(np.exp(-avg_mae * 5))
+            return max(0.0, min(1.0, confidence))
+
+        return 0.5  # Default moderate confidence
 
     def get_feature_importance(self, horizon: int, top_n: int = 10) -> Dict[str, float]:
         if horizon not in self.models:

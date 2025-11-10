@@ -1,34 +1,37 @@
 {
-  "usdeur_lightgbm_20251026072908": {
-    "model_id": "usdeur_lightgbm_20251026072908",
+  "usdeur_lightgbm_20251110131206": {
+    "model_id": "usdeur_lightgbm_20251110131206",
     "model_type": "lightgbm",
     "currency_pair": "USD/EUR",
-    "trained_at": "2025-10-26T07:29:08.692399",
+    "trained_at": "2025-11-10T13:12:06.652466",
     "version": "1.0",
     "validation_metrics": {
       "1d": {
-        "rmse": 0.3691530626127806,
-        "mae": 0.28936442742640256,
-        "directional_accuracy": 0.5952380952380952,
-        "quantile_coverage": 0.6904761904761905,
-        "n_samples": 42
+        "rmse": 0.471792912747643,
+        "mae": 0.3490906448417098,
+        "r2": 0.0649141805025405,
+        "directional_accuracy": 0.5757307351638619,
+        "quantile_coverage": 0.7936226749335695,
+        "n_samples": 1129
       },
       "7d": {
-        "rmse": 0.6856207625068633,
-        "mae": 0.5638303405902255,
-        "directional_accuracy": 0.6341463414634146,
-        "quantile_coverage": 0.7073170731707317,
-        "n_samples": 41
+        "rmse": 1.2360775273535483,
+        "mae": 0.9390856565902833,
+        "r2": 0.0029535117544716716,
+        "directional_accuracy": 0.4521276595744681,
+        "quantile_coverage": 0.625,
+        "n_samples": 1128
       },
       "30d": {
-        "rmse": 0.8746465265584006,
-        "mae": 0.7471867263155058,
-        "directional_accuracy": 0.7777777777777778,
-        "quantile_coverage": 0.6944444444444444,
-        "n_samples": 36
+        "rmse": 2.5366152704684324,
+        "mae": 2.034180890562915,
+        "r2": 0.0008563258340515967,
+        "directional_accuracy": 0.4906500445235975,
+        "quantile_coverage": 0.3579697239536955,
+        "n_samples": 1123
       }
     },
-    "min_samples": 36,
+    "min_samples": 1123,
     "calibration_ok": false,
     "features_used": [
       "Open",
@@ -54,337 +57,7 @@
       7,
       30
     ],
-    "model_path": "data/models/prediction/usdeur_lightgbm_20251026072908.pkl",
-    "scaler_path": null
-  },
-  "usdeur_lstm_20251026072934": {
-    "model_id": "usdeur_lstm_20251026072934",
-    "model_type": "lstm",
-    "currency_pair": "USD/EUR",
-    "trained_at": "2025-10-26T07:29:34.583471",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.09350397437810898,
-        "n_samples": 2716
-      },
-      "4d": {
-        "rmse": 0.18581289052963257,
-        "n_samples": 2716
-      },
-      "24d": {
-        "rmse": 0.42144763469696045,
-        "n_samples": 2716
-      }
-    },
-    "min_samples": 2716,
-    "calibration_ok": true,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      4,
-      24
-    ],
-    "model_path": "data/models/prediction/usdeur_lstm_20251026072934.pkl",
-    "scaler_path": null
-  },
-  "usdeur_lightgbm_20251026073512": {
-    "model_id": "usdeur_lightgbm_20251026073512",
-    "model_type": "lightgbm",
-    "currency_pair": "USD/EUR",
-    "trained_at": "2025-10-26T07:35:12.907303",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.3691530626127806,
-        "mae": 0.28936442742640256,
-        "directional_accuracy": 0.5952380952380952,
-        "quantile_coverage": 0.6904761904761905,
-        "n_samples": 42
-      },
-      "7d": {
-        "rmse": 0.6856207625068633,
-        "mae": 0.5638303405902255,
-        "directional_accuracy": 0.6341463414634146,
-        "quantile_coverage": 0.7073170731707317,
-        "n_samples": 41
-      },
-      "30d": {
-        "rmse": 0.8746465265584006,
-        "mae": 0.7471867263155058,
-        "directional_accuracy": 0.7777777777777778,
-        "quantile_coverage": 0.6944444444444444,
-        "n_samples": 36
-      }
-    },
-    "min_samples": 36,
-    "calibration_ok": false,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      7,
-      30
-    ],
-    "model_path": "data/models/prediction/usdeur_lightgbm_20251026073512.pkl",
-    "scaler_path": null
-  },
-  "inrusd_lightgbm_20251031220556": {
-    "model_id": "inrusd_lightgbm_20251031220556",
-    "model_type": "lightgbm",
-    "currency_pair": "INR/USD",
-    "trained_at": "2025-10-31T22:05:56.057088",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.25685924040938923,
-        "mae": 0.16468892180832795,
-        "directional_accuracy": 0.6190476190476191,
-        "quantile_coverage": 0.8809523809523809,
-        "n_samples": 42
-      },
-      "7d": {
-        "rmse": 0.5637718427205972,
-        "mae": 0.4107762668302059,
-        "directional_accuracy": 0.6341463414634146,
-        "quantile_coverage": 0.6829268292682927,
-        "n_samples": 41
-      },
-      "30d": {
-        "rmse": 0.9236799924169372,
-        "mae": 0.7781006847410431,
-        "directional_accuracy": 0.7777777777777778,
-        "quantile_coverage": 0.5,
-        "n_samples": 36
-      }
-    },
-    "min_samples": 36,
-    "calibration_ok": false,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      7,
-      30
-    ],
-    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/inrusd_lightgbm_20251031220556.pkl",
-    "scaler_path": null
-  },
-  "usdeur_lightgbm_20251031220704": {
-    "model_id": "usdeur_lightgbm_20251031220704",
-    "model_type": "lightgbm",
-    "currency_pair": "USD/EUR",
-    "trained_at": "2025-10-31T22:07:04.586805",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.3758465012866166,
-        "mae": 0.2991606981121756,
-        "directional_accuracy": 0.6428571428571429,
-        "quantile_coverage": 0.7142857142857143,
-        "n_samples": 42
-      },
-      "7d": {
-        "rmse": 0.6985682566898304,
-        "mae": 0.5761567252605412,
-        "directional_accuracy": 0.7073170731707317,
-        "quantile_coverage": 0.7073170731707317,
-        "n_samples": 41
-      },
-      "30d": {
-        "rmse": 0.9858434678944606,
-        "mae": 0.7917536196986266,
-        "directional_accuracy": 0.7222222222222222,
-        "quantile_coverage": 0.5555555555555556,
-        "n_samples": 36
-      }
-    },
-    "min_samples": 36,
-    "calibration_ok": false,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      7,
-      30
-    ],
-    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251031220704.pkl",
-    "scaler_path": null
-  },
-  "usdeur_lstm_20251031221404": {
-    "model_id": "usdeur_lstm_20251031221404",
-    "model_type": "lstm",
-    "currency_pair": "USD/EUR",
-    "trained_at": "2025-10-31T22:14:04.536126",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.1122194305062294,
-        "n_samples": 17168
-      },
-      "4d": {
-        "rmse": 0.19338664412498474,
-        "n_samples": 17168
-      },
-      "24d": {
-        "rmse": 0.45610183477401733,
-        "n_samples": 17168
-      }
-    },
-    "min_samples": 17168,
-    "calibration_ok": true,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      4,
-      24
-    ],
-    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lstm_20251031221404.pkl",
-    "scaler_path": null
-  },
-  "inrusd_lightgbm_20251031221433": {
-    "model_id": "inrusd_lightgbm_20251031221433",
-    "model_type": "lightgbm",
-    "currency_pair": "INR/USD",
-    "trained_at": "2025-10-31T22:14:33.997916",
-    "version": "1.0",
-    "validation_metrics": {
-      "1d": {
-        "rmse": 0.3171882179072605,
-        "mae": 0.22277457551942806,
-        "directional_accuracy": 0.5578231292517006,
-        "quantile_coverage": 0.5918367346938775,
-        "n_samples": 147
-      },
-      "7d": {
-        "rmse": 0.697470166281563,
-        "mae": 0.5696235686874875,
-        "directional_accuracy": 0.6027397260273972,
-        "quantile_coverage": 0.5068493150684932,
-        "n_samples": 146
-      },
-      "30d": {
-        "rmse": 1.1975354060628025,
-        "mae": 0.9946318796058845,
-        "directional_accuracy": 0.723404255319149,
-        "quantile_coverage": 0.41843971631205673,
-        "n_samples": 141
-      }
-    },
-    "min_samples": 141,
-    "calibration_ok": false,
-    "features_used": [
-      "Open",
-      "High",
-      "Low",
-      "Close",
-      "sma_5",
-      "sma_20",
-      "sma_50",
-      "ema_12",
-      "ema_26",
-      "rsi_14",
-      "macd",
-      "macd_signal",
-      "bb_upper",
-      "bb_middle",
-      "bb_lower",
-      "atr_14",
-      "volatility_20"
-    ],
-    "horizons": [
-      1,
-      7,
-      30
-    ],
-    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/inrusd_lightgbm_20251031221433.pkl",
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251110131206.pkl",
     "scaler_path": null
   }
 }

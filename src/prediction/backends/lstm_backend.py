@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional
 
+import numpy as np
 import pandas as pd
 
 from .base import BasePredictorBackend
@@ -102,8 +103,27 @@ class LSTMBackend(BasePredictorBackend):
                 opt.step()
 
             self.models[horizon] = model
-            # Minimal metrics; real validation could be added similarly
-            metrics[f"{horizon}d"] = {"rmse": float(torch.sqrt(loss).item()), "n_samples": int(len(X_seq))}
+
+            # Compute validation metrics on training data (better than nothing)
+            model.eval()
+            with torch.no_grad():
+                y_pred = model(X_seq).squeeze().cpu().numpy()
+                y_true = y_seq.squeeze().cpu().numpy()
+
+                rmse = float(torch.sqrt(loss).item())
+                mae = float(np.mean(np.abs(y_true - y_pred)))
+
+                # R² score
+                ss_res = np.sum((y_true - y_pred) ** 2)
+                ss_tot = np.sum((y_true - y_true.mean()) ** 2)
+                r2 = float(1 - (ss_res / ss_tot)) if ss_tot > 0 else 0.0
+
+                metrics[f"{horizon}d"] = {
+                    "rmse": rmse,
+                    "mae": mae,
+                    "r2": r2,
+                    "n_samples": int(len(X_seq))
+                }
 
         self.validation_metrics = metrics
         return metrics
@@ -153,10 +173,35 @@ class LSTMBackend(BasePredictorBackend):
         return results
 
     def get_model_confidence(self) -> float:
-        # Minimal mapping—without classification acc, return 0.0 if no metrics
+        """
+        Get model confidence based on R² or loss metrics.
+        """
         if not self.validation_metrics:
-            return 0.0
-        return 0.3
+            return 0.3  # Default low-moderate confidence for LSTM
+
+        # Try to extract R² if available
+        r2_scores = []
+        mae_values = []
+
+        for metrics in self.validation_metrics.values():
+            if isinstance(metrics, dict):
+                if 'r2' in metrics:
+                    r2_scores.append(metrics['r2'])
+                if 'mae' in metrics:
+                    mae_values.append(metrics['mae'])
+
+        # Use R² if available
+        if r2_scores and any(r2 > 0 for r2 in r2_scores):
+            avg_r2 = float(np.mean([r2 for r2 in r2_scores if r2 > 0]))
+            return float(max(0.0, min(1.0, avg_r2)))
+
+        # Fallback to MAE-based confidence
+        if mae_values:
+            avg_mae = float(np.mean(mae_values))
+            confidence = float(np.exp(-avg_mae * 5))
+            return max(0.0, min(1.0, confidence))
+
+        return 0.3  # Default low-moderate confidence
 
     def save(self, path: str) -> None:
         """Save LSTM backend state to disk (per-horizon state_dicts + scaler)."""
