@@ -131,3 +131,5 @@ scraped_data/
 logs/
 data/currency_assistant.db
 research_paper/
+backend/data/currency_assistant.db
+data/models/prediction_registry.json

@@ -59,5 +59,182 @@
     ],
     "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251110131206.pkl",
     "scaler_path": null
+  },
+  "usdeur_lstm_20251111040248": {
+    "model_id": "usdeur_lstm_20251111040248",
+    "model_type": "lstm",
+    "currency_pair": "USD/EUR",
+    "trained_at": "2025-11-11T04:02:48.294896",
+    "version": "1.0",
+    "validation_metrics": {
+      "1d": {
+        "rmse": 0.10673047602176666,
+        "mae": 0.06504390388727188,
+        "r2": -0.08686709403991699,
+        "n_samples": 17147
+      },
+      "4d": {
+        "rmse": 0.19009926915168762,
+        "mae": 0.12584711611270905,
+        "r2": -0.005262255668640137,
+        "n_samples": 17147
+      },
+      "24d": {
+        "rmse": 0.4591883718967438,
+        "mae": 0.3404833674430847,
+        "r2": -0.004016995429992676,
+        "n_samples": 17147
+      }
+    },
+    "min_samples": 17147,
+    "calibration_ok": true,
+    "features_used": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "sma_5",
+      "sma_20",
+      "sma_50",
+      "ema_12",
+      "ema_26",
+      "rsi_14",
+      "macd",
+      "macd_signal",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "atr_14",
+      "volatility_20"
+    ],
+    "horizons": [
+      1,
+      4,
+      24
+    ],
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lstm_20251111040248.pkl",
+    "scaler_path": null
+  },
+  "usdeur_lightgbm_20251111040328": {
+    "model_id": "usdeur_lightgbm_20251111040328",
+    "model_type": "lightgbm",
+    "currency_pair": "USD/EUR",
+    "trained_at": "2025-11-11T04:03:28.245720",
+    "version": "1.0",
+    "validation_metrics": {
+      "1d": {
+        "rmse": 0.47304182756266183,
+        "mae": 0.3498596643132614,
+        "r2": 0.05913326661709928,
+        "directional_accuracy": 0.6147032772364924,
+        "quantile_coverage": 0.7759078830823738,
+        "n_samples": 1129
+      },
+      "7d": {
+        "rmse": 1.2361642238744581,
+        "mae": 0.9393118780203646,
+        "r2": 0.0029101029570185455,
+        "directional_accuracy": 0.48138297872340424,
+        "quantile_coverage": 0.6453900709219859,
+        "n_samples": 1128
+      },
+      "30d": {
+        "rmse": 2.535926150662515,
+        "mae": 2.0338275306379017,
+        "r2": 0.000851195071532751,
+        "directional_accuracy": 0.49110320284697506,
+        "quantile_coverage": 0.3807829181494662,
+        "n_samples": 1124
+      }
+    },
+    "min_samples": 1124,
+    "calibration_ok": false,
+    "features_used": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "sma_5",
+      "sma_20",
+      "sma_50",
+      "ema_12",
+      "ema_26",
+      "rsi_14",
+      "macd",
+      "macd_signal",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "atr_14",
+      "volatility_20"
+    ],
+    "horizons": [
+      1,
+      7,
+      30
+    ],
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251111040328.pkl",
+    "scaler_path": null
+  },
+  "usdeur_lightgbm_20251111043447": {
+    "model_id": "usdeur_lightgbm_20251111043447",
+    "model_type": "lightgbm",
+    "currency_pair": "USD/EUR",
+    "trained_at": "2025-11-11T04:34:47.047242",
+    "version": "1.0",
+    "validation_metrics": {
+      "1d": {
+        "rmse": 0.47303616814833993,
+        "mae": 0.3498392111795682,
+        "r2": 0.05913169720794742,
+        "directional_accuracy": 0.6147032772364924,
+        "quantile_coverage": 0.7759078830823738,
+        "n_samples": 1129
+      },
+      "7d": {
+        "rmse": 1.236165603088894,
+        "mae": 0.9393323999831775,
+        "r2": 0.0029099422367260264,
+        "directional_accuracy": 0.48138297872340424,
+        "quantile_coverage": 0.6453900709219859,
+        "n_samples": 1128
+      },
+      "30d": {
+        "rmse": 2.535937655449367,
+        "mae": 2.033848408556483,
+        "r2": 0.0008510021897051301,
+        "directional_accuracy": 0.49110320284697506,
+        "quantile_coverage": 0.3798932384341637,
+        "n_samples": 1124
+      }
+    },
+    "min_samples": 1124,
+    "calibration_ok": false,
+    "features_used": [
+      "Open",
+      "High",
+      "Low",
+      "Close",
+      "sma_5",
+      "sma_20",
+      "sma_50",
+      "ema_12",
+      "ema_26",
+      "rsi_14",
+      "macd",
+      "macd_signal",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "atr_14",
+      "volatility_20"
+    ],
+    "horizons": [
+      1,
+      7,
+      30
+    ],
+    "model_path": "/home/spandan/projects/spec_project_2/currency_assistant/data/models/prediction/usdeur_lightgbm_20251111043447.pkl",
+    "scaler_path": null
   }
 }
