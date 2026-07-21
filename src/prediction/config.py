@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Dict, Any
 import os
 import yaml
 from pathlib import Path
@@ -15,7 +15,14 @@ class PredictionConfig:
     cache_ttl_hours: int = 1
 
     # Backend
-    predictor_backend: str = "hybrid"  # lightgbm | lstm | hybrid
+    predictor_backend: str = "hybrid"  # lightgbm | lstm | hybrid | advanced_ensemble
+
+    # Advanced ensemble settings
+    advanced_ensemble: Dict[str, Any] = field(default_factory=lambda: {
+        "enabled": True,
+        "ml_models_dir": "ml_models/models",
+        "fallback_to_hybrid": True
+    })
 
     # Features
     features_mode: str = "price_only"  # price_only | price_plus_intel

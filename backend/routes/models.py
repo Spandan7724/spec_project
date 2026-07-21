@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from src.prediction.training import train_and_register_lightgbm, train_and_register_lstm
+from src.prediction.training import train_and_register_lightgbm, train_and_register_lstm, train_and_register_catboost
 from src.prediction.registry import ModelRegistry
 from src.prediction.config import PredictionConfig
 
@@ -21,8 +21,8 @@ training_jobs: Dict[str, Dict[str, Any]] = {}
 
 class TrainModelRequest(BaseModel):
     currency_pair: str = Field(..., description="Currency pair (e.g., USD/EUR)")
-    model_type: str = Field(..., description="Model type: lightgbm or lstm")
-    horizons: Optional[List[int]] = Field(None, description="Prediction horizons in days (for lightgbm) or hours (for lstm)")
+    model_type: str = Field(..., description="Model type: lightgbm, lstm, or catboost")
+    horizons: Optional[List[int]] = Field(None, description="Prediction horizons in days (for lightgbm/catboost) or hours (for lstm)")
     version: str = Field(default="1.0", description="Model version string")
     history_days: Optional[int] = Field(None, description="Historical window in days to use for training")
     # LightGBM specific
@@ -30,6 +30,12 @@ class TrainModelRequest(BaseModel):
     gbm_patience: Optional[int] = Field(None, description="Early stopping patience (default: 10)")
     gbm_learning_rate: Optional[float] = Field(None, description="Learning rate (default: 0.05)")
     gbm_num_leaves: Optional[int] = Field(None, description="Max num leaves (default: 31)")
+    # CatBoost specific
+    catboost_rounds: Optional[int] = Field(None, description="Number of boosting rounds (default: 4000)")
+    catboost_patience: Optional[int] = Field(None, description="Early stopping patience (default: 300)")
+    catboost_learning_rate: Optional[float] = Field(None, description="Learning rate (default: 0.005)")
+    catboost_depth: Optional[int] = Field(None, description="Tree depth (default: 6)")
+    catboost_task_type: Optional[str] = Field("auto", description="Task type: CPU, GPU, or auto (default: auto)")
     # LSTM specific
     lstm_epochs: Optional[int] = Field(5, description="Training epochs (default: 5)")
     lstm_hidden_dim: Optional[int] = Field(64, description="Hidden dimension (default: 64)")
@@ -57,8 +63,8 @@ class TrainingStatusResponse(BaseModel):
 def train_model(request: TrainModelRequest, background: BackgroundTasks):
     """Start training a new model for a currency pair."""
     # Validate model type
-    if request.model_type not in ["lightgbm", "lstm"]:
-        raise HTTPException(status_code=400, detail="model_type must be 'lightgbm' or 'lstm'")
+    if request.model_type not in ["lightgbm", "lstm", "catboost"]:
+        raise HTTPException(status_code=400, detail="model_type must be 'lightgbm', 'lstm', or 'catboost'")
 
     # Generate job ID
     job_id = str(uuid.uuid4())
@@ -110,6 +116,26 @@ def _train_model_task(job_id: str, request: TrainModelRequest):
                 )
 
             metadata = asyncio.run(_train_gbm())
+
+        elif request.model_type == "catboost":
+            # Training CatBoost
+            training_jobs[job_id]["progress"] = 30
+            training_jobs[job_id]["message"] = "Training CatBoost model (Best Performance - 98.8% R²)..."
+
+            async def _train_catboost():
+                return await train_and_register_catboost(
+                    currency_pair=request.currency_pair,
+                    horizons=request.horizons,
+                    days=request.history_days,
+                    version=request.version,
+                    catboost_rounds=request.catboost_rounds,
+                    catboost_patience=request.catboost_patience,
+                    catboost_learning_rate=request.catboost_learning_rate,
+                    catboost_depth=request.catboost_depth,
+                    task_type=request.catboost_task_type or "auto",
+                )
+
+            metadata = asyncio.run(_train_catboost())
 
         else:  # lstm
             # Training LSTM

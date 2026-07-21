@@ -9,6 +9,7 @@ from src.agentic.state import AgentState
 from src.prediction.config import PredictionConfig
 from src.prediction.models import PredictionRequest
 from src.prediction.predictor import MLPredictor
+from src.prediction.advanced_predictor import AdvancedMLPredictor
 from src.utils.decorators import timeout, log_execution
 from src.utils.logging import get_logger
 
@@ -84,8 +85,41 @@ async def prediction_node(state: AgentState) -> Dict[str, Any]:
             include_explanations=cfg.explain_enabled,
         )
 
-        predictor = MLPredictor(cfg)
-        pred_response = await predictor.predict(req)
+        # Choose predictor based on config
+        backend = getattr(cfg, 'predictor_backend', 'hybrid').lower()
+
+        if backend == "advanced_ensemble":
+            # Try advanced ensemble first
+            advanced_cfg = getattr(cfg, 'advanced_ensemble', {})
+            ml_models_dir = advanced_cfg.get('ml_models_dir', 'ml_models/models')
+            fallback_to_hybrid = advanced_cfg.get('fallback_to_hybrid', True)
+
+            try:
+                logger.info("Using advanced ensemble predictor")
+                predictor = AdvancedMLPredictor(cfg, ml_models_dir=ml_models_dir)
+
+                if predictor.is_available():
+                    pred_response = await predictor.predict(req)
+                elif fallback_to_hybrid:
+                    logger.warning("Advanced ensemble not available, falling back to hybrid predictor")
+                    predictor = MLPredictor(cfg)
+                    pred_response = await predictor.predict(req)
+                else:
+                    raise RuntimeError("Advanced ensemble not available and fallback disabled")
+
+            except Exception as e:
+                logger.error(f"Advanced ensemble predictor failed: {e}")
+                if fallback_to_hybrid:
+                    logger.info("Falling back to hybrid predictor")
+                    predictor = MLPredictor(cfg)
+                    pred_response = await predictor.predict(req)
+                else:
+                    raise
+        else:
+            # Use standard hybrid/lightgbm/lstm predictor
+            logger.info(f"Using standard predictor (backend: {backend})")
+            predictor = MLPredictor(cfg)
+            pred_response = await predictor.predict(req)
 
         # Format predictions for state
         predictions_view = {}

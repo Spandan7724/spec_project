@@ -1,0 +1,14 @@
+# Model artifacts must never go through EOL conversion. LightGBM's .txt format
+# is line-based but byte-exact: CRLF translation on Windows checkout corrupts it
+# and the loader dies with "Model format error, expect a tree here".
+ml_models/models/**  -text
+
+*.cbm   -text
+*.pt    -text
+*.pth   -text
+*.pkl   -text
+*.bin   -text
+*.onnx  -text
+*.npy   -text
+*.png   -text
+*.jpg   -text

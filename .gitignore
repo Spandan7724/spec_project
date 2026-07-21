@@ -133,3 +133,31 @@ data/currency_assistant.db
 research_paper/
 backend/data/currency_assistant.db
 data/models/prediction_registry.json
+
+# CatBoost training logs
+catboost_info/
+backend/catboost_info/
+ml_models/catboost_info/
+
+# ml_models research output not used by the app at runtime.
+# AdvancedEnsembleBackend only reads 12 files from ml_models/models/:
+#   training_results.json, advanced_nn_results.json, feature_columns.json,
+#   scaler.pkl, lightgbm_model.txt, xgboost_model.json,
+#   catboost_model{1,2,3}.cbm, neural_network_model.pkl,
+#   nn_alfa_model.pt, nn_lstm_transformer_model.pt
+ml_models/RESEARCH_PAPER_PROBLEM_STATEMENT.md
+ml_models/RESEARCH_PAPER_OBJECTIVES.md
+ml_models/ADVANCED_MODELS_INTEGRATION.md
+ml_models/CATBOOST_INTEGRATION_SUMMARY.md
+ml_models/visualizations/
+ml_models/data/
+
+# Trained but never loaded: _load_advanced_nn_models() instantiates only
+# ALFA and LSTM-Transformer, so these three are dead weight (~40MB).
+ml_models/models/nn_bilstm_multihead_model.pt
+ml_models/models/nn_cnn_lstm_model.pt
+ml_models/models/nn_tcn_model.pt
+
+# Evaluation output, not inputs
+ml_models/models/nn_predictions.csv
+ml_models/models/complete_model_comparison.csv

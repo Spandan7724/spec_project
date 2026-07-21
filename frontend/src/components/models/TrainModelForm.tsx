@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { modelsService } from '../../services/models';
+import type { TrainModelRequest } from '../../services/models';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarted: () => void }) {
-  type ModelType = 'lightgbm' | 'lstm';
+  type ModelType = 'lightgbm' | 'lstm' | 'catboost';
   interface TrainingFormState {
     currencyPair: string;
     modelType: ModelType;
@@ -12,6 +13,11 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
     version: string;
     historyDays: string;
     lstmInterval: string;
+    catboostRounds: string;
+    catboostLearningRate: string;
+    catboostDepth: string;
+    catboostPatience: string;
+    catboostTaskType: 'auto' | 'cpu' | 'gpu';
   }
 
   const [isTraining, setIsTraining] = useState(false);
@@ -24,6 +30,11 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
     version: '1.0',
     historyDays: '365',
     lstmInterval: '1h',
+    catboostRounds: '4000',
+    catboostLearningRate: '0.005',
+    catboostDepth: '6',
+    catboostPatience: '300',
+    catboostTaskType: 'auto',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,14 +50,32 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
         .filter((value) => !Number.isNaN(value));
       const historyDays = parseInt(formData.historyDays.trim(), 10);
 
-      const response = await modelsService.trainModel({
+      const request: TrainModelRequest = {
         currency_pair: formData.currencyPair,
         model_type: formData.modelType,
         horizons: horizons.length ? horizons : undefined,
         version: formData.version,
         history_days: Number.isNaN(historyDays) ? undefined : historyDays,
-        lstm_interval: formData.modelType === 'lstm' ? formData.lstmInterval : undefined,
-      });
+      };
+
+      if (formData.modelType === 'lstm') {
+        request.lstm_interval = formData.lstmInterval;
+      }
+
+      if (formData.modelType === 'catboost') {
+        const rounds = parseInt(formData.catboostRounds.trim(), 10);
+        const patience = parseInt(formData.catboostPatience.trim(), 10);
+        const depth = parseInt(formData.catboostDepth.trim(), 10);
+        const learningRate = parseFloat(formData.catboostLearningRate.trim());
+
+        if (!Number.isNaN(rounds)) request.catboost_rounds = rounds;
+        if (!Number.isNaN(patience)) request.catboost_patience = patience;
+        if (!Number.isNaN(depth)) request.catboost_depth = depth;
+        if (!Number.isNaN(learningRate)) request.catboost_learning_rate = learningRate;
+        request.catboost_task_type = formData.catboostTaskType;
+      }
+
+      const response = await modelsService.trainModel(request);
 
       pollTrainingStatus(response.job_id);
     } catch (error) {
@@ -89,14 +118,20 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
         return {
           ...prev,
           modelType: nextModel,
-          horizons: nextModel === 'lightgbm' ? '1,7,30' : '1,4,24',
-          historyDays: nextModel === 'lightgbm' ? '365' : '180',
-          lstmInterval: nextModel === 'lightgbm' ? prev.lstmInterval : prev.lstmInterval || '1h',
+          horizons: nextModel === 'lstm' ? '1,4,24' : '1,7,30',
+          historyDays: nextModel === 'lstm' ? '180' : '365',
+          lstmInterval: nextModel === 'lstm' ? prev.lstmInterval || '1h' : prev.lstmInterval,
         };
       }
 
       return { ...prev, [field]: value };
     });
+  };
+
+  const modelDescriptions: Record<ModelType, string> = {
+    lightgbm: 'Gradient boosting for daily price predictions',
+    lstm: 'Neural network for hourly price predictions',
+    catboost: 'CatBoost gradient boosting with quantiles + direction signals',
   };
 
   return (
@@ -127,12 +162,9 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
           >
             <option value="lightgbm">LightGBM (daily predictions)</option>
             <option value="lstm">LSTM (intraday predictions)</option>
+            <option value="catboost">CatBoost (daily, quantiles + direction)</option>
           </select>
-          <p className="text-xs text-muted-foreground mt-1">
-            {formData.modelType === 'lightgbm'
-              ? 'Gradient boosting for daily price predictions'
-              : 'Neural network for hourly price predictions'}
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">{modelDescriptions[formData.modelType]}</p>
         </div>
 
         <div>
@@ -147,6 +179,12 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
             };
             const isLstm = formData.modelType === 'lstm';
             const maxDays = isLstm ? intradayCaps[formData.lstmInterval] ?? 730 : undefined;
+            const historyPlaceholder = isLstm ? '180' : '365';
+            const historyHelpText = isLstm
+              ? `${formData.lstmInterval} up to ${maxDays} days.`
+              : formData.modelType === 'catboost'
+                ? 'Daily CatBoost: fetch as much history as available (365+ recommended).'
+                : 'No hard max; backend fetches as many daily years as available.';
 
             return (
               <>
@@ -158,16 +196,12 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
                   step={10}
                   value={formData.historyDays}
                   onChange={(e) => handleChange('historyDays', e.target.value)}
-                  placeholder={formData.modelType === 'lightgbm' ? '365' : '180'}
+                  placeholder={historyPlaceholder}
                   required
                   disabled={isTraining}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formData.modelType === 'lightgbm'
-                    ? 'No hard max; backend fetches as many daily years as available.'
-                    : `${formData.lstmInterval} up to ${maxDays} days.`}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">{historyHelpText}</p>
               </>
             );
           })()}
@@ -175,7 +209,7 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
 
         <div>
           <label className="block text-xs md:text-sm font-medium mb-2">
-            Horizons ({formData.modelType === 'lightgbm' ? 'days' : 'hours'})
+            Horizons ({formData.modelType === 'lstm' ? 'hours' : 'days'})
           </label>
           <input
             type="text"
@@ -188,6 +222,83 @@ export default function TrainModelForm({ onTrainingStarted }: { onTrainingStarte
           />
           <p className="text-xs text-muted-foreground mt-1">Comma-separated values</p>
         </div>
+
+        {formData.modelType === 'catboost' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div>
+              <label className="block text-xs md:text-sm font-medium mb-2">Boosting Rounds</label>
+              <input
+                type="number"
+                min={500}
+                step={100}
+                value={formData.catboostRounds}
+                onChange={(e) => handleChange('catboostRounds', e.target.value)}
+                disabled={isTraining}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Default 4000 (best accuracy)</p>
+            </div>
+
+            <div>
+              <label className="block text-xs md:text-sm font-medium mb-2">Learning Rate</label>
+              <input
+                type="number"
+                step="0.001"
+                min="0.001"
+                value={formData.catboostLearningRate}
+                onChange={(e) => handleChange('catboostLearningRate', e.target.value)}
+                disabled={isTraining}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Smaller values = more conservative</p>
+            </div>
+
+            <div>
+              <label className="block text-xs md:text-sm font-medium mb-2">Tree Depth</label>
+              <input
+                type="number"
+                min={4}
+                max={10}
+                value={formData.catboostDepth}
+                onChange={(e) => handleChange('catboostDepth', e.target.value)}
+                disabled={isTraining}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Default 6 (balanced)</p>
+            </div>
+
+            <div>
+              <label className="block text-xs md:text-sm font-medium mb-2">Early-Stopping Patience</label>
+              <input
+                type="number"
+                min={50}
+                step={10}
+                value={formData.catboostPatience}
+                onChange={(e) => handleChange('catboostPatience', e.target.value)}
+                disabled={isTraining}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Default 300 (matches backend)</p>
+            </div>
+
+            <div>
+              <label className="block text-xs md:text-sm font-medium mb-2">Task Type</label>
+              <select
+                value={formData.catboostTaskType}
+                onChange={(e) =>
+                  handleChange('catboostTaskType', e.target.value as TrainingFormState['catboostTaskType'])
+                }
+                disabled={isTraining}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 mobile-tap min-h-[44px] text-sm"
+              >
+                <option value="auto">Auto (detect GPU)</option>
+                <option value="gpu">GPU</option>
+                <option value="cpu">CPU</option>
+              </select>
+              <p className="text-xs text-muted-foreground mt-1">Auto tries GPU first, falls back to CPU</p>
+            </div>
+          </div>
+        )}
 
         {formData.modelType === 'lstm' && (
           <div>
