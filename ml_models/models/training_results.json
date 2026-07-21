@@ -1,0 +1,113 @@
+{
+    "model_performance": {
+        "train_rmse": {
+            "CatBoost_3": 0.006408203220695247,
+            "CatBoost_Ensemble": 0.005699592746922565,
+            "Ultimate_Ensemble": 0.005678859037082995,
+            "CatBoost_1": 0.005492641438113954,
+            "Ensemble": 0.006058074063969142,
+            "LightGBM": 0.0033468980051674585,
+            "CatBoost_2": 0.005698840177126937,
+            "Neural_Network": 0.007340249879435448,
+            "XGBoost": 0.010370726569822278
+        },
+        "test_rmse": {
+            "CatBoost_3": 0.0056403429665288175,
+            "CatBoost_Ensemble": 0.005661518925036528,
+            "Ultimate_Ensemble": 0.005667081773289003,
+            "CatBoost_1": 0.005802784965529258,
+            "Ensemble": 0.005830305812442732,
+            "LightGBM": 0.005882482813337496,
+            "CatBoost_2": 0.006236566300589158,
+            "Neural_Network": 0.006459436598767644,
+            "XGBoost": 0.006602872308131231
+        },
+        "train_mae": {
+            "CatBoost_3": 0.004716409022413307,
+            "CatBoost_Ensemble": 0.004241609067273044,
+            "Ultimate_Ensemble": 0.004211525851151864,
+            "CatBoost_1": 0.004122722794043392,
+            "Ensemble": 0.004469815296469458,
+            "LightGBM": 0.0025136657062127246,
+            "CatBoost_2": 0.004338228341672138,
+            "Neural_Network": 0.005456317668782663,
+            "XGBoost": 0.007437435618520708
+        },
+        "test_mae": {
+            "CatBoost_3": 0.004239285244583379,
+            "CatBoost_Ensemble": 0.004265375460775748,
+            "Ultimate_Ensemble": 0.00425087655788299,
+            "CatBoost_1": 0.004379370462814315,
+            "Ensemble": 0.004382789211235846,
+            "LightGBM": 0.00446562608564036,
+            "CatBoost_2": 0.004785929751204013,
+            "Neural_Network": 0.004939561202784786,
+            "XGBoost": 0.0049143430454845595
+        },
+        "train_r2": {
+            "CatBoost_3": 0.9992522828347514,
+            "CatBoost_Ensemble": 0.9994085031321177,
+            "Ultimate_Ensemble": 0.9994127987435447,
+            "CatBoost_1": 0.9994506776148839,
+            "Ensemble": 0.999331757710826,
+            "LightGBM": 0.9997960377687144,
+            "CatBoost_2": 0.9994086593233785,
+            "Neural_Network": 0.9990189605129727,
+            "XGBoost": 0.998041682219986
+        },
+        "test_r2": {
+            "CatBoost_3": 0.9883405970249737,
+            "CatBoost_Ensemble": 0.9882528851568191,
+            "Ultimate_Ensemble": 0.98822978905049,
+            "CatBoost_1": 0.9876593441213517,
+            "Ensemble": 0.9875420105744069,
+            "LightGBM": 0.9873180329128164,
+            "CatBoost_2": 0.9857453560151902,
+            "Neural_Network": 0.9847083423129893,
+            "XGBoost": 0.9840216810888708
+        },
+        "weights": {
+            "CatBoost_3": NaN,
+            "CatBoost_Ensemble": {
+                "Model_1": 0.33792397328470275,
+                "Model_2": 0.31441983571683363,
+                "Model_3": 0.34765619099846373
+            },
+            "Ultimate_Ensemble": {
+                "LightGBM": 0.17237019397521555,
+                "XGBoost": 0.15356418483849674,
+                "Neural_Network": 0.1569741707480036,
+                "CatBoost_1": 0.17473759748365492,
+                "CatBoost_2": 0.1625838088973845,
+                "CatBoost_3": 0.17977004405724473
+            },
+            "CatBoost_1": NaN,
+            "Ensemble": {
+                "LightGBM": 0.35694169037110113,
+                "XGBoost": 0.3179984802047311,
+                "Neural_Network": 0.32505982942416767
+            },
+            "LightGBM": NaN,
+            "CatBoost_2": NaN,
+            "Neural_Network": NaN,
+            "XGBoost": NaN
+        }
+    },
+    "best_model": "CatBoost_3",
+    "test_metrics": {
+        "rmse": 0.0056403429665288175,
+        "mae": 0.004239285244583379,
+        "r2": 0.9883405970249737,
+        "mape": 0.38069643646257295,
+        "direction_accuracy": 51.10227683411637
+    },
+    "training_info": {
+        "train_samples": 11066,
+        "test_samples": 2767,
+        "n_features": 174,
+        "train_period": "1971-10-18 00:00:00 to 2015-02-12 00:00:00",
+        "test_period": "2015-02-13 00:00:00 to 2025-10-24 00:00:00",
+        "gpu_used": false
+    },
+    "timestamp": "2025-11-07 20:10:48"
+}

@@ -152,8 +152,17 @@ decision:
 prediction:
   prediction_horizons: [1, 7, 30]
   cache_ttl_hours: 1
-  predictor_backend: "hybrid"  # lightgbm | lstm | hybrid
+  predictor_backend: "hybrid"  # lightgbm | lstm | hybrid | advanced_ensemble
   features_mode: "price_only"  # price_only | price_plus_intel
+
+  # Advanced ensemble settings (uses ml_models trained models).
+  # Opt-in only: the ml_models artifacts expect a different feature set than
+  # FeatureBuilder produces, so predictions come back as 0.0 rather than failing
+  # over to hybrid. Switch predictor_backend above once that is reconciled.
+  advanced_ensemble:
+    enabled: false
+    ml_models_dir: "ml_models/models"
+    fallback_to_hybrid: true  # If advanced ensemble fails, use hybrid backend
 
   technical_indicators:
     - sma_5

@@ -3,7 +3,7 @@ import type { Model, TrainingJobResponse, TrainingStatus } from '../types/api';
 
 export interface TrainModelRequest {
   currency_pair: string;
-  model_type: 'lightgbm' | 'lstm';
+  model_type: 'lightgbm' | 'lstm' | 'catboost';
   horizons?: number[];
   version?: string;
   history_days?: number;
@@ -16,6 +16,11 @@ export interface TrainModelRequest {
   lstm_seq_len?: number;
   lstm_lr?: number;
   lstm_interval?: string;
+  catboost_rounds?: number;
+  catboost_patience?: number;
+  catboost_learning_rate?: number;
+  catboost_depth?: number;
+  catboost_task_type?: 'cpu' | 'gpu' | 'auto';
 }
 
 export const modelsService = {
