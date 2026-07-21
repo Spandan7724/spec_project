@@ -19,6 +19,7 @@ from src.prediction.backends.lstm_backend import LSTMBackend
 from src.prediction.backends.catboost_backend import CatBoostBackend
 from src.prediction.registry import ModelRegistry
 from src.prediction.utils.fallback import FallbackPredictor
+from src.prediction.utils.confidence import confidence_by_horizon
 from src.prediction.explainer import PredictionExplainer
 from src.utils.logging import get_logger
 
@@ -123,48 +124,76 @@ class MLPredictor:
         daily_h, intraday_h = self._split_horizons(request)
 
         predictions: Dict[int, HorizonPrediction] = {}
-        model_used = "none"
+        selected_daily_meta = None
+        selected_lstm_meta = None
+        loaded_daily_meta = None
+        loaded_lstm_meta = None
+        model_type_used = "none"
+        model_id_used = "none"
+        runtime_warnings: list[str] = []
 
-        # Try to load CatBoost model first (best performance - 98.8% R²)
-        try:
-            meta_catboost = self.registry.get_model(request.currency_pair, model_type="catboost")
-            if meta_catboost:
-                self.backend_catboost.load(meta_catboost["model_path"])
+        # Match the Models page: select the newest compatible daily model for
+        # the pair. Hybrid compares LightGBM and CatBoost by the same ordering;
+        # an explicit backend preference restricts the compatible model types.
+        if daily_h:
+            backend_preference = (
+                request.backend_preference or self.config.predictor_backend or "hybrid"
+            ).lower()
+            if backend_preference == "lightgbm":
+                daily_model_types = ["lightgbm"]
+            elif backend_preference == "catboost":
+                daily_model_types = ["catboost"]
+            else:
+                daily_model_types = ["lightgbm", "catboost"]
+            selected_daily_meta = self.registry.get_latest_model(
+                request.currency_pair,
+                model_types=daily_model_types,
+            )
+            if selected_daily_meta:
+                selected_type = selected_daily_meta.get("model_type")
+                selected_id = selected_daily_meta.get("model_id", selected_type or "unknown")
+                try:
+                    model_path = self.registry.resolve_artifact_path(
+                        selected_daily_meta["model_path"]
+                    )
+                    if selected_type == "catboost":
+                        self.backend_catboost.load(model_path)
+                        scaler_path = selected_daily_meta.get("scaler_path")
+                        if scaler_path:
+                            import joblib
 
-                # Load scaler if available
-                scaler_path = meta_catboost.get("scaler_path")
-                if scaler_path:
-                    import joblib
-                    self.backend_catboost.scaler = joblib.load(scaler_path)
-                    logger.info(f"Loaded scaler from {scaler_path}")
+                            resolved_scaler = self.registry.resolve_artifact_path(scaler_path)
+                            self.backend_catboost.scaler = joblib.load(resolved_scaler)
+                        self.backend_catboost.validation_metrics = (
+                            selected_daily_meta.get("validation_metrics") or {}
+                        )
+                    elif selected_type == "lightgbm":
+                        self.backend_gbm.load(model_path)
+                        self.backend_gbm.validation_metrics = (
+                            selected_daily_meta.get("validation_metrics") or {}
+                        )
+                    else:
+                        raise ValueError(f"Unsupported daily model type: {selected_type}")
 
-                vm = meta_catboost.get("validation_metrics") or {}
-                if isinstance(vm, dict):
-                    self.backend_catboost.validation_metrics = vm
-                model_used = "catboost"
-                logger.info(f"Loaded CatBoost model for {request.currency_pair}")
-        except Exception as e:
-            logger.debug(f"CatBoost model not available: {e}")
-
-        # If no CatBoost model, try LightGBM
-        if model_used == "none":
-            try:
-                meta = self.registry.get_model(request.currency_pair, model_type="lightgbm")
-                if meta:
-                    self.backend_gbm.load(meta["model_path"])
-                    vm = meta.get("validation_metrics") or {}
-                    if isinstance(vm, dict):
-                        self.backend_gbm.validation_metrics = vm
-                    model_used = "lightgbm"
-                    logger.info(f"Loaded LightGBM model for {request.currency_pair}")
-            except Exception as e:
-                logger.debug(f"LightGBM model not available: {e}")
+                    model_type_used = str(selected_type)
+                    model_id_used = str(selected_id)
+                    loaded_daily_meta = selected_daily_meta
+                    logger.info(
+                        "Loaded newest %s model %s for %s",
+                        selected_type,
+                        selected_id,
+                        request.currency_pair,
+                    )
+                except Exception as exc:
+                    message = f"Newest model {selected_id} could not be loaded: {exc}"
+                    runtime_warnings.append(message)
+                    logger.warning(message)
 
         # Daily predictions via CatBoost or GBM
         if daily_h:
             X_latest = features_daily.iloc[[-1]]
 
-            # Use CatBoost if available (preferred)
+            # Use the single newest model selected above.
             if self.backend_catboost.models:
                 raw = self.backend_catboost.predict(X_latest, horizons=daily_h)
                 # Convert to expected format
@@ -181,7 +210,6 @@ class MLPredictor:
                             direction_probability=float(raw[f"direction_{h}d_proba"].iloc[0]) if f"direction_{h}d_proba" in raw.columns else 0.5,
                         )
 
-            # Fallback to LightGBM if CatBoost not available
             elif self.backend_gbm.models:
                 raw = self.backend_gbm.predict(X_latest, horizons=daily_h, include_quantiles=True)
                 for h, pdict in raw.items():
@@ -200,14 +228,24 @@ class MLPredictor:
                 feats_1h = self.feature_builder.build_features(df_1h, mode=request.features_mode)
                 # Load LSTM model for pair from registry if available
                 try:
-                    meta_lstm = self.registry.get_model(request.currency_pair, model_type="lstm")
-                    if meta_lstm:
-                        self.backend_lstm.load(meta_lstm["model_path"])
-                        vm = meta_lstm.get("validation_metrics") or {}
+                    selected_lstm_meta = self.registry.get_latest_model(
+                        request.currency_pair, model_types=["lstm"]
+                    )
+                    if selected_lstm_meta:
+                        lstm_path = self.registry.resolve_artifact_path(
+                            selected_lstm_meta["model_path"]
+                        )
+                        self.backend_lstm.load(lstm_path)
+                        vm = selected_lstm_meta.get("validation_metrics") or {}
                         if isinstance(vm, dict):
                             self.backend_lstm.validation_metrics = vm
+                        loaded_lstm_meta = selected_lstm_meta
+                        if model_id_used == "none":
+                            model_type_used = "lstm"
+                            model_id_used = str(selected_lstm_meta.get("model_id", "lstm"))
                 except Exception as e:
                     logger.error(f"Registry load (LSTM) failed: {e}")
+                    runtime_warnings.append(f"Newest LSTM model could not be loaded: {e}")
 
                 if self.backend_lstm.models:
                     # Map hours to a faux day-key for response horizon (e.g., 1h -> horizon 1)
@@ -221,14 +259,18 @@ class MLPredictor:
                         )
 
         # If no predictions from ML backends, attempt fallback heuristics
+        fallback_response = None
         if not predictions:
             try:
                 fb_resp = await self.fallback.predict(request, base, quote)
                 if fb_resp and fb_resp.predictions:
-                    # Coerce fallback PredictionResponse into current response
+                    fallback_response = fb_resp
                     predictions = fb_resp.predictions
+                    model_type_used = "fallback"
+                    model_id_used = fb_resp.model_id
             except Exception as e:
                 logger.error(f"Fallback prediction failed: {e}")
+                runtime_warnings.append(f"Fallback prediction failed: {e}")
 
         # Optional explanations/evidence
         explanations = None
@@ -264,48 +306,91 @@ class MLPredictor:
                     if h in predictions:
                         explanations["intraday"][str(h)] = {"mc_samples": getattr(self.backend_lstm, "mc_samples", None)}
 
-            # Model info from registry metadata
-            if 'meta_catboost' in locals() and meta_catboost:
-                model_info['catboost'] = {
-                    k: meta_catboost.get(k)
-                    for k in ("model_id", "trained_at", "validation_metrics", "horizons")
-                }
-            if 'meta' in locals() and meta:
-                model_info['lightgbm'] = {
-                    k: meta.get(k)
-                    for k in ("model_id", "trained_at", "validation_metrics", "horizons")
-                }
-            if 'meta_lstm' in locals() and meta_lstm:
-                model_info['lstm'] = {
-                    k: meta_lstm.get(k)
-                    for k in ("model_id", "trained_at", "validation_metrics", "horizons")
-                }
-
-        # Build response
-        # Get model confidence - prioritize CatBoost if available
-        all_confidences = []
+        # Build validation metadata from the model(s) that actually produced
+        # predictions. Confidence is calculated per horizon, not from R².
         all_metrics = {}
-
         if self.backend_catboost.models:
-            all_confidences.append(self.backend_catboost.get_model_confidence())
             all_metrics.update(self.backend_catboost.validation_metrics)
         if self.backend_gbm.models:
-            all_confidences.append(self.backend_gbm.get_model_confidence())
             all_metrics.update(self.backend_gbm.validation_metrics)
         if self.backend_lstm.models:
-            all_confidences.append(self.backend_lstm.get_model_confidence())
             all_metrics.update(self.backend_lstm.validation_metrics)
 
-        max_confidence = max(all_confidences) if all_confidences else 0.0
+        reliability_by_horizon = confidence_by_horizon(
+            all_metrics,
+            predictions.keys(),
+            min_samples_required=self.config.min_samples_required,
+        )
+        if fallback_response is not None:
+            reliability_by_horizon = {
+                str(horizon): fallback_response.confidence for horizon in predictions
+            }
+
+        primary_horizon = next(
+            (horizon for horizon in (daily_h + intraday_h) if horizon in predictions),
+            next(iter(predictions), None),
+        )
+        model_confidence = (
+            reliability_by_horizon.get(str(primary_horizon), 0.0)
+            if primary_horizon is not None
+            else 0.0
+        )
+
+        if loaded_daily_meta:
+            daily_type = str(loaded_daily_meta.get("model_type", "daily"))
+            model_info[daily_type] = {
+                key: loaded_daily_meta.get(key)
+                for key in (
+                    "model_id",
+                    "model_type",
+                    "trained_at",
+                    "validation_metrics",
+                    "horizons",
+                    "calibration_ok",
+                )
+            }
+        if loaded_lstm_meta:
+            model_info["lstm"] = {
+                key: loaded_lstm_meta.get(key)
+                for key in (
+                    "model_id",
+                    "model_type",
+                    "trained_at",
+                    "validation_metrics",
+                    "horizons",
+                    "calibration_ok",
+                )
+            }
+        model_info["confidence_by_horizon"] = reliability_by_horizon
+        model_info["confidence_method"] = (
+            "fixed_low_confidence_fallback"
+            if fallback_response is not None
+            else "direction_accuracy_adjusted_for_interval_coverage_and_sample_size"
+        )
+
+        calibrated_models = [
+            meta
+            for meta in (loaded_daily_meta, loaded_lstm_meta)
+            if meta is not None
+        ]
+        calibrated = (
+            fallback_response is None
+            and bool(calibrated_models)
+            and all(bool(meta.get("calibration_ok")) for meta in calibrated_models)
+        )
 
         quality = PredictionQuality(
-            model_confidence=max_confidence,
-            calibrated=False,
+            model_confidence=model_confidence,
+            calibrated=calibrated,
             validation_metrics=all_metrics,
-            notes=[f"Using {model_used} model"] if model_used != "none" else [],
+            notes=[f"Using newest {model_type_used} model"] if model_id_used != "none" else [],
         )
         response = PredictionResponse(
-            status="success" if predictions else "partial",
+            status=(
+                fallback_response.status
+                if fallback_response is not None
+                else ("success" if predictions else "partial")
+            ),
             confidence=quality.model_confidence,
             processing_time_ms=int((time.time() - start) * 1000),
             currency_pair=request.currency_pair,
@@ -314,8 +399,12 @@ class MLPredictor:
             latest_close=latest_close,
             features_used=self.feature_builder.indicators,
             quality=quality,
-            model_id=model_used if model_used != "none" else "hybrid",
-            warnings=[] if predictions else ["No models loaded; predictions may be empty"],
+            model_id=model_id_used if model_id_used != "none" else "none",
+            warnings=(
+                runtime_warnings
+                + (fallback_response.warnings if fallback_response is not None else [])
+                + ([] if predictions else ["No models loaded; predictions may be empty"])
+            ),
             explanations=explanations,
             model_info=model_info or None,
         )

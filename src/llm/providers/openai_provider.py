@@ -1,12 +1,21 @@
-"""
-OpenAI API provider for Currency Assistant.
-"""
+"""OpenAI Responses API provider for Currency Assistant."""
 
-import os
-import json
+from __future__ import annotations
+
 import logging
-from typing import Dict, Any, List, Optional, AsyncGenerator
-import httpx
+import os
+from typing import Any, AsyncGenerator, Dict, List, Optional
+
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    AsyncOpenAI,
+    AuthenticationError,
+    BadRequestError,
+    PermissionDeniedError,
+    RateLimitError,
+)
 
 from ..types import BaseLLMProvider, ChatResponse, ProviderConfig
 
@@ -14,254 +23,300 @@ logger = logging.getLogger(__name__)
 
 
 class OpenAIProvider(BaseLLMProvider):
-    def __init__(self, config: ProviderConfig):
+    """OpenAI provider backed by the recommended Responses API."""
+
+    _CLIENT_KWARGS = {"base_url", "max_retries", "organization", "project", "timeout"}
+
+    def __init__(self, config: ProviderConfig, client: Optional[AsyncOpenAI] = None):
         super().__init__(config)
-        self.api_base = "https://api.openai.com/v1"
-        
-        # Validate authentication
-        self.api_key = os.getenv("OPENAI_API_KEY")
-        if not self.api_key:
-            raise ValueError("OPENAI_API_KEY environment variable is required")
-        
-        # Set up headers
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-            "User-Agent": "CurrencyAssistant/1.0"
+
+        api_key_env = config.api_key_env or "OPENAI_API_KEY"
+        api_key = os.getenv(api_key_env)
+        if client is None and not api_key:
+            raise ValueError(f"{api_key_env} environment variable is required")
+
+        raw_kwargs = dict(self.kwargs)
+        client_kwargs = {
+            key: raw_kwargs.pop(key)
+            for key in list(raw_kwargs)
+            if key in self._CLIENT_KWARGS
         }
-        
-        logger.debug(f"Initialized OpenAI provider with model: {self.model}")
-    
+        self.request_kwargs = self._normalize_request_kwargs(raw_kwargs)
+        self.client = client or AsyncOpenAI(api_key=api_key, **client_kwargs)
+
+        logger.debug("Initialized OpenAI Responses provider with model: %s", self.model)
+
     def get_provider_name(self) -> str:
         return "openai"
-    
+
     def get_model_name(self) -> str:
         return self.model
-    
+
     def get_supported_features(self) -> Dict[str, bool]:
         return {
             "function_calling": True,
             "streaming": True,
             "usage_tracking": True,
             "temperature_control": True,
-            "max_tokens_control": True
+            "max_tokens_control": True,
+            "responses_api": True,
+            "reasoning": True,
         }
-    
+
     async def health_check(self) -> bool:
-        """Check if OpenAI API is accessible"""
+        """Verify authentication and access to the configured model."""
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(
-                    f"{self.api_base}/models",
-                    headers=self.headers
-                )
-                return response.status_code == 200
-        except Exception as e:
-            logger.warning(f"OpenAI health check failed: {e}")
+            await self.client.models.retrieve(self.model)
+            return True
+        except Exception as exc:
+            logger.warning("OpenAI health check failed: %s", exc)
             return False
-    
-    async def chat(self, messages: List[Dict[str, Any]], 
-                   tools: Optional[List[Dict[str, Any]]] = None) -> ChatResponse:
-        """
-        Send a chat completion request to OpenAI API.
-        """
+
+    async def chat(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> ChatResponse:
+        """Create a non-streaming response using OpenAI's Responses API."""
+        payload = self._build_payload(messages, tools)
+
         try:
-            # Prepare the request payload
-            payload = {
-                "model": self.model,
-                "messages": messages,
-                **self.kwargs
-            }
-            
-            # Add tools if provided
-            if tools:
-                payload["tools"] = tools
-                payload["tool_choice"] = "auto"
-                logger.debug(f"Added {len(tools)} tools to OpenAI request")
-            
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                response = await client.post(
-                    f"{self.api_base}/chat/completions",
-                    headers=self.headers,
-                    json=payload
-                )
-                
-                if response.status_code != 200:
-                    error_text = response.text
-                    logger.error(f"OpenAI API error {response.status_code}: {error_text}")
-                    
-                    # Handle common error cases
-                    if response.status_code == 401:
-                        raise Exception("OpenAI authentication failed. Check your OPENAI_API_KEY.")
-                    elif response.status_code == 403:
-                        raise Exception("OpenAI access forbidden. Check your API permissions.")
-                    elif response.status_code == 429:
-                        raise Exception("OpenAI rate limit exceeded. Please wait and try again.")
-                    elif response.status_code == 400:
-                        raise Exception(f"OpenAI API bad request: {error_text}")
-                    else:
-                        raise Exception(f"OpenAI API error {response.status_code}: {error_text}")
-                
-                response_data = response.json()
-                
-                # Extract the response content
-                choice = response_data.get("choices", [{}])[0]
-                message = choice.get("message", {})
-                content = message.get("content", "")
-                
-                # Extract tool calls if present
-                tool_calls = None
-                if "tool_calls" in message:
-                    tool_calls = []
-                    for tool_call in message["tool_calls"]:
-                        tool_calls.append({
-                            "id": tool_call.get("id"),
-                            "function": {
-                                "name": tool_call["function"]["name"],
-                                "arguments": tool_call["function"]["arguments"]
-                            }
-                        })
-                
-                # Extract usage information
-                usage = None
-                if "usage" in response_data:
-                    usage_data = response_data["usage"]
-                    usage = {
-                        "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                        "completion_tokens": usage_data.get("completion_tokens", 0),
-                        "total_tokens": usage_data.get("total_tokens", 0)
+            response = await self.client.responses.create(**payload)
+        except Exception as exc:
+            self._raise_provider_error(exc)
+
+        output = self._get(response, "output", []) or []
+        tool_calls = []
+        for item in output:
+            if self._get(item, "type") == "function_call":
+                tool_calls.append(
+                    {
+                        "id": self._get(item, "call_id") or self._get(item, "id"),
+                        "function": {
+                            "name": self._get(item, "name", ""),
+                            "arguments": self._get(item, "arguments", "{}"),
+                        },
                     }
-                
-                return ChatResponse(
-                    content=content,
-                    model=response_data.get("model", self.model),
-                    usage=usage,
-                    tool_calls=tool_calls,
-                    finish_reason=choice.get("finish_reason"),
-                    provider="openai"
                 )
-                
-        except httpx.TimeoutException:
-            logger.error("OpenAI API request timed out")
-            raise Exception("OpenAI API request timed out")
-        except httpx.RequestError as e:
-            logger.error(f"OpenAI API request error: {e}")
-            raise Exception(f"OpenAI API request failed: {e}")
-        except Exception as e:
-            logger.error(f"OpenAI chat error: {e}")
-            raise e
 
-    async def stream_chat(self, messages: List[Dict[str, Any]],
-                         tools: Optional[List[Dict[str, Any]]] = None) -> AsyncGenerator[dict, None]:
-        """
-        Stream a chat completion request to OpenAI API.
-        """
+        usage = self._usage_dict(self._get(response, "usage"))
+        status = self._get(response, "status")
+        finish_reason = (
+            "tool_calls" if tool_calls else "stop" if status == "completed" else status
+        )
+
+        return ChatResponse(
+            content=self._get(response, "output_text", "") or "",
+            model=self._get(response, "model", self.model),
+            usage=usage,
+            tool_calls=tool_calls or None,
+            finish_reason=finish_reason,
+            provider="openai",
+        )
+
+    async def stream_chat(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> AsyncGenerator[dict, None]:
+        """Stream text delta events from OpenAI's Responses API."""
+        payload = self._build_payload(messages, tools)
+        payload["stream"] = True
+
         try:
-            # Prepare the request payload
-            payload = {
-                "model": self.model,
-                "messages": messages,
-                "stream": True,
-                **self.kwargs
-            }
+            stream = await self.client.responses.create(**payload)
+            async for event in stream:
+                event_type = self._get(event, "type")
+                if event_type == "response.output_text.delta":
+                    delta = self._get(event, "delta", "")
+                    if delta:
+                        yield {
+                            "content": delta,
+                            "model": self.model,
+                            "finish_reason": None,
+                            "provider": "openai",
+                        }
+                elif event_type == "response.completed":
+                    completed = self._get(event, "response")
+                    yield {
+                        "content": "",
+                        "model": self._get(completed, "model", self.model),
+                        "finish_reason": "stop",
+                        "provider": "openai",
+                    }
+        except Exception as exc:
+            self._raise_provider_error(exc, streaming=True)
 
-            # Add tools if provided
-            if tools:
-                payload["tools"] = tools
-                payload["tool_choice"] = "auto"
-                logger.debug(f"Added {len(tools)} tools to OpenAI streaming request")
-
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                async with client.stream(
-                    "POST",
-                    f"{self.api_base}/chat/completions",
-                    headers=self.headers,
-                    json=payload
-                ) as response:
-
-                    if response.status_code != 200:
-                        error_text = await response.aread()
-                        logger.error(f"OpenAI streaming error {response.status_code}: {error_text}")
-                        raise Exception(f"OpenAI streaming failed: {response.status_code}")
-
-                    async for line in response.aiter_lines():
-                        if line.startswith("data: "):
-                            data = line[6:]  # Remove "data: " prefix
-
-                            if data.strip() == "[DONE]":
-                                break
-
-                            try:
-                                chunk = json.loads(data)
-
-                                # Extract delta content
-                                choices = chunk.get("choices", [])
-                                if choices:
-                                    delta = choices[0].get("delta", {})
-                                    content = delta.get("content", "")
-
-                                    if content:
-                                        yield {
-                                            "content": content,
-                                            "model": chunk.get("model", self.model),
-                                            "finish_reason": choices[0].get("finish_reason"),
-                                            "provider": "openai"
-                                        }
-
-                            except json.JSONDecodeError:
-                                continue  # Skip invalid JSON lines
-
-        except httpx.TimeoutException:
-            logger.error("OpenAI streaming request timed out")
-            raise Exception("OpenAI streaming timed out")
-        except httpx.RequestError as e:
-            logger.error(f"OpenAI streaming error: {e}")
-            raise Exception(f"OpenAI streaming failed: {e}")
-        except Exception as e:
-            logger.error(f"OpenAI streaming error: {e}")
-            raise e
+    def format_tools_for_provider(
+        self, tools: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Convert Chat Completions function definitions to Responses tools."""
+        formatted = []
+        for tool in tools:
+            if tool.get("type") == "function" and isinstance(
+                tool.get("function"), dict
+            ):
+                function = tool["function"]
+                formatted_tool = {
+                    "type": "function",
+                    "name": function["name"],
+                    "parameters": function.get(
+                        "parameters", {"type": "object", "properties": {}}
+                    ),
+                    # Responses defaults differ from Chat Completions. Preserve the
+                    # existing provider contract unless strict mode is requested.
+                    "strict": function.get("strict", False),
+                }
+                if function.get("description"):
+                    formatted_tool["description"] = function["description"]
+                formatted.append(formatted_tool)
+            else:
+                # Native Responses tools (web search, file search, MCP, etc.)
+                # already use the correct shape.
+                formatted.append(dict(tool))
+        return formatted
 
     def get_available_models(self) -> List[str]:
-        """
-        Get available OpenAI models.
-        """
-        return [
-            "gpt-4",
-            "gpt-4-turbo",
-            "gpt-4-turbo-preview",
-            "gpt-4-0125-preview",
-            "gpt-4-1106-preview",
-            "gpt-3.5-turbo",
-            "gpt-3.5-turbo-1106",
-            "gpt-3.5-turbo-0125"
-        ]
-    
+        """Return the documented GPT-5.6 model family used by this project."""
+        return ["gpt-5.6", "gpt-5.6-terra", "gpt-5.6-luna"]
+
     async def get_models(self) -> List[Dict[str, Any]]:
-        """
-        Get detailed model information from OpenAI API.
-        """
+        """List GPT models visible to the configured OpenAI project."""
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.get(
-                    f"{self.api_base}/models",
-                    headers=self.headers
-                )
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    models = data.get("data", [])
-                    # Filter to only chat completion models
-                    chat_models = [
-                        model for model in models 
-                        if model.get("id", "").startswith(("gpt-", "text-davinci"))
-                    ]
-                    logger.debug(f"OpenAI API returned {len(chat_models)} chat models")
-                    return chat_models
+            page = await self.client.models.list()
+            models = []
+            for model in self._get(page, "data", []) or []:
+                model_id = self._get(model, "id", "")
+                if not model_id.startswith("gpt-"):
+                    continue
+                if hasattr(model, "model_dump"):
+                    models.append(model.model_dump())
+                elif isinstance(model, dict):
+                    models.append(dict(model))
                 else:
-                    error_text = response.text
-                    logger.warning(f"Failed to fetch models from OpenAI API: {response.status_code} - {error_text}")
-                    return []
-                    
-        except Exception as e:
-            logger.warning(f"Error fetching models from OpenAI API: {e}")
+                    models.append({"id": model_id})
+            return models
+        except Exception as exc:
+            logger.warning("Error fetching models from OpenAI API: %s", exc)
             return []
+
+    def _build_payload(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
+            "model": self.model,
+            "input": self._format_input(messages),
+            **self.request_kwargs,
+        }
+        if tools:
+            payload["tools"] = self.format_tools_for_provider(tools)
+            payload["tool_choice"] = "auto"
+        return payload
+
+    @classmethod
+    def _format_input(cls, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Map legacy chat transcripts to Responses messages/items."""
+        items: List[Dict[str, Any]] = []
+        for message in messages:
+            role = message.get("role")
+
+            if role == "tool":
+                items.append(
+                    {
+                        "type": "function_call_output",
+                        "call_id": message.get("tool_call_id"),
+                        "output": cls._string_content(message.get("content", "")),
+                    }
+                )
+                continue
+
+            if role == "assistant" and message.get("tool_calls"):
+                if message.get("content"):
+                    items.append({"role": "assistant", "content": message["content"]})
+                for tool_call in message["tool_calls"]:
+                    function = tool_call.get("function", {})
+                    items.append(
+                        {
+                            "type": "function_call",
+                            "call_id": tool_call.get("id"),
+                            "name": function.get("name"),
+                            "arguments": function.get("arguments", "{}"),
+                        }
+                    )
+                continue
+
+            items.append(dict(message))
+        return items
+
+    @staticmethod
+    def _string_content(content: Any) -> str:
+        if isinstance(content, str):
+            return content
+        if content is None:
+            return ""
+        return str(content)
+
+    @staticmethod
+    def _normalize_request_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+        normalized = dict(kwargs)
+        if "max_tokens" in normalized and "max_output_tokens" not in normalized:
+            normalized["max_output_tokens"] = normalized.pop("max_tokens")
+        if "response_format" in normalized and "text" not in normalized:
+            response_format = normalized.pop("response_format")
+            if (
+                response_format.get("type") == "json_schema"
+                and "json_schema" in response_format
+            ):
+                normalized["text"] = {
+                    "format": {"type": "json_schema", **response_format["json_schema"]}
+                }
+            else:
+                normalized["text"] = {"format": response_format}
+        return normalized
+
+    @classmethod
+    def _usage_dict(cls, usage: Any) -> Optional[Dict[str, int]]:
+        if usage is None:
+            return None
+        input_tokens = cls._get(usage, "input_tokens", 0)
+        output_tokens = cls._get(usage, "output_tokens", 0)
+        return {
+            # Keep the cross-provider ChatResponse vocabulary stable.
+            "prompt_tokens": input_tokens,
+            "completion_tokens": output_tokens,
+            "total_tokens": cls._get(
+                usage, "total_tokens", input_tokens + output_tokens
+            ),
+        }
+
+    @staticmethod
+    def _get(value: Any, key: str, default: Any = None) -> Any:
+        if isinstance(value, dict):
+            return value.get(key, default)
+        return getattr(value, key, default)
+
+    @staticmethod
+    def _raise_provider_error(exc: Exception, streaming: bool = False) -> None:
+        operation = "streaming request" if streaming else "request"
+        if isinstance(exc, AuthenticationError):
+            message = "OpenAI authentication failed. Check your OPENAI_API_KEY."
+        elif isinstance(exc, PermissionDeniedError):
+            message = (
+                "OpenAI access forbidden. Check your project and model permissions."
+            )
+        elif isinstance(exc, RateLimitError):
+            message = "OpenAI rate limit exceeded. Please wait and try again."
+        elif isinstance(exc, BadRequestError):
+            message = f"OpenAI rejected the request: {exc}"
+        elif isinstance(exc, APITimeoutError):
+            message = f"OpenAI {operation} timed out"
+        elif isinstance(exc, APIConnectionError):
+            message = f"OpenAI {operation} failed to connect: {exc}"
+        elif isinstance(exc, APIStatusError):
+            message = f"OpenAI API error {exc.status_code}: {exc}"
+        else:
+            message = f"OpenAI {operation} failed: {exc}"
+        logger.error(message)
+        raise RuntimeError(message) from exc

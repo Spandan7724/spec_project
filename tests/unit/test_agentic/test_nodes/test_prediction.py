@@ -42,3 +42,42 @@ async def test_prediction_node_happy_path(monkeypatch):
     out = await prediction_node(state)
     assert out["prediction_status"] == "success"
     assert out["price_forecast"]["predictions"]["1"]["mean_change_pct"] == 0.12
+    assert out["price_forecast"]["currency_pair"] == "USD/EUR"
+
+
+@pytest.mark.asyncio
+async def test_numeric_timeframe_routes_to_bucketed_horizons(monkeypatch):
+    import src.agentic.nodes.prediction as node_mod
+
+    captured = {}
+
+    class FakePredictor:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def predict(self, request):
+            captured["horizons"] = request.horizons
+            horizon = request.horizons[0]
+            return PredictionResponse(
+                status="success",
+                confidence=0.6,
+                processing_time_ms=1,
+                currency_pair=request.currency_pair,
+                horizons=request.horizons,
+                predictions={horizon: HorizonPrediction(horizon, 0.1)},
+                latest_close=1.0,
+                features_used=[],
+                quality=PredictionQuality(0.6, True, {}),
+                model_id="unit_test",
+            )
+
+    monkeypatch.setattr(node_mod, "MLPredictor", FakePredictor)
+    state = initialize_state(
+        "Convert in 21 days",
+        base_currency="USD",
+        quote_currency="EUR",
+        timeframe="1_day",  # orchestrator default must not hide numeric days
+    )
+    state["timeframe_days"] = 21
+    await prediction_node(state)
+    assert captured["horizons"] == [7, 30]

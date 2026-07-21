@@ -1,23 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Optional
 
+from src.decision.contracts import prediction_is_fresh, select_prediction
 from src.decision.models import DecisionRequest
-
-
-def _parse_iso(ts: Optional[str]) -> Optional[datetime]:
-    if not ts:
-        return None
-    try:
-        return datetime.fromisoformat(ts.replace("Z", "+00:00"))
-    except Exception:
-        return None
-
 
 class ConfidenceAggregator:
     """Aggregate confidence from market, intelligence, and prediction with penalties."""
+
+    def __init__(self, max_prediction_age_hours: float = 6):
+        self.max_prediction_age_hours = float(max_prediction_age_hours)
 
     def aggregate_confidence(
         self, request: DecisionRequest, utility_scores: Dict[str, float] | None = None, is_heuristic: bool = False
@@ -28,7 +20,17 @@ class ConfidenceAggregator:
         # Components
         comp["market"] = self._calculate_market_confidence(request.market)
         comp["intelligence"] = self._calculate_intelligence_confidence(request.intelligence)
-        comp["prediction"] = self._calculate_prediction_confidence(request.prediction)
+        pred = request.prediction or {}
+        stale = bool(pred.get("timestamp")) and not prediction_is_fresh(
+            pred, self.max_prediction_age_hours
+        )
+        comp["prediction"] = (
+            None
+            if stale
+            else self._calculate_prediction_confidence(
+                request.prediction, request.timeframe_days
+            )
+        )
 
         # Weights
         if comp["prediction"] is not None:
@@ -55,10 +57,8 @@ class ConfidenceAggregator:
             base -= dec
             penalties.append(f"warnings_penalty:{dec:.2f}")
 
-        # Staleness: if prediction timestamp exists and > 6h
-        pred = request.prediction or {}
-        ts = _parse_iso(pred.get("timestamp"))
-        if ts is not None and datetime.now(timezone.utc) - ts > timedelta(hours=6):
+        # Staleness uses the configured decision threshold.
+        if stale:
             base -= 0.05
             penalties.append("stale_prediction")
 
@@ -114,11 +114,17 @@ class ConfidenceAggregator:
         return min(1.0, base)
 
     @staticmethod
-    def _calculate_prediction_confidence(prediction: Optional[Dict[str, Any]]) -> Optional[float]:
+    def _calculate_prediction_confidence(
+        prediction: Optional[Dict[str, Any]], timeframe_days: int
+    ) -> Optional[float]:
         if not prediction:
             return None
+        horizon_key, _ = select_prediction(prediction, timeframe_days)
+        by_horizon = ((prediction.get("model_info") or {}).get("confidence_by_horizon") or {})
+        horizon_value = by_horizon.get(str(horizon_key)) if horizon_key is not None else None
+        if isinstance(horizon_value, (int, float)):
+            return float(horizon_value)
         val = prediction.get("confidence")
         if isinstance(val, (int, float)):
             return float(val)
         return None
-

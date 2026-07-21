@@ -8,7 +8,9 @@ class DecisionRequest:
     """Input to the decision engine.
 
     All percentages in request subfields (e.g., prediction mean_change_pct) are expected
-    to be expressed as percent units (e.g., +0.3 means +0.3%). Costs are in basis points.
+    to be expressed as percent units (e.g., +0.3 means +0.3%). Prediction changes follow
+    ``currency_pair`` market direction; the engine translates them into the economic
+    direction of selling ``source_currency`` to buy ``target_currency``. Costs are bps.
     """
 
     # User constraints
@@ -18,6 +20,10 @@ class DecisionRequest:
     timeframe: str  # immediate | 1_day | 1_week | 1_month
     timeframe_days: int
     currency_pair: Optional[str] = None
+    # Conversion contract: sell source_currency to buy target_currency.  The
+    # market pair may be direct (source/target) or inverse (target/source).
+    source_currency: Optional[str] = None
+    target_currency: Optional[str] = None
 
     # Upstream agent data
     market: Dict[str, Any] = field(default_factory=dict)
@@ -33,6 +39,26 @@ class DecisionRequest:
         default_factory=lambda: {"market": False, "intelligence": False, "prediction": False}
     )
     warnings: List[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.currency_pair and "/" in self.currency_pair:
+            pair_base, pair_quote = self.currency_pair.upper().split("/", 1)
+            self.currency_pair = f"{pair_base}/{pair_quote}"
+            self.source_currency = (self.source_currency or pair_base).upper()
+            self.target_currency = (self.target_currency or pair_quote).upper()
+            if self.source_currency == self.target_currency or {
+                self.source_currency,
+                self.target_currency,
+            } != {pair_base, pair_quote}:
+                raise ValueError(
+                    "source_currency and target_currency must be the two currencies in currency_pair"
+                )
+        elif self.source_currency and self.target_currency:
+            self.source_currency = self.source_currency.upper()
+            self.target_currency = self.target_currency.upper()
+            if self.source_currency == self.target_currency:
+                raise ValueError("source_currency and target_currency must differ")
+            self.currency_pair = f"{self.source_currency}/{self.target_currency}"
 
 
 @dataclass
@@ -96,4 +122,3 @@ class DecisionResponse:
     utility_scores: Dict[str, float] = field(default_factory=dict)
     component_confidences: Dict[str, float] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
-

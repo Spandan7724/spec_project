@@ -4,14 +4,14 @@ from src.data_collection.market_intelligence.models import EconomicEvent
 from src.data_collection.market_intelligence.bias_calculator import calculate_policy_bias, next_high_impact_event
 
 
-def make_event(name: str, importance: str, minutes_ahead: int):
+def make_event(name: str, importance: str, minutes_ahead: int, currency: str = "USD"):
     when = datetime.now(timezone.utc) + timedelta(minutes=minutes_ahead)
     return EconomicEvent(
         when_utc=when,
         when_local=when,
         timezone="UTC",
         country="US",
-        currency="USD",
+        currency=currency,
         event=name,
         importance=importance,
         source="test",
@@ -35,4 +35,11 @@ def test_next_high_event():
     e3 = make_event("PMI", "medium", 30)
     nxt = next_high_impact_event([e1, e2, e3])
     assert nxt.event in {"NFP", "CPI"}  # picks among high, closest future
+
+
+def test_policy_bias_is_pair_directional():
+    base_hike = make_event("Rate hike expected", "high", 60, currency="USD")
+    quote_hike = make_event("Rate hike expected", "high", 60, currency="EUR")
+    assert calculate_policy_bias([base_hike], base="USD", quote="EUR") > 0
+    assert calculate_policy_bias([quote_hike], base="USD", quote="EUR") < 0
 

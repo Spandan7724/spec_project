@@ -99,6 +99,12 @@ async def test_intelligence_service_integration(monkeypatch):
     from src.data_collection.market_intelligence.extractors.news_classifier import NewsClassifier
     monkeypatch.setattr(NewsClassifier, "classify_batch", fake_classify_batch)
 
+    async def fake_generate_narrative(self, snapshot):
+        return "Deterministic test narrative"
+
+    from src.data_collection.market_intelligence.extractors.narrative_generator import NarrativeGenerator
+    monkeypatch.setattr(NarrativeGenerator, "generate_narrative", fake_generate_narrative)
+
     service = MarketIntelligenceService(serper_api_key=None, llm_manager=None)
     report = await service.get_pair_intelligence("USD", "EUR")
     assert report["pair"] == "USD/EUR"

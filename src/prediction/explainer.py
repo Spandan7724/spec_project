@@ -1,16 +1,24 @@
 import base64
+import threading
 from io import BytesIO
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
+import matplotlib
 import numpy as np
 
-import matplotlib.pyplot as plt
-import shap
+# SHAP plots are rendered by FastAPI background-task threads. Force a headless
+# backend before importing pyplot so Matplotlib never initializes Tkinter.
+matplotlib.use("Agg", force=True)
+import matplotlib.pyplot as plt  # noqa: E402
+import shap  # noqa: E402
 
 from src.utils.logging import get_logger
 
 
 logger = get_logger(__name__)
+
+
+_PLOT_LOCK = threading.Lock()
 
 
 class PredictionExplainer:
@@ -67,27 +75,33 @@ class PredictionExplainer:
             return payload
 
         try:
-            shap_values = self.explainer.shap_values(X)
-            if isinstance(shap_values, list):
-                shap_vector = shap_values[0]
-            else:
-                shap_vector = shap_values
+            # Matplotlib has global state and is not thread-safe. Serializing
+            # this small rendering section prevents concurrent requests from
+            # corrupting one another's figures.
+            with _PLOT_LOCK:
+                shap_values = self.explainer.shap_values(X)
+                if isinstance(shap_values, list):
+                    shap_vector = shap_values[0]
+                else:
+                    shap_vector = shap_values
 
-            plt.figure(figsize=(10, 6))
-            shap.waterfall_plot(
-                shap.Explanation(
-                    values=np.array(shap_vector)[0],
-                    base_values=self.explainer.expected_value,
-                    data=X.iloc[0].values,
-                    feature_names=self.feature_names,
-                ),
-                show=False,
-            )
-            buf = BytesIO()
-            plt.savefig(buf, format="png", bbox_inches="tight", dpi=100)
-            buf.seek(0)
-            payload["plot_base64"] = base64.b64encode(buf.read()).decode()
-            plt.close()
+                figure = plt.figure(figsize=(10, 6))
+                try:
+                    shap.waterfall_plot(
+                        shap.Explanation(
+                            values=np.array(shap_vector)[0],
+                            base_values=self.explainer.expected_value,
+                            data=X.iloc[0].values,
+                            feature_names=self.feature_names,
+                        ),
+                        show=False,
+                    )
+                    buf = BytesIO()
+                    figure.savefig(buf, format="png", bbox_inches="tight", dpi=100)
+                    buf.seek(0)
+                    payload["plot_base64"] = base64.b64encode(buf.read()).decode()
+                finally:
+                    plt.close(figure)
         except Exception as e:  # noqa: BLE001
             logger.error(f"Error generating SHAP waterfall plot: {e}")
         return payload

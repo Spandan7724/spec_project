@@ -73,7 +73,9 @@ class MarketIntelligenceService:
             len(base_cal), len(quote_cal), len(base_events), len(quote_events), len(all_events)
         )
 
-        policy_bias = calculate_policy_bias(all_events)
+        # Express policy bias in pair-rate direction: positive means the base
+        # currency is expected to strengthen relative to the quote currency.
+        policy_bias = calculate_policy_bias(all_events, base=base, quote=quote)
         next_event = next_high_impact_event(all_events)
 
         # Prepare list for display (cap for size)

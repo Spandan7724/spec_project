@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 import yaml
 from pathlib import Path
-from dotenv import load_dotenv
 from src.utils.errors import ConfigurationError
 from src.utils.logging import setup_logging
 import logging
+from src.utils.environment import load_project_environment
 from src.utils.paths import find_project_root
 
 logger = logging.getLogger(__name__)
@@ -48,8 +48,9 @@ class Config:
     
     def _load(self) -> None:
         """Load configuration from YAML and environment."""
-        # Load environment variables from .env
-        load_dotenv()
+        # Load environment variables from the project root before consumers
+        # initialize. Existing process variables intentionally take priority.
+        load_project_environment()
         
         # Load YAML config
         if not self.config_path.exists():

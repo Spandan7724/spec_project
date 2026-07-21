@@ -15,7 +15,7 @@ Benefits:
 Provider Examples:
 ==================
 Copilot: copilot_main (gpt-4o) / copilot_fast (gpt-5-mini)
-OpenAI:  openai_main (gpt-4o) / openai_fast (gpt-4o-mini)
+OpenAI:  openai_main (gpt-5.6) / openai_fast (gpt-5.6-luna)
 Claude:  claude_main (claude-sonnet-4) / claude_fast (claude-3.5-sonnet)
 
 Usage Patterns
@@ -101,6 +101,9 @@ async def chat_with_model(
     if provider_or_model in config.providers:
         provider_name = provider_or_model
         logger.debug(f"Using provider '{provider_name}'")
+    elif f"{provider_or_model}_main" in config.providers:
+        provider_name = provider_or_model
+        logger.debug(f"Using base provider '{provider_name}'")
     else:
         # Try to find provider for this model name (backward compatibility)
         provider_name = get_provider_for_model(provider_or_model)
@@ -133,9 +136,15 @@ def create_agent_llm(model_name: Optional[str] = None, provider_name: Optional[s
     
     # If provider_name is specified, use it directly
     if provider_name:
-        if provider_name in config.providers:
+        if provider_name in config.providers or f"{provider_name}_main" in config.providers:
             config.default_provider = provider_name
-            logger.info(f"Using provider '{provider_name}' with model '{config.providers[provider_name].model}'")
+            resolved_name = (
+                provider_name if provider_name in config.providers else f"{provider_name}_main"
+            )
+            logger.info(
+                f"Using provider '{provider_name}' with model "
+                f"'{config.providers[resolved_name].model}'"
+            )
         else:
             logger.warning(f"Provider '{provider_name}' not found in config, using default")
     

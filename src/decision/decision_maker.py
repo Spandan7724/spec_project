@@ -1,13 +1,19 @@
 from __future__ import annotations
 
-from dataclasses import asdict
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 from src.decision.config import DecisionConfig
+from src.decision.contracts import (
+    conversion_change_pct,
+    conversion_direction_multiplier,
+    nearest_high_event_days,
+    prediction_is_fresh,
+    select_prediction,
+    upcoming_events,
+)
 from src.decision.cost_calculator import CostCalculator
 from src.decision.heuristics import HeuristicDecisionMaker
 from src.decision.models import (
-    CostEstimate,
     DecisionRequest,
     DecisionResponse,
     ExpectedOutcome,
@@ -29,7 +35,9 @@ class DecisionMaker:
         self.staging_planner = StagingPlanner(self.config.staging, self.config.costs)
         self.cost_calculator = CostCalculator(self.config.costs)
         self.heuristic_maker = HeuristicDecisionMaker(self.config)
-        self.confidence_agg = ConfidenceAggregator()
+        self.confidence_agg = ConfidenceAggregator(
+            max_prediction_age_hours=self.config.thresholds.max_prediction_age_hours
+        )
         self.risk_calculator = RiskCalculator()
 
     def make_decision(self, request: DecisionRequest) -> DecisionResponse:
@@ -60,7 +68,7 @@ class DecisionMaker:
                 is_heuristic=False,
             )
 
-            warnings = list(request.warnings or [])
+            warnings = self._base_warnings(request)
             if risk_summary.event_risk in {"moderate", "high"}:
                 warnings.append("High-impact event approaching")
             if risk_summary.risk_level in {"moderate", "high"}:
@@ -90,7 +98,7 @@ class DecisionMaker:
         conf_data = self.confidence_agg.aggregate_confidence(request, utility_scores={}, is_heuristic=True)
         timeline = self._generate_timeline(action, staged_plan, request.timeframe_days)
         rationale = ["Using heuristic fallback (prediction unavailable)"] + list(h.get("rationale", []))
-        warnings = list(request.warnings or []) + ["Prediction unavailable, using heuristics"]
+        warnings = self._base_warnings(request) + ["Prediction unavailable, using heuristics"]
 
         return DecisionResponse(
             action=action,
@@ -118,6 +126,7 @@ class DecisionMaker:
             and str(pred.get("status", "success")).lower() == "success"
             and isinstance(pred.get("confidence"), (int, float))
             and float(pred["confidence"]) >= float(self.config.thresholds.min_model_confidence)
+            and prediction_is_fresh(pred, self.config.thresholds.max_prediction_age_hours)
         )
         if reliable:
             return False
@@ -127,22 +136,54 @@ class DecisionMaker:
         has_intel = bool(request.intelligence)
         if policy == "strict":
             return not has_intel
-        # relaxed: if prediction unreliable and intel weak/missing
-        return not has_intel
+        # Relaxed mode falls back when intelligence is absent or too weak to
+        # supply either a directional signal or meaningful event context.
+        return not self._has_usable_intelligence(request.intelligence)
 
     def _apply_hard_constraints(self, utility_scores: Dict[str, float], request: DecisionRequest) -> Dict[str, float]:
-        # Conservative near high-impact events: block convert_now
-        from src.decision.heuristics import HeuristicDecisionMaker
-
+        original = dict(utility_scores)
+        constrained = dict(utility_scores)
         rt = (request.risk_tolerance or "moderate").lower()
-        if rt != "conservative":
-            return utility_scores
-        days_until = HeuristicDecisionMaker._nearest_high_event_days(request.intelligence)
-        threshold = self.config.risk_profiles["conservative"].event_proximity_threshold_days
-        if days_until is not None and days_until <= threshold:
-            utility_scores = dict(utility_scores)
-            utility_scores["convert_now"] = -999.0
-        return utility_scores
+        profile = self.config.risk_profiles.get(rt, self.config.risk_profiles["moderate"])
+        blocked = -999.0
+
+        # Waiting must clear the risk-profile-specific minimum benefit.
+        improvement_bps = self.utility_scorer._get_expected_improvement(request) * 100.0
+        if improvement_bps < profile.min_improvement_bps:
+            constrained["wait"] = blocked
+
+        # Staging is not feasible inside the configured minimum window.
+        if request.timeframe_days < self.config.thresholds.staged_min_timeframe_days:
+            constrained["staged_conversion"] = blocked
+
+        # Do not recommend immediate conversion unless its absolute utility
+        # clears the configured quality gate.
+        if constrained.get("convert_now", blocked) < self.config.thresholds.convert_now_min_utility:
+            constrained["convert_now"] = blocked
+
+        days_until = nearest_high_event_days(request.intelligence)
+        if days_until is not None:
+            if rt == "conservative" and days_until <= profile.event_proximity_threshold_days:
+                constrained["convert_now"] = blocked
+            elif (
+                rt == "moderate"
+                and days_until <= self.config.thresholds.wait_event_proximity_days
+                and constrained.get("convert_now", blocked) > blocked
+            ):
+                # Moderate users receive the planned soft event penalty.
+                constrained["convert_now"] -= 0.25
+
+        # Conflicting gates can otherwise eliminate every action (for example,
+        # an immediate neutral request).  Preserve one feasible conservative
+        # fallback while keeping every independently applicable gate enforced.
+        if max(constrained.values()) <= blocked:
+            if request.timeframe_days >= self.config.thresholds.staged_min_timeframe_days:
+                constrained["staged_conversion"] = original["staged_conversion"]
+            elif (request.urgency or "normal").lower() == "urgent" or request.timeframe_days <= 1:
+                constrained["convert_now"] = original["convert_now"]
+            else:
+                constrained["wait"] = original["wait"]
+        return constrained
 
     @staticmethod
     def _select_best_action(utility_scores: Dict[str, float]) -> str:
@@ -154,30 +195,64 @@ class DecisionMaker:
         return self.staging_planner.create_staged_plan(request)
 
     def _generate_expected_outcome(self, request: DecisionRequest, action: str, is_heuristic: bool) -> ExpectedOutcome:
-        # Pull pred for timeframe_days; fallback to 0
+        # Pull the same exact/nearest horizon used by utility scoring.
         pred = request.prediction or {}
-        preds = pred.get("predictions") or {}
-        item = preds.get(request.timeframe_days) or preds.get(str(request.timeframe_days)) or {}
-        mean_pct = float(item.get("mean_change_pct", 0.0)) if isinstance(item, dict) else 0.0
+        is_fresh = prediction_is_fresh(pred, self.config.thresholds.max_prediction_age_hours)
+        _, selected = select_prediction(pred, request.timeframe_days)
+        item = selected if is_fresh and isinstance(selected, dict) else {}
+        raw_mean_pct = float(item.get("mean_change_pct", 0.0))
+        improvement_pct = conversion_change_pct(request, raw_mean_pct)
         latest_close = float(pred.get("latest_close", 0.0)) if isinstance(pred.get("latest_close"), (int, float)) else 0.0
 
-        expected_rate = latest_close * (1.0 + (mean_pct / 100.0)) if latest_close > 0 else 0.0
+        raw_expected_rate = latest_close * (1.0 + (raw_mean_pct / 100.0)) if latest_close > 0 else 0.0
         q = item.get("quantiles") if isinstance(item, dict) else None
         if isinstance(q, dict):
             low = float(q.get("p10", 0.0))
             high = float(q.get("p90", 0.0))
-            range_low = latest_close * (1.0 + (low / 100.0)) if latest_close > 0 else 0.0
-            range_high = latest_close * (1.0 + (high / 100.0)) if latest_close > 0 else 0.0
+            raw_range_low = latest_close * (1.0 + (low / 100.0)) if latest_close > 0 else 0.0
+            raw_range_high = latest_close * (1.0 + (high / 100.0)) if latest_close > 0 else 0.0
         else:
-            range_low = 0.0
-            range_high = 0.0
+            raw_range_low = 0.0
+            raw_range_high = 0.0
+
+        if conversion_direction_multiplier(request) > 0:
+            expected_rate = raw_expected_rate
+            range_low = raw_range_low
+            range_high = raw_range_high
+        else:
+            expected_rate = 1.0 / raw_expected_rate if raw_expected_rate > 0 else 0.0
+            # Inversion reverses quantile ordering.
+            range_low = 1.0 / raw_range_high if raw_range_high > 0 else 0.0
+            range_high = 1.0 / raw_range_low if raw_range_low > 0 else 0.0
 
         return ExpectedOutcome(
             expected_rate=expected_rate,
             range_low=range_low,
             range_high=range_high,
-            expected_improvement_bps=mean_pct * 100.0,  # percent → bps
+            expected_improvement_bps=improvement_pct * 100.0,  # percent → bps
         )
+
+    def _base_warnings(self, request: DecisionRequest) -> list[str]:
+        warnings = list(request.warnings or [])
+        if request.prediction and not prediction_is_fresh(
+            request.prediction, self.config.thresholds.max_prediction_age_hours
+        ):
+            warnings.append("Prediction is stale and was ignored")
+        return warnings
+
+    @staticmethod
+    def _has_usable_intelligence(intelligence: Optional[Dict]) -> bool:
+        if not intelligence or not isinstance(intelligence, dict):
+            return False
+        news = intelligence.get("news") or {}
+        pair_bias = news.get("pair_bias", intelligence.get("pair_bias"))
+        confidence = str(news.get("confidence") or "low").lower()
+        if isinstance(pair_bias, (int, float)) and confidence in {"medium", "high"}:
+            return True
+        policy_bias = intelligence.get("policy_bias")
+        if isinstance(policy_bias, (int, float)) and abs(float(policy_bias)) > 0.0:
+            return True
+        return bool(upcoming_events(intelligence))
 
     @staticmethod
     def _generate_timeline(action: str, staged_plan: Optional[StagedPlan], timeframe_days: int) -> str:

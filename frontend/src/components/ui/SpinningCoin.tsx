@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface SpinningCoinProps {
   size?: number;
@@ -8,6 +9,7 @@ interface SpinningCoinProps {
 export function SpinningCoin({ size = 400, className = '' }: SpinningCoinProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -17,7 +19,7 @@ export function SpinningCoin({ size = 400, className = '' }: SpinningCoinProps) 
     if (!ctx) return;
 
     // Configuration
-    const COIN_COLOR = '#9EF6CA';
+    const COIN_COLOR = theme === 'light' ? '#047857' : '#9EF6CA';
 
     const pixelWidth = Math.floor(size / 40);
     const pixelHeight = Math.floor(size / 40);
@@ -277,7 +279,7 @@ export function SpinningCoin({ size = 400, className = '' }: SpinningCoinProps) 
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [size]);
+  }, [size, theme]);
 
   return (
     <canvas

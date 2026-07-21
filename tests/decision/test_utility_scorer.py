@@ -1,4 +1,4 @@
-import math
+from datetime import datetime, timedelta, timezone
 
 from src.decision.config import DecisionConfig
 from src.decision.models import DecisionRequest
@@ -19,7 +19,7 @@ def _base_request(**overrides):
         timeframe_days=overrides.get("timeframe_days", 7),
         market=overrides.get(
             "market",
-            {"indicators": {"rsi_14": 50, "atr_14": 0.002, "macd": 0.0}},
+            {"mid_rate": 1.0, "indicators": {"rsi_14": 50, "atr_14": 0.002, "macd": 0.0}},
         ),
         intelligence=overrides.get("intelligence", {"upcoming_events": []}),
         prediction=overrides.get("prediction"),
@@ -92,7 +92,7 @@ def test_risk_penalty_increases_near_event():
 def test_conservative_penalizes_risk_more_than_aggressive():
     scorer = _scorer()
     # High ATR to emphasize risk
-    market = {"indicators": {"rsi_14": 50, "atr_14": 0.01, "macd": 0.0}}
+    market = {"mid_rate": 1.0, "indicators": {"rsi_14": 50, "atr_14": 0.01, "macd": 0.0}}
     cons = _base_request(risk_tolerance="conservative", market=market)
     aggr = _base_request(risk_tolerance="aggressive", market=market)
     s_cons = scorer.score_actions(cons)
@@ -106,8 +106,77 @@ def test_staging_reduces_risk_and_can_beat_convert_now_under_risk():
     # Positive improvement with significant risk -> staged may beat convert_now
     req = _base_request(
         prediction={"status": "success", "predictions": {"7": {"mean_change_pct": 0.5}}},
-        market={"indicators": {"rsi_14": 50, "atr_14": 0.01, "macd": 0.0}},
+        market={"mid_rate": 1.0, "indicators": {"rsi_14": 50, "atr_14": 0.01, "macd": 0.0}},
     )
     scores = scorer.score_actions(req)
     assert scores["staged_conversion"] > scores["convert_now"]
+
+
+def test_current_intelligence_bias_contract_is_used():
+    scorer = _scorer()
+    req = _base_request(
+        market={},
+        intelligence={
+            "news": {"pair_bias": 1.0, "confidence": "high"},
+            "policy_bias": 0.5,
+        },
+    )
+    assert scorer._get_expected_improvement(req) > 0
+
+
+def test_nested_calendar_events_add_risk_penalty():
+    scorer = _scorer()
+    req = _base_request(
+        market={},
+        intelligence={
+            "calendar": {
+                "events_extracted": [
+                    {"importance": "high", "proximity_minutes": 60, "event": "CPI"}
+                ]
+            }
+        },
+    )
+    profile = scorer._get_profile("moderate")
+    assert scorer._calculate_risk_penalty(req, profile) > 0.4
+
+
+def test_nearest_prediction_horizon_is_used():
+    scorer = _scorer()
+    req = _base_request(
+        timeframe_days=21,
+        prediction={
+            "status": "success",
+            "predictions": {
+                "1": {"mean_change_pct": 0.1},
+                "7": {"mean_change_pct": 0.7},
+                "30": {"mean_change_pct": 3.0},
+            },
+        },
+    )
+    assert scorer._get_expected_improvement(req) == 3.0
+
+
+def test_stale_prediction_is_ignored():
+    scorer = _scorer()
+    old = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    req = _base_request(
+        market={"mid_rate": 1.0, "indicators": {"rsi_14": 50, "macd": 0.0}},
+        intelligence=None,
+        prediction={
+            "status": "success",
+            "timestamp": old,
+            "predictions": {"7": {"mean_change_pct": 5.0}},
+        },
+    )
+    assert scorer._get_expected_improvement(req) == 0.0
+
+
+def test_inverse_conversion_flips_prediction_benefit():
+    scorer = _scorer()
+    req = _base_request(
+        prediction={"status": "success", "predictions": {"7": {"mean_change_pct": 0.5}}}
+    )
+    req.source_currency = "EUR"
+    req.target_currency = "USD"
+    assert -0.5 < scorer._get_expected_improvement(req) < -0.49
 

@@ -1,11 +1,11 @@
 """Decision Engine LangGraph node implementation (Phase 3.4)."""
 from __future__ import annotations
 
-from dataclasses import asdict
 from typing import Any, Dict
 
 from src.agentic.state import AgentState
 from src.decision.config import DecisionConfig
+from src.decision.contracts import select_prediction
 from src.decision.decision_maker import DecisionMaker
 from src.decision.models import DecisionRequest
 from src.utils.logging import get_logger
@@ -48,6 +48,11 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
                 spread_bps = float((spread_abs / mid_rate) * 10000)
                 logger.debug(f"[{correlation_id}] Calculated spread_bps: {spread_bps:.2f} from spread={spread_abs}, mid_rate={mid_rate}")
 
+        prediction_payload = state.get("price_forecast") or None
+        decision_warnings = list(state.get("warnings") or [])
+        if prediction_payload:
+            decision_warnings.extend(prediction_payload.get("warnings") or [])
+
         # Build DecisionRequest
         req = DecisionRequest(
             amount=amount,
@@ -56,9 +61,11 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
             timeframe=timeframe,
             timeframe_days=tf_days,
             currency_pair=state.get("currency_pair"),
+            source_currency=state.get("base_currency"),
+            target_currency=state.get("quote_currency"),
             market=market_snapshot,
             intelligence=state.get("intelligence_report") or None,
-            prediction=state.get("price_forecast") or None,
+            prediction=prediction_payload,
             spread_bps=spread_bps,
             fee_bps=None,
             components_available={
@@ -66,7 +73,7 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
                 "intelligence": bool(state.get("intelligence_report")),
                 "prediction": bool(state.get("price_forecast")),
             },
-            warnings=list(state.get("warnings") or []),
+            warnings=decision_warnings,
         )
 
         maker = DecisionMaker(DecisionConfig.from_yaml())
@@ -126,13 +133,7 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
         used_key = None
         pf = state.get("price_forecast") or {}
         preds = (pf.get("predictions") or {})
-        if str(tf_days) in preds:
-            used_key = str(tf_days)
-        elif preds:
-            try:
-                used_key = str(sorted(int(k) for k in preds.keys())[0])
-            except Exception:
-                used_key = next(iter(preds.keys()))
+        used_key, _ = select_prediction(pf, tf_days)
 
         recommendation["meta"] = {
             "prediction_horizon_days": tf_days,
@@ -170,12 +171,14 @@ def decision_node(state: AgentState) -> Dict[str, Any]:
         explanations = ((pf.get("explanations") or {}).get("daily") or {})
         tf_key = used_key if used_key in explanations else (next(iter(explanations.keys())) if explanations else None)
         top_features = (explanations.get(tf_key) or {}).get("top_features") if tf_key else None
+        confidence_by_horizon = ((pf.get("model_info") or {}).get("confidence_by_horizon") or {})
+        selected_model_confidence = confidence_by_horizon.get(str(used_key), pf.get("confidence"))
         model_ev = {
-            "horizon_key": tf_key,
-            "horizon_days": int(tf_key) if tf_key and str(tf_key).isdigit() else None,
+            "horizon_key": used_key,
+            "horizon_days": int(used_key) if used_key and str(used_key).isdigit() else None,
             "top_features": top_features or {},
             "model_id": pf.get("model_id"),
-            "model_confidence": pf.get("confidence"),
+            "model_confidence": selected_model_confidence,
         }
 
         # Market extras: indicators, regime, and sample provider quotes

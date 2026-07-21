@@ -212,7 +212,7 @@ logging:
   file: "logs/currency_assistant.log"
 
 llm:
-  default_provider: "copilot"  # Base provider name (without _main/_fast suffix)
+  default_provider: "openai"  # Base provider name (without _main/_fast suffix)
   providers:
     # GitHub Copilot variants
     copilot_main:
@@ -230,17 +230,21 @@ llm:
 
     # OpenAI variants
     openai_main:
-      model: "gpt-5"
+      model: "gpt-5.6-terra"
       enabled: true
       kwargs:
-        temperature: 0.7
-        max_tokens: 128000
+        reasoning:
+          effort: "medium"
+        max_output_tokens: 8192
+        store: false
     openai_fast:
-      model: "gpt-5-mini"
+      model: "gpt-5.6-luna"
       enabled: true
       kwargs:
-        temperature: 0.7
-        max_tokens: 8192
+        reasoning:
+          effort: "low"
+        max_output_tokens: 4096
+        store: false
 
     # Claude variants
     claude_main:

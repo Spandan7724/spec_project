@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 
+from src.decision.contracts import relative_atr_pct, realized_volatility_pct, upcoming_events
 from src.decision.models import RiskSummary
 
 
@@ -9,15 +10,9 @@ class RiskCalculator:
     def calculate_risk_summary(
         self, market: Optional[Dict], intelligence: Optional[Dict]
     ) -> RiskSummary:
-        vol_pct = 0.0
-        if market:
-            ind = market.get("indicators", {})
-            atr = ind.get("atr_14")
-            if isinstance(atr, (int, float)):
-                vol_pct = float(atr) * 100.0  # convert to percent
+        vol_pct = relative_atr_pct(market) or 0.0
 
-        # Approx realized 30d volatility heuristic (as per plan):
-        realized_vol_30d = vol_pct * 16.0
+        realized_vol_30d = realized_volatility_pct(market, vol_pct)
         var_95 = 1.65 * vol_pct
 
         # Event risk classification
@@ -25,7 +20,7 @@ class RiskCalculator:
         event_details = None
         nearest = None
         if intelligence:
-            events = intelligence.get("upcoming_events") or []
+            events = upcoming_events(intelligence)
             for ev in events:
                 if (ev or {}).get("importance") == "high":
                     d = ev.get("days_until")

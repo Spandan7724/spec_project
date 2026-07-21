@@ -117,6 +117,37 @@ def test_get_model_not_found(temp_registry_dir):
     assert registry.get_model("GBP/JPY", "lightgbm") is None
 
 
+def test_get_latest_model_matches_newest_first_models_list(temp_registry_dir, sample_model):
+    registry_path = os.path.join(temp_registry_dir, "registry.json")
+    storage_dir = os.path.join(temp_registry_dir, "models")
+    registry = ModelRegistry(registry_path, storage_dir)
+
+    for model_type, minute in (("catboost", 1), ("lightgbm", 2)):
+        metadata = ModelMetadata(
+            model_id=f"usdeur_{model_type}_{minute}",
+            model_type=model_type,
+            currency_pair="USD/EUR",
+            trained_at=datetime(2025, 10, 25, 12, minute, 0),
+            version="1.0",
+            validation_metrics={},
+            min_samples=500,
+            calibration_ok=False,
+            features_used=[],
+            horizons=[1, 7, 30],
+            model_path="",
+        )
+        registry.register_model(metadata, sample_model)
+
+    top_model = registry.list_models(currency_pair="USD/EUR")[0]
+    selected_model = registry.get_latest_model(
+        "USD/EUR", model_types=["lightgbm", "catboost"]
+    )
+
+    assert selected_model is not None
+    assert selected_model["model_id"] == top_model["model_id"]
+    assert selected_model["model_type"] == "lightgbm"
+
+
 def test_load_model_objects(temp_registry_dir, sample_model, sample_scaler, sample_metadata):
     registry_path = os.path.join(temp_registry_dir, "registry.json")
     storage_dir = os.path.join(temp_registry_dir, "models")

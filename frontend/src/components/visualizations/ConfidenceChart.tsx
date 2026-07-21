@@ -1,4 +1,13 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 interface ConfidenceData {
   component_name: string;
@@ -12,10 +21,9 @@ interface ConfidenceChartProps {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
 export default function ConfidenceChart({ data }: ConfidenceChartProps) {
-  // Transform data for Recharts
   const chartData = data.map((item) => ({
     name: item.component_name,
-    value: Math.round(item.confidence * 100), // Convert to percentage
+    value: Math.round(item.confidence * 100),
   }));
 
   return (
@@ -27,24 +35,21 @@ export default function ConfidenceChart({ data }: ConfidenceChartProps) {
         </div>
       ) : (
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
-              fill="#8884d8"
+          <BarChart data={chartData} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 12 }}>
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+            <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+            <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 12 }} />
+            <Tooltip formatter={(value) => [`${value}%`, 'Confidence']} />
+            <Bar
               dataKey="value"
+              radius={[0, 4, 4, 0]}
+              label={{ position: 'right', formatter: (value) => `${Number(value)}%` }}
             >
               {chartData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
-            </Pie>
-            <Tooltip formatter={(value) => `${value}%`} />
-            <Legend wrapperStyle={{ fontSize: '12px' }} />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       )}
     </div>

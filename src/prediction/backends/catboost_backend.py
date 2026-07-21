@@ -12,6 +12,7 @@ from catboost import CatBoostRegressor, CatBoostClassifier, Pool
 from sklearn.preprocessing import RobustScaler
 
 from .base import BasePredictorBackend
+from src.prediction.utils.confidence import model_reliability_score
 
 logger = logging.getLogger(__name__)
 
@@ -455,19 +456,5 @@ class CatBoostBackend(BasePredictorBackend):
         return importance_df
 
     def get_model_confidence(self) -> float:
-        """
-        Get overall model confidence based on validation metrics.
-
-        Returns:
-            Confidence score (0-1) based on R² or MAE metrics
-        """
-        if not self.validation_metrics:
-            # If no validation metrics, return high confidence (0.98) since this is CatBoost_3
-            return 0.98
-
-        # Use R² from validation metrics if available
-        r2_values = [m.get("r2", 0.0) for m in self.validation_metrics.values()]
-        if r2_values:
-            return float(np.mean(r2_values))
-
-        return 0.98  # Default high confidence for CatBoost_3
+        """Return validation reliability instead of a hardcoded/R² percentage."""
+        return model_reliability_score(self.validation_metrics)

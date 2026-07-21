@@ -39,7 +39,9 @@ def _proximity_weight(minutes_ahead: int) -> float:
     return 0.4
 
 
-def calculate_policy_bias(events: List[EconomicEvent]) -> float:
+def calculate_policy_bias(
+    events: List[EconomicEvent], base: Optional[str] = None, quote: Optional[str] = None
+) -> float:
     """Compute a simple policy bias score from events.
 
     Returns a value roughly in [-1, +1].
@@ -54,6 +56,13 @@ def calculate_policy_bias(events: List[EconomicEvent]) -> float:
     for e in events:
         imp_w = IMPORTANCE_WEIGHTS.get((e.importance or "low").lower(), 0.3)
         sign = _keyword_bias(e.event or "")
+        if base and quote:
+            currency = (e.currency or "").upper()
+            if currency == quote.upper():
+                sign *= -1.0
+            elif currency != base.upper():
+                # Do not let unrelated currencies move this pair's signal.
+                continue
         minutes_ahead = int((e.when_utc - now).total_seconds() / 60)
         prox_w = _proximity_weight(minutes_ahead)
         w = imp_w * prox_w

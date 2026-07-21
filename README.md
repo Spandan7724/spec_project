@@ -71,6 +71,11 @@ Key env vars:
 - `SERPER_API_KEY` (news/calendar), `EXCHANGE_RATE_HOST_API_KEY` (optional)
 - `VITE_API_BASE_URL` (frontend API base override)
 
+To use OpenAI as the primary LLM provider, set `OPENAI_API_KEY` and change
+`llm.default_provider` in `config.yaml` to `openai`. Complex tasks route to
+`openai_main`; latency-sensitive tasks route to `openai_fast`. The OpenAI
+provider uses the Responses API, including streaming and function calling.
+
 ## Commands
 
 - Backend: `python dev_backend.py` or `uvicorn backend.main:app --reload --port 8000`

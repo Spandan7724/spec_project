@@ -3,7 +3,8 @@ from __future__ import annotations
 import math
 from typing import Dict, List, Optional
 
-from src.decision.config import StagingConfig, DecisionConfig, CostConfig
+from src.decision.config import CostConfig, StagingConfig
+from src.decision.contracts import upcoming_events
 from src.decision.models import DecisionRequest, StagedPlan, TrancheSpec
 
 
@@ -33,7 +34,7 @@ class StagingPlanner:
         # Execution schedule
         days = self._calculate_execution_schedule(num_tranches, tf)
         # Event avoidance
-        events = (request.intelligence or {}).get("upcoming_events") or []
+        events = upcoming_events(request.intelligence)
         days_adj = self._adjust_for_events(days, events, tf)
 
         # If too constrained (duplicates or out of bounds), reduce tranches progressively
@@ -58,7 +59,6 @@ class StagingPlanner:
 
         # Extra cost approximation
         spread_bps = request.spread_bps
-        fee_bps = request.fee_bps
         extra_cost_bps = 0.0
         if self.costs is not None:
             sp = spread_bps if spread_bps is not None else self.costs.default_spread_bps
@@ -172,4 +172,3 @@ class StagingPlanner:
         if urgency == "urgent":
             parts.append("front-loaded to meet urgency")
         return ", ".join(parts)
-

@@ -39,12 +39,12 @@ class LLMManager:
                 continue
             
             # Determine provider class based on name
-            # Support copilot variants (copilot_mini, copilot_claude, etc.)
+            # Support tiered provider variants (for example, openai_main).
             if provider_name.startswith('copilot'):
                 provider_class = CopilotProvider
-            elif provider_name == 'openai':
+            elif provider_name.startswith('openai'):
                 provider_class = OpenAIProvider
-            elif provider_name == 'claude':
+            elif provider_name.startswith('claude'):
                 provider_class = ClaudeProvider
             else:
                 logger.warning(f"Unknown provider: {provider_name}")
@@ -127,14 +127,18 @@ class LLMManager:
         """Get the provider failover order, filtered by availability"""
         if not self.config.failover_enabled:
             # If failover is disabled, only return default provider
-            default = self.config.default_provider
+            default = self._resolve_provider_name(self.config.default_provider)
             return [default] if default in self.providers else []
         
         # Use configured failover order, filtered by available providers
         failover_order = self.config.failover_order or ['copilot', 'openai', 'claude']
-        available_providers = list(self.providers.keys())
-        
-        return [provider for provider in failover_order if provider in available_providers]
+        available_providers = set(self.providers)
+        resolved_order = []
+        for provider in failover_order:
+            resolved = self._resolve_provider_name(provider)
+            if resolved in available_providers and resolved not in resolved_order:
+                resolved_order.append(resolved)
+        return resolved_order
     
     async def chat(self, messages: List[Dict[str, Any]], 
                    tools: Optional[List[Dict[str, Any]]] = None,
@@ -149,7 +153,8 @@ class LLMManager:
         # Determine provider order
         if provider_name:
             # Use specific provider if requested
-            providers_to_try = [provider_name] if provider_name in self.providers else []
+            resolved_provider = self._resolve_provider_name(provider_name)
+            providers_to_try = [resolved_provider] if resolved_provider in self.providers else []
         else:
             # Use failover order
             providers_to_try = self.get_failover_order()
@@ -220,7 +225,8 @@ class LLMManager:
         # Determine provider order
         if provider_name:
             # Use specific provider if requested
-            providers_to_try = [provider_name] if provider_name in self.providers else []
+            resolved_provider = self._resolve_provider_name(provider_name)
+            providers_to_try = [resolved_provider] if resolved_provider in self.providers else []
         else:
             # Use failover order
             providers_to_try = self.get_failover_order()
@@ -287,12 +293,21 @@ class LLMManager:
 
     def get_default_provider(self) -> Optional[BaseLLMProvider]:
         """Get the default provider instance"""
-        provider_name = self.config.default_provider
+        provider_name = self._resolve_provider_name(self.config.default_provider)
         return self.providers.get(provider_name)
     
     def get_provider(self, provider_name: str) -> Optional[BaseLLMProvider]:
         """Get a specific provider instance"""
-        return self.providers.get(provider_name)
+        return self.providers.get(self._resolve_provider_name(provider_name))
+
+    def _resolve_provider_name(self, provider_name: str) -> str:
+        """Resolve a base provider name to its configured main variant."""
+        if provider_name in self.providers:
+            return provider_name
+        main_variant = f"{provider_name}_main"
+        if main_variant in self.providers:
+            return main_variant
+        return provider_name
     
     def list_providers(self) -> Dict[str, Dict[str, Any]]:
         """List all providers with their status"""
@@ -308,7 +323,7 @@ class LLMManager:
                 'last_error': health_info.get('last_error'),
                 'last_check': health_info.get('last_check'),
                 'features': provider.get_supported_features(),
-                'is_default': provider_name == self.config.default_provider
+                'is_default': provider_name == self._resolve_provider_name(self.config.default_provider)
             }
         
         return provider_info

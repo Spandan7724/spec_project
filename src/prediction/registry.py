@@ -127,9 +127,33 @@ class ModelRegistry:
         latest = max(matches, key=lambda m: _dt(m.get("trained_at", "")))
         return latest
 
+    def get_latest_model(
+        self,
+        currency_pair: str,
+        model_types: Optional[List[str]] = None,
+    ) -> Optional[Dict]:
+        """Return the first compatible model from the same newest-first list as the UI."""
+        allowed_types = set(model_types or [])
+        for model in self.list_models(currency_pair=currency_pair):
+            if not allowed_types or model.get("model_type") in allowed_types:
+                return model
+        return None
+
+    def resolve_artifact_path(self, stored_path: str) -> str:
+        """Resolve legacy absolute artifact paths against the active storage directory."""
+        path = Path(stored_path)
+        if path.exists():
+            return str(path)
+
+        # Registry files have moved between Windows and Linux environments.
+        # Recover by basename while new registrations transition to portable paths.
+        basename = Path(str(stored_path).replace("\\", "/")).name
+        local_path = Path(self.storage_dir) / basename
+        return str(local_path) if local_path.exists() else str(path)
+
     def load_model_objects(self, model_metadata: Dict) -> Tuple[Any, Optional[Any]]:
         """Load model (and optional scaler) objects from disk."""
-        model_path = model_metadata["model_path"]
+        model_path = self.resolve_artifact_path(model_metadata["model_path"])
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model file not found: {model_path}")
         with open(model_path, "rb") as f:
@@ -137,6 +161,8 @@ class ModelRegistry:
 
         scaler_obj = None
         scaler_path = model_metadata.get("scaler_path")
+        if scaler_path:
+            scaler_path = self.resolve_artifact_path(scaler_path)
         if scaler_path and os.path.exists(scaler_path):
             with open(scaler_path, "rb") as f:
                 scaler_obj = pickle.load(f)

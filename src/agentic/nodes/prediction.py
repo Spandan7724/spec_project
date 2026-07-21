@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict
 
 from src.agentic.state import AgentState
+from src.decision.contracts import prediction_timeframe_bucket
 from src.prediction.config import PredictionConfig
 from src.prediction.models import PredictionRequest
 from src.prediction.predictor import MLPredictor
@@ -53,25 +54,14 @@ async def prediction_node(state: AgentState) -> Dict[str, Any]:
     try:
         # Build prediction request
         cfg = PredictionConfig.from_yaml()
-        # Determine effective timeframe string using Option A (bucket from timeframe_days when needed)
-        def _bucket_timeframe(tf_days: int | None) -> str:
-            if tf_days is None:
-                return cfg.default_timeframe or "1_day"
-            if tf_days <= 0:
-                return "immediate"
-            if tf_days <= 1:
-                return "1_day"
-            if tf_days < 30:
-                return "1_week"
-            return "1_month"
-
         user_tf = state.get("timeframe")
         tf_days = state.get("timeframe_days")
-        if cfg.use_user_timeframe:
-            # Accept either categorical timeframe or derive from days
-            timeframe = user_tf or _bucket_timeframe(tf_days)
-        else:
-            timeframe = user_tf or _bucket_timeframe(tf_days)
+        timeframe = prediction_timeframe_bucket(
+            user_timeframe=user_tf,
+            timeframe_days=tf_days,
+            use_user_timeframe=cfg.use_user_timeframe,
+            default_timeframe=cfg.default_timeframe,
+        )
         daily_h, intraday_h = _timeframe_to_horizons(timeframe, cfg)
         req = PredictionRequest(
             currency_pair=currency_pair,
@@ -133,6 +123,7 @@ async def prediction_node(state: AgentState) -> Dict[str, Any]:
         exec_ms = int((time.time() - start) * 1000)
         price_forecast = {
             "status": pred_response.status,
+            "currency_pair": currency_pair,
             "confidence": pred_response.confidence,
             "predictions": predictions_view,
             "latest_close": pred_response.latest_close,

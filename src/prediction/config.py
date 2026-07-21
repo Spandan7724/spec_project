@@ -15,7 +15,7 @@ class PredictionConfig:
     cache_ttl_hours: int = 1
 
     # Backend
-    predictor_backend: str = "hybrid"  # lightgbm | lstm | hybrid | advanced_ensemble
+    predictor_backend: str = "hybrid"  # lightgbm | catboost | lstm | hybrid | advanced_ensemble
 
     # Advanced ensemble settings
     advanced_ensemble: Dict[str, Any] = field(default_factory=lambda: {

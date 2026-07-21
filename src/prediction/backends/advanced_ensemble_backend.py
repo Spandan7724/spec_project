@@ -23,6 +23,7 @@ import torch
 import torch.nn as nn
 
 from .base import BasePredictorBackend
+from src.prediction.utils.confidence import model_reliability_score
 
 logger = logging.getLogger(__name__)
 
@@ -399,23 +400,9 @@ class AdvancedEnsembleBackend(BasePredictorBackend):
         return np.std(pred_array, axis=0)
 
     def get_model_confidence(self) -> float:
-        """
-        Return overall model confidence based on test metrics.
-        Uses R² score from the best model (CatBoost_3: 0.9883).
-        """
-        test_metrics = self.training_results.get('test_metrics', {})
-
-        # Use R² score as confidence
-        r2 = test_metrics.get('r2', 0.0)
-
-        # For our trained models, R² is 0.9883 (98.83%)
-        # Ensure 0-1 range
-        confidence = max(0.0, min(1.0, r2))
-
-        # Log confidence for debugging
-        logger.debug(f"Advanced ensemble confidence: {confidence:.4f} (R²={r2:.4f})")
-
-        return confidence
+        """Return zero until comparable return/direction validation is recorded."""
+        metrics = self.training_results.get("validation_metrics", {})
+        return model_reliability_score(metrics)
 
     def save(self, path: str) -> None:
         """Save method - not needed as models are pre-trained"""

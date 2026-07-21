@@ -4,6 +4,14 @@ import math
 from typing import Dict, Optional
 
 from src.decision.config import DecisionConfig, RiskProfile
+from src.decision.contracts import (
+    conversion_change_pct,
+    intelligence_improvement_pct,
+    prediction_is_fresh,
+    relative_atr_pct,
+    select_prediction,
+    upcoming_events,
+)
 from src.decision.models import DecisionRequest
 
 
@@ -44,7 +52,8 @@ class UtilityScorer:
     ) -> float:
         w = profile.weights
         urgency_fit = self._get_urgency_fit("convert_now", request.urgency)
-        expected_improvement = 0.0  # No waiting
+        # Converting now avoids a forecast loss that would be incurred by waiting.
+        expected_improvement = max(0.0, -improvement)
         return (
             w.profit * expected_improvement
             - w.risk * risk_penalty
@@ -103,21 +112,19 @@ class UtilityScorer:
         """
         # 1) Prediction
         if request.prediction and isinstance(request.prediction, dict):
-            preds = request.prediction.get("predictions") or {}
-            # Prefer timeframe_days key, allow both int and str keys
-            key_int = request.timeframe_days
-            key_str = str(request.timeframe_days)
-            item = preds.get(key_int) or preds.get(key_str)
-            if item and isinstance(item, dict):
+            is_fresh = prediction_is_fresh(
+                request.prediction, self.config.thresholds.max_prediction_age_hours
+            )
+            _, item = select_prediction(request.prediction, request.timeframe_days)
+            if is_fresh and item and isinstance(item, dict):
                 val = item.get("mean_change_pct")
                 if isinstance(val, (int, float)):
-                    return float(val)
-        # 2) Intelligence bias (-10..+10) → scale to percent
+                    return conversion_change_pct(request, float(val))
+        # 2) Pair-directional intelligence bias → percent
         if request.intelligence and isinstance(request.intelligence, dict):
-            bias = request.intelligence.get("overall_bias")
-            if isinstance(bias, (int, float)):
-                # 0.05% per point → ±0.5% max
-                return float(bias) * 0.05
+            improvement = intelligence_improvement_pct(request.intelligence)
+            if improvement is not None:
+                return conversion_change_pct(request, improvement)
         # 3) Technical (RSI/MACD)
         rsi = None
         macd = None
@@ -127,29 +134,27 @@ class UtilityScorer:
             macd = ind.get("macd")
         if isinstance(rsi, (int, float)):
             if rsi < 40:
-                return 0.15  # +0.15%
+                return conversion_change_pct(request, 0.15)
             if rsi > 60:
-                return -0.15
+                return conversion_change_pct(request, -0.15)
         if isinstance(macd, (int, float)):
             if macd > 0:
-                return 0.1
+                return conversion_change_pct(request, 0.1)
             if macd < 0:
-                return -0.1
+                return conversion_change_pct(request, -0.1)
         return 0.0
 
     def _calculate_risk_penalty(self, request: DecisionRequest, profile: RiskProfile) -> float:
         """Combine volatility and event-based penalty (percent units)."""
         vol_pen = 0.0
         if request.market:
-            ind = request.market.get("indicators", {})
-            atr = ind.get("atr_14")
-            if isinstance(atr, (int, float)):
-                # ATR is in price units; assume FX rate near 1, convert to percent
-                vol_pen = float(atr) * 100.0 * profile.volatility_penalty_multiplier
+            atr_pct = relative_atr_pct(request.market)
+            if atr_pct is not None:
+                vol_pen = atr_pct * profile.volatility_penalty_multiplier
 
         event_pen = 0.0
         if request.intelligence and isinstance(request.intelligence, dict):
-            events = request.intelligence.get("upcoming_events") or []
+            events = upcoming_events(request.intelligence)
             nearest_high = None
             for ev in events:
                 if (ev or {}).get("importance") == "high":

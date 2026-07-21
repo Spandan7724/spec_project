@@ -125,3 +125,22 @@ def test_tranche_rationale_generation():
     req = _req(timeframe_days=7, events=events)
     plan = planner.create_staged_plan(req)
     assert all(t.rationale for t in plan.tranches)
+
+
+def test_nested_calendar_contract_adjusts_schedule():
+    planner = _planner()
+    req = _req(timeframe_days=7)
+    req.intelligence = {
+        "calendar": {
+            "events_extracted": [
+                {
+                    "importance": "high",
+                    "proximity_minutes": 3 * 24 * 60,
+                    "event": "Fed",
+                }
+            ]
+        }
+    }
+    plan = planner.create_staged_plan(req)
+    assert 3 not in [tranche.execute_day for tranche in plan.tranches]
+    assert "Fed" in plan.benefit

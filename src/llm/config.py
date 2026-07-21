@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 from .types import ProviderConfig
+from src.utils.environment import load_project_environment
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +37,12 @@ class LLMConfig:
             
             for provider_name, provider_data in provider_configs.items():
                 # Map provider names to their environment variable names
-                # Support copilot variants (copilot_mini, copilot_claude, etc.)
+                # Support tiered provider variants (for example, openai_main).
                 if provider_name.startswith('copilot'):
                     api_key_env = 'COPILOT_ACCESS_TOKEN'
-                elif provider_name == 'openai':
+                elif provider_name.startswith('openai'):
                     api_key_env = 'OPENAI_API_KEY'
-                elif provider_name == 'claude':
+                elif provider_name.startswith('claude'):
                     api_key_env = 'ANTHROPIC_API_KEY'
                 else:
                     api_key_env = None
@@ -77,20 +78,40 @@ class LLMConfig:
     def get_default_config(cls) -> 'LLMConfig':
         """Get default configuration"""
         providers = {
-            'copilot': ProviderConfig(
-                name='copilot',
+            'copilot_main': ProviderConfig(
+                name='copilot_main',
                 model='gpt-4o',
                 enabled=True,
                 api_key_env='COPILOT_ACCESS_TOKEN'
             ),
-            'openai': ProviderConfig(
-                name='openai', 
-                model='gpt-4',
+            'copilot_fast': ProviderConfig(
+                name='copilot_fast',
+                model='gpt-5-mini',
                 enabled=True,
-                api_key_env='OPENAI_API_KEY'
+                api_key_env='COPILOT_ACCESS_TOKEN'
             ),
-            'claude': ProviderConfig(
-                name='claude',
+            'openai_main': ProviderConfig(
+                name='openai_main',
+                model='gpt-5.6',
+                enabled=True,
+                api_key_env='OPENAI_API_KEY',
+                kwargs={'reasoning': {'effort': 'medium'}, 'store': False}
+            ),
+            'openai_fast': ProviderConfig(
+                name='openai_fast',
+                model='gpt-5.6-luna',
+                enabled=True,
+                api_key_env='OPENAI_API_KEY',
+                kwargs={'reasoning': {'effort': 'low'}, 'store': False}
+            ),
+            'claude_main': ProviderConfig(
+                name='claude_main',
+                model='claude-3-5-sonnet-20241022',
+                enabled=True,
+                api_key_env='ANTHROPIC_API_KEY'
+            ),
+            'claude_fast': ProviderConfig(
+                name='claude_fast',
                 model='claude-3-5-sonnet-20241022',
                 enabled=True,
                 api_key_env='ANTHROPIC_API_KEY'
@@ -101,7 +122,7 @@ class LLMConfig:
             default_provider='copilot',
             providers=providers,
             failover_enabled=True,
-            failover_order=['copilot', 'openai', 'claude']
+            failover_order=['copilot_main', 'copilot_fast', 'openai_main', 'claude_main']
         )
     
     def get_enabled_providers(self) -> List[str]:
@@ -136,12 +157,22 @@ class LLMConfig:
                             'max_tokens': 200000
                         }
                     },
-                    'openai': {
-                        'model': 'gpt-4',
+                    'openai_main': {
+                        'model': 'gpt-5.6',
                         'enabled': True,
                         'kwargs': {
-                            'temperature': 0.7,
-                            'max_tokens': 200000
+                            'reasoning': {'effort': 'medium'},
+                            'max_output_tokens': 8192,
+                            'store': False
+                        }
+                    },
+                    'openai_fast': {
+                        'model': 'gpt-5.6-luna',
+                        'enabled': True,
+                        'kwargs': {
+                            'reasoning': {'effort': 'low'},
+                            'max_output_tokens': 4096,
+                            'store': False
                         }
                     },
                     'claude': {
@@ -168,6 +199,10 @@ class LLMConfig:
 
 def load_config(config_path: Optional[str] = None) -> LLMConfig:
     """Load LLM configuration from file or use defaults"""
+    # LLMManager can be initialized before the main application Config (for
+    # example by the TUI's NLUExtractor), so it must bootstrap .env itself.
+    load_project_environment()
+
     if config_path is None:
         # Look for config.yaml in current directory or currency_assistant root
         possible_paths = [

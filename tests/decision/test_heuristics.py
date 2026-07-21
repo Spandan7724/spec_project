@@ -101,3 +101,12 @@ def test_mixed_signals_prefers_staged():
     d = maker.make_heuristic_decision(req)
     assert d["action"] == "staged_conversion"
 
+
+def test_inverse_conversion_flips_momentum_action():
+    maker = _maker()
+    req = _req(market={"indicators": {"rsi_14": 25}})
+    req.source_currency = "EUR"
+    req.target_currency = "USD"
+    d = maker.make_heuristic_decision(req)
+    assert d["action"] == "convert_now"
+
